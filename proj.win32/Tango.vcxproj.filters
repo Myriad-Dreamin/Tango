@@ -39,6 +39,9 @@
     <ClCompile Include="..\Classes\sqlite_utils\main_db.cpp">
       <Filter>sqlite_utils</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\sqlite_utils\logic_db.cpp">
+      <Filter>sqlite_utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -69,6 +72,9 @@
       <Filter>sqlite_utils</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\sqlite_utils\main_db.h">
+      <Filter>sqlite_utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\sqlite_utils\logic_db.h">
       <Filter>sqlite_utils</Filter>
     </ClInclude>
   </ItemGroup>

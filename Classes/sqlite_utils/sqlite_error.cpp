@@ -2,7 +2,7 @@
 
 namespace app_space
 {
-	 SqliteException::SqliteException(SQLITE_EXCEPTION sql_err)
+	 SqliteException::SqliteException(SQLITE_STATUS sql_err)
 	{
 		switch (sql_err) {
 			case SQLITE_ERROR: {

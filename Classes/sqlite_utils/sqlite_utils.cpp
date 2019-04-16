@@ -5,6 +5,29 @@
 
 namespace app_space
 {
+	// private call_back functions, do not use them straightly
+	namespace cb_funcs
+	{
+		extern "C" {
+			int _if_table_exists (
+				// int *
+				void *query_ret,
+				int queryed_cnt,
+				char **query_value,
+				char **query_key
+			)
+			{
+				if (queryed_cnt >= 1) {
+					if (nullptr != query_ret) {
+						int *query_ret = (int *)query_ret;
+						*query_ret = atoi(*query_value);
+					}
+				}
+				return 0;
+			}
+		}
+	}
+
 	SqliteBase::SqliteBase()
 	{
 		sqlite_base_handler = nullptr;
@@ -93,13 +116,29 @@ namespace app_space
 	}
 	
 	// noexception will occur
-	SQLITE_EXCEPTION SqliteBase::exec (
+	SQLITE_STATUS SqliteBase::exec (
 		const std::string &sql_query,
 		sqlite3_callback cb_func,
 		void *dat
 	) {
-		return sqlite3_exec(sqlite_base_handler, sql_query.c_str(), cb_func, dat, &errmsg);
+		char *errmsg;
+		SQLITE_STATUS exec_status =
+			sqlite3_exec(sqlite_base_handler, sql_query.c_str(), cb_func, dat, &errmsg);
+		if (exec_status != SQLITE_OK) {
+			CCLOGERROR("error when querying %s.\n error message: %s\n", sql_query.c_str(), errmsg);
+		}
+		return exec_status;
 	}
 
+	query_result<int> SqliteBase::is_table_exist(const std::string & table_query)
+	{
+		query_result<int> query_ret;
+		query_ret.status = exec(
+			("select count(*) from sqlite_master where type ='table' and name ='" + table_query + "'").c_str(),
+			cb_funcs::_if_table_exists,
+			reinterpret_cast<void*>(query_ret.ret)
+		);
+		return query_ret;
+	}
 
 }

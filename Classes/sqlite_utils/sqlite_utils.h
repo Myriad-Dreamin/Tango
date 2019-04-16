@@ -4,11 +4,18 @@
 
 #include "sqlite_header.h"
 #include "sqlite_error.h"
+#include <utility>
 #include <ctime>
+
 
 namespace app_space
 {
 	typedef bool action_result;
+	template<typename T> struct query_result
+	{
+		T ret;
+		SQLITE_STATUS status;
+	};
 
 	const std::string defalut_encoding = "utf-8";
 	// cache
@@ -21,8 +28,7 @@ namespace app_space
 
 	protected:
 		
-		std::string self_encoding;
-		char *errmsg; 
+		std::string self_encoding; 
 
 	public:
 		
@@ -46,10 +52,14 @@ namespace app_space
 
 		action_result close ();
 
-		SQLITE_EXCEPTION exec (
+		SQLITE_STATUS exec (
 			const std::string &sql_query,
 			sqlite3_callback cb_func = nullptr,
 			void *data = nullptr
+		);
+
+		query_result<int> is_table_exist(
+			const std::string &table_query
 		);
 	};
 }

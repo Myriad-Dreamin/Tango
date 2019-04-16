@@ -157,6 +157,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)\Resources\" /D /E /I /F /Y
     <ClCompile Include="..\Classes\event\login_box.cpp" />
     <ClCompile Include="..\Classes\event\start_box.cpp" />
     <ClCompile Include="..\Classes\HelloWorldScene.cpp" />
+    <ClCompile Include="..\Classes\sqlite_utils\logic_db.cpp" />
     <ClCompile Include="..\Classes\sqlite_utils\main_db.cpp" />
     <ClCompile Include="..\Classes\sqlite_utils\sqlite_error.cpp" />
     <ClCompile Include="..\Classes\sqlite_utils\sqlite_utils.cpp" />
@@ -168,6 +169,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)\Resources\" /D /E /I /F /Y
     <ClInclude Include="..\Classes\event\login_box.h" />
     <ClInclude Include="..\Classes\event\start_box.h" />
     <ClInclude Include="..\Classes\HelloWorldScene.h" />
+    <ClInclude Include="..\Classes\sqlite_utils\logic_db.h" />
     <ClInclude Include="..\Classes\sqlite_utils\main_db.h" />
     <ClInclude Include="..\Classes\sqlite_utils\sqlite_error.h" />
     <ClInclude Include="..\Classes\sqlite_utils\sqlite_header.h" />

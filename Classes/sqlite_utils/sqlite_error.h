@@ -7,14 +7,14 @@
 
 namespace app_space
 {
-	typedef int SQLITE_EXCEPTION;
+	typedef int SQLITE_STATUS;
 
 	class SqliteException
 	{
 	private:
 		std::string err_desc;
 	public:
-		SqliteException::SqliteException (SQLITE_EXCEPTION sql_err);
+		SqliteException::SqliteException (SQLITE_STATUS sql_err);
 
 		SqliteException::SqliteException (const char *sql_err);
 
