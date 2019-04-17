@@ -19,8 +19,7 @@ namespace app_space
 			{
 				if (queryed_cnt >= 1) {
 					if (nullptr != query_ret) {
-						int *query_ret = (int *)query_ret;
-						*query_ret = atoi(*query_value);
+						*(reinterpret_cast<int*>(query_ret)) = atoi(*query_value);
 					}
 				}
 				return 0;
@@ -132,11 +131,12 @@ namespace app_space
 
 	query_result<int> SqliteBase::is_table_exist(const std::string & table_query)
 	{
-		query_result<int> query_ret;
+		query_result<int> query_ret = {0, SQLITE_OK};
+
 		query_ret.status = exec(
 			("select count(*) from sqlite_master where type ='table' and name ='" + table_query + "'").c_str(),
 			cb_funcs::_if_table_exists,
-			reinterpret_cast<void*>(query_ret.ret)
+			reinterpret_cast<void*>(&query_ret.ret)
 		);
 		return query_ret;
 	}

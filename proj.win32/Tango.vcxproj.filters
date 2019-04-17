@@ -13,6 +13,9 @@
     <Filter Include="sqlite_utils">
       <UniqueIdentifier>{57a64641-7492-4f8e-9255-48214dd11e47}</UniqueIdentifier>
     </Filter>
+    <Filter Include="encoding_utils">
+      <UniqueIdentifier>{9a1341d1-0914-43c3-8ffe-a2a8f882d0a7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -41,6 +44,9 @@
     </ClCompile>
     <ClCompile Include="..\Classes\sqlite_utils\logic_db.cpp">
       <Filter>sqlite_utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\encoding_utils\ecsda.cpp">
+      <Filter>encoding_utils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -76,6 +82,9 @@
     </ClInclude>
     <ClInclude Include="..\Classes\sqlite_utils\logic_db.h">
       <Filter>sqlite_utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\encoding_utils\ecsda.h">
+      <Filter>encoding_utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

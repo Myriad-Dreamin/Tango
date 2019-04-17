@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 
 #include "cocos2d.h"
@@ -6,13 +6,14 @@
 #include "sqlite_utils.h"
 #include "logic_db.h"
 
+
 namespace app_space
 {
 	class UserDB: public LogicBase
 	{
 		/*
-		 * ´³¹ØÕßÊôĞÔÒªÇó±ØĞëº¬ÓĞ£º´³¹ØÕßĞÕÃû¡¢ÒÑ´³¹Ø¹Ø¿¨Êı¡¢´³¹ØÕß¾­ÑéÖµ¡¢´³¹ØÕßµÈ¼¶£¬ÈôÓĞĞèÒª¿ÉÒÔ×ÔĞĞÌí¼ÓÆäËûÊôĞÔ
-		 * ³öÌâÕßÊôĞÔÒªÇó±ØĞëº¬ÓĞ£º³öÌâÕßĞÕÃû¡¢³öÌâÕß³öÌâÊıÄ¿¡¢µÈ¼¶£¬ÈôÓĞĞèÒª¿ÉÒÔ×ÔĞĞÌí¼ÓÆäÓàÊôĞÔ¡£
+		 * é—¯å…³è€…å±æ€§è¦æ±‚å¿…é¡»å«æœ‰ï¼šé—¯å…³è€…å§“åã€å·²é—¯å…³å…³å¡æ•°ã€é—¯å…³è€…ç»éªŒå€¼ã€é—¯å…³è€…ç­‰çº§ï¼Œè‹¥æœ‰éœ€è¦å¯ä»¥è‡ªè¡Œæ·»åŠ å…¶ä»–å±æ€§
+		 * å‡ºé¢˜è€…å±æ€§è¦æ±‚å¿…é¡»å«æœ‰ï¼šå‡ºé¢˜è€…å§“åã€å‡ºé¢˜è€…å‡ºé¢˜æ•°ç›®ã€ç­‰çº§ï¼Œè‹¥æœ‰éœ€è¦å¯ä»¥è‡ªè¡Œæ·»åŠ å…¶ä½™å±æ€§ã€‚
 		 */
 
 		/*
@@ -30,15 +31,20 @@ namespace app_space
 		 * uint32   conlevel   initialized   0
 		 *
 		 */
+	public:
 		UserDB();
 
 		UserDB(SqliteBase *sqlite_handler);
 
 		void init();
+
+		void create_user(const std::string user_name, );
 	};
 
 	class MainDB: public cocos2d::Ref, public SqliteBase
 	{
+	protected:
+		UserDB user_db;
 	public:
 		MainDB ();
 
@@ -49,6 +55,8 @@ namespace app_space
 		MainDB (MainDB &&right_base);
 
 		virtual ~MainDB ();
+
+		void init();
 
 		// MainDB operator= (const MainDB & right_base);
 

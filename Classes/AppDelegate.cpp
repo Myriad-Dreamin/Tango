@@ -54,6 +54,9 @@ AppDelegate::AppDelegate()
 {
 	// Sqlite open.
 	main_db.open("./data/maindb.db", "utf-8");
+	main_db.init();
+	auto result = main_db.is_table_exist("user_table");
+	log("create result: %d, %d", result.ret, result.status);
 }
 
 AppDelegate::~AppDelegate() 

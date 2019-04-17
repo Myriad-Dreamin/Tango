@@ -16,7 +16,7 @@ namespace app_space
 		/*
 		 * Sqlite3 doesn't support uint32, so we use uint64 instead.
 		 * Table user:
-		 * uint64   user_id    primary_key   increment
+		 * uint32   user_id    primary_key   increment
 		 * string   name                     not null
 		 * // finished count
 		 * uint32   fincnt     initialized   0
@@ -31,33 +31,51 @@ namespace app_space
 		 */
 		static const std::string create_table_cmd =
 			"CREATE TABLE IF NOT EXISTS user_table ("
-			"user_id UNSIGNED BIG INT PRIMARY KEY AUTOINCREMENT, "
+			"user_id INTEGER PRIMARY KEY AUTOINCREMENT, "
 			"name NCHAR(30) NOT NULL, "
-			"fincnt UNSIGNED BIG INT DEFAULT 0"
-			"finlevel UNSIGNED BIG INT DEFAULT 0"
-			"finexp UNSIGNED BIG INT DEFAULT 0"
-			"concnt UNSIGNED BIG INT DEFAULT 0"
-			"conlevel UNSIGNED BIG INT DEFAULT 0"
+			"fincnt UNSIGNED BIG INT DEFAULT 0, "
+			"finlevel UNSIGNED BIG INT DEFAULT 0, "
+			"finexp UNSIGNED BIG INT DEFAULT 0, "
+			"concnt UNSIGNED BIG INT DEFAULT 0, "
+			"conlevel UNSIGNED BIG INT DEFAULT 0, "
 			"conexp UNSIGNED BIG INT DEFAULT 0"
 			"); ";
 		SQLITE_STATUS create_status = handler->exec(create_table_cmd);
 
 		if (create_status != SQLITE_OK) {
 			auto excp = SqliteException(create_status);
-			CCLOGERROR("can not open database: %s", excp.what());
+			CCLOGERROR("can not create table: %s", excp.what());
 			throw excp;
 		}
 	}
 
-	MainDB::MainDB (): SqliteBase() {}
+	MainDB::MainDB (): SqliteBase()
+	{
+		user_db.rely_on(this);
+	}
 
 	MainDB::MainDB (const std::string & database_path, const std::string & encoding):
 		SqliteBase(database_path, encoding)
-	{}
+	{
+		user_db.rely_on(this);
+	}
 
-	MainDB::MainDB (const MainDB & right_base): SqliteBase(right_base) {}
+	MainDB::MainDB (const MainDB & right_base): SqliteBase(right_base)
+	{
+		user_db.rely_on(this);
+	}
 	
-	MainDB::MainDB (MainDB && right_base): SqliteBase(right_base) {}
+	MainDB::MainDB (MainDB && right_base): SqliteBase(right_base)
+	{
+		user_db.rely_on(this);
+	}
 	
-	MainDB::~MainDB () {}
+	MainDB::~MainDB ()
+	{
+		user_db.rely_off();
+	}
+	void MainDB::init()
+	{
+		user_db.init();
+	}
 }
