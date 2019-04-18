@@ -22,15 +22,12 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#include "HelloWorldScene.h"
-#include "SimpleAudioEngine.h"
-#include "common_header.h"
-#include "event/start_box.h"
+#include "StartScene.h"
 USING_NS_CC;
 
-Scene* HelloWorld::createScene()
+Scene* StartScene::createScene()
 {
-    return HelloWorld::create();
+    return StartScene::create();
 }
 
 // Print useful error message instead of segfaulting when files are not there.
@@ -41,7 +38,7 @@ static void problemLoading(const char* filename)
 }
 
 // on "init" you need to initialize your instance
-bool HelloWorld::init()
+bool StartScene::init()
 {
     //////////////////////////////
     // 1. super init first
@@ -52,22 +49,34 @@ bool HelloWorld::init()
 	Size windows_size = Director::getInstance()->getVisibleSize();
 
 
-	Sprite *s = StartBox::create();
-	s->setAnchorPoint(Point(0, 0));
-	s->setPosition(Point(100, 200));
-	addChild(s);
-	
-	MessageBox("消息内容", "Message Header");
-	LabelTTF *label = LabelTTF::create();
-	label->setString("这是我的文本");
-	label->setFontSize(36);
-	label->setPosition(Point(windows_size.width / 2, windows_size.height / 3));
-	TextFieldTTF *tf = TextFieldTTF::textFieldWithPlaceHolder("在这里输入", "宋体", 20);
-	tf->setPosition(Point(windows_size.width / 2, windows_size.height / 2));
-	
-	addChild(label);
-	addChild(tf);
+	auto login_box = app_space::LoginBox::create();
+	login_box->setPosition(cocos2d::Point(windows_size.width * 0.1, windows_size.height * 0.9));
 
+	auto start_button = app_space::StartBox::create();
+	start_button->setPosition(Point(windows_size.width * 0.55, windows_size.height * 0.63));
+	
+	// auto option_button = app_space::OptionBox::create();
+	// option_button->init();
+	// option_button->setPosition(Point(windows_size.width * 0.55, windows_size.height * 0.50));
+
+
+	auto center_circle = Sprite::create("start_scene/center_circle.png");
+	center_circle->setPosition(Point(windows_size.width * 0.6, windows_size.height * 0.50));
+	
+	// MessageBox("消息内容", "Message Header");
+	// LabelTTF *label = LabelTTF::create();
+	// label->setString("这是我的文本");
+	// label->setFontSize(36);
+	// label->setPosition(Point(windows_size.width / 2, windows_size.height / 3));
+	TextFieldTTF *tf = TextFieldTTF::textFieldWithPlaceHolder("在这里输入", "宋体", 20);
+	tf->setPosition(Point(windows_size.width / 4, 3 * windows_size.height / 4));
+	
+	// addChild(label);
+	addChild(tf);
+	addChild(center_circle, LAYER1 + HEIGHT0);
+	addChild(start_button, LAYER1 + HEIGHT1);
+	addChild(login_box, LAYER1 + HEIGHT0);
+	// addChild(option_button, LAYER1 + HEIGHT1);
 
 	auto listener = EventListenerTouchOneByOne::create();
 	listener->onTouchBegan = [tf](Touch *t, Event *event) {
@@ -91,7 +100,7 @@ bool HelloWorld::init()
 }
 
 
-void HelloWorld::menuCloseCallback(Ref* pSender)
+void StartScene::menuCloseCallback(Ref* pSender)
 {
     //Close the cocos2d-x game scene and quit the application
     Director::getInstance()->end();

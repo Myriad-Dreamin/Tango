@@ -16,21 +16,18 @@
     <Filter Include="encoding_utils">
       <UniqueIdentifier>{9a1341d1-0914-43c3-8ffe-a2a8f882d0a7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="event">
+      <UniqueIdentifier>{1809a3ca-eb9a-42c1-b25b-7c50c22598c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="scene">
+      <UniqueIdentifier>{49dc4461-2e0c-44ef-b9ad-23fae77f9f8c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>win32</Filter>
     </ClCompile>
     <ClCompile Include="..\Classes\AppDelegate.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Classes\HelloWorldScene.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Classes\event\login_box.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Classes\event\start_box.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\Classes\sqlite_utils\sqlite_utils.cpp">
@@ -45,8 +42,23 @@
     <ClCompile Include="..\Classes\sqlite_utils\logic_db.cpp">
       <Filter>sqlite_utils</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\encoding_utils\ecsda.cpp">
+    <ClCompile Include="..\Classes\encoding_utils\hashtools.cpp">
       <Filter>encoding_utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\event\LoginBox.cpp">
+      <Filter>event</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\event\StartBox.cpp">
+      <Filter>event</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\StartScene.cpp">
+      <Filter>scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\event\OptionBox.cpp">
+      <Filter>event</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\event\ExitBox.cpp">
+      <Filter>event</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -56,16 +68,7 @@
     <ClInclude Include="..\Classes\AppDelegate.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\HelloWorldScene.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="..\Classes\common_header.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\event\login_box.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\event\start_box.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\sqlite_utils\sqlite_utils.h">
@@ -83,8 +86,26 @@
     <ClInclude Include="..\Classes\sqlite_utils\logic_db.h">
       <Filter>sqlite_utils</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\encoding_utils\ecsda.h">
+    <ClInclude Include="..\Classes\encoding_utils\hashtools.h">
       <Filter>encoding_utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\magic_macros.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\event\StartBox.h">
+      <Filter>event</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\event\LoginBox.h">
+      <Filter>event</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\StartScene.h">
+      <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\event\ExitBox.h">
+      <Filter>event</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\event\OptionBox.h">
+      <Filter>event</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

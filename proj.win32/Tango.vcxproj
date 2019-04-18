@@ -154,10 +154,12 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)\Resources\" /D /E /I /F /Y
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Classes\AppDelegate.cpp" />
-    <ClCompile Include="..\Classes\encoding_utils\ecsda.cpp" />
-    <ClCompile Include="..\Classes\event\login_box.cpp" />
-    <ClCompile Include="..\Classes\event\start_box.cpp" />
-    <ClCompile Include="..\Classes\HelloWorldScene.cpp" />
+    <ClCompile Include="..\Classes\encoding_utils\hashtools.cpp" />
+    <ClCompile Include="..\Classes\event\ExitBox.cpp" />
+    <ClCompile Include="..\Classes\event\LoginBox.cpp" />
+    <ClCompile Include="..\Classes\event\OptionBox.cpp" />
+    <ClCompile Include="..\Classes\event\StartBox.cpp" />
+    <ClCompile Include="..\Classes\StartScene.cpp" />
     <ClCompile Include="..\Classes\sqlite_utils\logic_db.cpp" />
     <ClCompile Include="..\Classes\sqlite_utils\main_db.cpp" />
     <ClCompile Include="..\Classes\sqlite_utils\sqlite_error.cpp" />
@@ -167,10 +169,13 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)\Resources\" /D /E /I /F /Y
   <ItemGroup>
     <ClInclude Include="..\Classes\AppDelegate.h" />
     <ClInclude Include="..\Classes\common_header.h" />
-    <ClInclude Include="..\Classes\encoding_utils\ecsda.h" />
-    <ClInclude Include="..\Classes\event\login_box.h" />
-    <ClInclude Include="..\Classes\event\start_box.h" />
-    <ClInclude Include="..\Classes\HelloWorldScene.h" />
+    <ClInclude Include="..\Classes\encoding_utils\hashtools.h" />
+    <ClInclude Include="..\Classes\event\ExitBox.h" />
+    <ClInclude Include="..\Classes\event\LoginBox.h" />
+    <ClInclude Include="..\Classes\event\OptionBox.h" />
+    <ClInclude Include="..\Classes\event\StartBox.h" />
+    <ClInclude Include="..\Classes\magic_macros.h" />
+    <ClInclude Include="..\Classes\StartScene.h" />
     <ClInclude Include="..\Classes\sqlite_utils\logic_db.h" />
     <ClInclude Include="..\Classes\sqlite_utils\main_db.h" />
     <ClInclude Include="..\Classes\sqlite_utils\sqlite_error.h" />

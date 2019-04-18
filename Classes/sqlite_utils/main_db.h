@@ -38,7 +38,7 @@ namespace app_space
 
 		void init();
 
-		void create_user(const std::string user_name, );
+		// void create_user(const std::string user_name, );
 	};
 
 	class MainDB: public cocos2d::Ref, public SqliteBase

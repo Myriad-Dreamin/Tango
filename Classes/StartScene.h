@@ -26,8 +26,16 @@
 #define __HELLOWORLD_SCENE_H__
 
 #include "cocos2d.h"
+#include "SimpleAudioEngine.h"
+#include "common_header.h"
 
-class HelloWorld : public cocos2d::Scene
+#include "event/StartBox.h"
+#include "event/OptionBox.h"
+#include "event/ExitBox.h"
+#include "event/LoginBox.h"
+#include "magic_macros.h"
+
+class StartScene : public cocos2d::Scene
 {
 public:
     static cocos2d::Scene* createScene();
@@ -38,7 +46,7 @@ public:
     void menuCloseCallback(cocos2d::Ref* pSender);
     
     // implement the "static create()" method manually
-    CREATE_FUNC(HelloWorld);
+    CREATE_FUNC(StartScene);
 };
 
 #endif // __HELLOWORLD_SCENE_H__
