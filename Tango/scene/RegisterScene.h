@@ -16,7 +16,7 @@ private:
     QGridLayout *lay;
 public:
     QPushButton *confirm_button, *cancel_button, *return_button;
-    QLineEdit *account_edit, *password_edit, *confirm_edit;
+    QLineEdit *account_edit, *password_edit, *confirm_edit, *network_edit, *port_edit;
 
     RegisterScene(QWidget *parent=nullptr);
     ~RegisterScene();

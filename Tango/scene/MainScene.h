@@ -16,7 +16,7 @@ private:
     QGridLayout *lay;
 public:
     QPushButton *sign_in_button, *cancel_button, *sign_up_button;
-    QLineEdit *account_edit, *password_edit;
+    QLineEdit *account_edit, *password_edit, *network_edit, *port_edit;
 
     MainScene(QWidget *parent=nullptr);
     ~MainScene();

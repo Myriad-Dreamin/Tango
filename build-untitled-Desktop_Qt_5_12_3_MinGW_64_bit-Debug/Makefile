@@ -249,6 +249,7 @@ Makefile: ../Tango/Tango.pro E:/Qt5/5.12.3/mingw73_64/mkspecs/win32-g++/qmake.co
 		../Tango/Tango.pro \
 		E:/Qt5/5.12.3/mingw73_64/lib/Qt5Widgets.prl \
 		E:/Qt5/5.12.3/mingw73_64/lib/Qt5Gui.prl \
+		E:/Qt5/5.12.3/mingw73_64/lib/Qt5Network.prl \
 		E:/Qt5/5.12.3/mingw73_64/lib/Qt5Sql.prl \
 		E:/Qt5/5.12.3/mingw73_64/lib/Qt5Core.prl \
 		E:/Qt5/5.12.3/mingw73_64/lib/qtmaind.prl
@@ -439,6 +440,7 @@ E:/Qt5/5.12.3/mingw73_64/mkspecs/features/lex.prf:
 ../Tango/Tango.pro:
 E:/Qt5/5.12.3/mingw73_64/lib/Qt5Widgets.prl:
 E:/Qt5/5.12.3/mingw73_64/lib/Qt5Gui.prl:
+E:/Qt5/5.12.3/mingw73_64/lib/Qt5Network.prl:
 E:/Qt5/5.12.3/mingw73_64/lib/Qt5Sql.prl:
 E:/Qt5/5.12.3/mingw73_64/lib/Qt5Core.prl:
 E:/Qt5/5.12.3/mingw73_64/lib/qtmaind.prl:

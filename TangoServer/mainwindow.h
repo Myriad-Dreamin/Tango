@@ -6,14 +6,18 @@
 #include <QTcpSocket>
 #include <QTextEdit>
 
+class TcpServer;
+
+
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
 private:
-    QTcpServer *server;
+    TcpServer *server;
     QTextEdit *text_edit, *address_edit, *port_edit;
 private slots:
-    void newCon();
+    // void newCon();
     void dealData();
 public:
     MainWindow(QWidget *parent = nullptr);

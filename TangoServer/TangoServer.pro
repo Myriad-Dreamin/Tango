@@ -4,7 +4,6 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
 QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -26,10 +25,16 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
+        engine/SocketX.cpp \
+        engine/TangoThread.cpp \
+        engine/TcpServer.cpp \
         main.cpp \
         mainwindow.cpp
 
 HEADERS += \
+        engine/SocketX.h \
+        engine/TangoThread.h \
+        engine/TcpServer.h \
         mainwindow.h
 
 # Default rules for deployment.

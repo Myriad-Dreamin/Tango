@@ -7,6 +7,16 @@
 
 RegisterScene::RegisterScene(QWidget *parent): Scene(parent)
 {
+    auto network_lay = new QHBoxLayout;
+    auto network_host_lab = new QLabel("服务器地址: ");
+    auto network_port_lab = new QLabel("端口: ");
+    network_edit = new QLineEdit;
+    port_edit = new QLineEdit;
+    network_lay->addWidget(network_host_lab);
+    network_lay->addWidget(network_edit, 1);
+    network_lay->addWidget(network_port_lab);
+    network_lay->addWidget(port_edit, 1);
+
     auto account_lay = new QHBoxLayout;
     auto account_lab = new QLabel("账户: ");
     account_edit = new QLineEdit;
@@ -44,6 +54,7 @@ RegisterScene::RegisterScene(QWidget *parent): Scene(parent)
     buttons_lay->addStretch(1);
 
     auto main_center_lay = new QVBoxLayout;
+    main_center_lay->addLayout(network_lay);
     main_center_lay->addLayout(account_lay);
     main_center_lay->addLayout(password_lay);
     main_center_lay->addLayout(confirm_lay);
