@@ -1,0 +1,11 @@
+release/db_create_tables.o
+release/main.o
+release/mainwindow.o
+release/playdb.o
+release/MainScene.o
+release/RegisterScene.o
+release/Scene.o
+release/moc_mainwindow.o
+release/moc_MainScene.o
+release/moc_RegisterScene.o
+release/moc_Scene.o
