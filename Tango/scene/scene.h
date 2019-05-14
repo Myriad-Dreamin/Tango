@@ -3,7 +3,6 @@
 #define ABSTRACT_SCENE_H
 
 #include <QWidget>
-#include <QLayout>
 
 class Scene: public QWidget
 {

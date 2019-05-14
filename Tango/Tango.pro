@@ -27,22 +27,26 @@ CONFIG += c++11
 
 SOURCES += \
         db/db_connection.cpp \
-        db/db_create_tables.cpp \
         main.cpp \
         mainwindow.cpp \
-        players/playdb.cpp \
+        players/Author.cpp \
+        players/Player.cpp \
+        scene/CreationScene.cpp \
         scene/MainScene.cpp \
         scene/RegisterScene.cpp \
-        scene/Scene.cpp
+        scene/Scene.cpp \
+        scene/SelectingScene.cpp
 
 HEADERS += \
         db/db_connection.h \
-        db/db_create_tables.h \
         mainwindow.h \
-        players/playdb.h \
+        players/Author.h \
+        players/Player.h \
+        scene/CreationScene.h \
         scene/MainScene.h \
         scene/RegisterScene.h \
-        scene/Scene.h
+        scene/Scene.h \
+        scene/SelectingScene.h
 
 FORMS +=
 

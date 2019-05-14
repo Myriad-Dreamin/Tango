@@ -1,13 +1,18 @@
 #ifndef MAINSCENE_H
 #define MAINSCENE_H
 
-
-#include <QLayout>
-#include <functional>
-#include <QWidget>
-#include <QPushButton>
-#include <QLineEdit>
 #include "Scene.h"
+
+namespace std
+{
+    template<typename function_signature>
+    class function;
+}
+
+class QGridLayout;
+class QPushButton;
+class QRadioButton;
+class QLineEdit;
 
 class MainScene : public Scene
 {
@@ -16,6 +21,7 @@ private:
     QGridLayout *lay;
 public:
     QPushButton *sign_in_button, *cancel_button, *sign_up_button;
+    QRadioButton *remote_button;
     QLineEdit *account_edit, *password_edit, *network_edit, *port_edit;
 
     MainScene(QWidget *parent=nullptr);

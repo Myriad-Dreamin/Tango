@@ -1,14 +1,17 @@
 #include "mainwindow.h"
 #include <QApplication>
 
+#include <QSqlDatabase>
+#include <QSqlError>
+#include <QMessageBox>
 #include <QPushButton>
 #include <QLineEdit>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLabel>
+#include "players/Author.h"
 
 // #include "db/db_connection.h"
-#include "db/db_create_tables.h"
 
 bool open_sql_base()
 {
@@ -41,7 +44,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    if (!create_authors_table()) {
+    if (!Author::create_table()) {
         return 2;
     }
 

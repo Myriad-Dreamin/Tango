@@ -7,8 +7,16 @@
 #include <QMenuBar>
 #include <QMessageBox>
 #include <QAction>
-
 #include <QHostAddress>
+#include <QRadioButton>
+
+#include <QSqlError>
+
+#include "players/Author.h"
+#include "scene/MainScene.h"
+#include "scene/RegisterScene.h"
+#include "scene/SelectingScene.h"
+#include "scene/CreationScene.h"
 
 // toolbar, statusbar
 
@@ -19,10 +27,14 @@ MainWindow::MainWindow(QWidget *parent) :
     qDebug() << "I...";
 
     this->cur_scene = nullptr;
+    this->user_author = nullptr;
+    this->user_status = MainWindow::UserStatusType::None;
 
     this->init_client();
     this->init_main_scene();
     this->init_register_scene();
+    this->init_selecting_scene();
+    this->init_creation_scene();
 
     auto main_menubar = menuBar();
     auto menu_item = main_menubar->addMenu("File(&F)");
@@ -67,24 +79,17 @@ bool MainWindow::init_main_scene()
             return;
         }
 
-
-        QHostAddress host_address(this->main_scene->network_edit->text());
-        quint16 server_port = quint16(this->main_scene->port_edit->text().toShort());
-
-        this->try_connect_to_server(host_address, server_port);
-
-        if (this->client->waitForConnected(1000) == false) {
-            QMessageBox::critical(this, tr("错误"), tr("服务器连接失败"), QMessageBox::Ok);
-            return;
+        if (this->main_scene->remote_button->isChecked()) {
+            qDebug() << "checked";
+            if (!this->author_sign_in(account_text, password_text)) {
+                QMessageBox::critical(this, tr("错误"), "登陆失败" + this->caughted_error, QMessageBox::Ok);
+                return;
+            }
+        } else {
+            qDebug() << "not checked";
         }
 
-        QByteArray qbytes;
-        qbytes.append(account_text);
-        client->write(qbytes);
-
-        qbytes.clear();
-        qbytes.append(password_text);
-        client->write(qbytes);
+        this->switch_scene(this->selecting_scene);
     });
 
     main_scene->set_cancel_button_event([this]() mutable {
@@ -124,6 +129,18 @@ bool MainWindow::init_register_scene()
             QMessageBox::critical(this, tr("错误"), tr("两次输入密码不一致"), QMessageBox::Ok);
         }
 
+
+        if (this->register_scene->remote_button->isChecked()) {
+            qDebug() << "checked";
+            if (!this->author_sign_up(account_text, password_text)) {
+                QMessageBox::critical(this, tr("错误"), "注册失败" + this->caughted_error, QMessageBox::Ok);
+                return;
+            }
+        } else {
+            qDebug() << "not checked";
+        }
+
+        this->switch_scene(this->selecting_scene);
     });
 
     register_scene->set_cancel_button_event([this]() mutable {
@@ -136,6 +153,22 @@ bool MainWindow::init_register_scene()
         this->switch_scene(this->main_scene);
     });
 
+    return true;
+}
+
+bool MainWindow::init_selecting_scene()
+{
+    this->selecting_scene = new SelectingScene;
+    this->selecting_scene->set_creation_button_event([this]() mutable {
+        qDebug() << "clicked creation button" << this->main_scene;
+        this->switch_scene(this->creation_scene);
+    });
+    return true;
+}
+
+bool MainWindow::init_creation_scene()
+{
+    this->creation_scene = new CreationScene;
     return true;
 }
 
@@ -175,7 +208,6 @@ bool MainWindow::try_connect_to_server(QHostAddress host_address, quint16 server
     return true;
 }
 
-
 bool MainWindow::init_client()
 {
     this->client = new QTcpSocket;
@@ -199,8 +231,94 @@ void MainWindow::client_on_closed()
     this->client_connected = false;
 }
 
+/************************************* Player *************************************/
 
-void MainWindow::makeLayout()
+
+bool MainWindow::author_sign_in(QString account, QString password)
 {
+    if (this->user_status != MainWindow::UserStatusType::None) {
+        qDebug() << "user_doesn't logout";
+        user_author->deleteLater();
+        user_author = nullptr;
+        this->user_status = MainWindow::UserStatusType::None;
+    }
+
+    user_author = new class Author(QSqlDatabase::database());
+    if (user_author->sign_in(account, password)) {
+        this->user_status = MainWindow::Author;
+        return true;
+    }
+
+    caughted_error = user_author->last_error();
+    user_author->deleteLater();
+    user_author = nullptr;
+    return false;
+}
+
+bool MainWindow::author_sign_in_remote(QString account, QString password)
+{
+    QHostAddress host_address(this->main_scene->network_edit->text());
+    quint16 server_port = quint16(this->main_scene->port_edit->text().toShort());
+
+    this->try_connect_to_server(host_address, server_port);
+
+    if (this->client->waitForConnected(1000) == false) {
+        QMessageBox::critical(this, tr("错误"), tr("服务器连接失败"), QMessageBox::Ok);
+        return false;
+    }
+
+    QByteArray qbytes;
+    qbytes.append(account);
+    client->write(qbytes);
+
+    qbytes.clear();
+    qbytes.append(password);
+    client->write(qbytes);
+
+    return false;
+}
+
+bool MainWindow::author_sign_up(QString account, QString password)
+{
+    if (this->user_status != MainWindow::UserStatusType::None) {
+        qDebug() << "user_doesn't logout";
+        user_author->deleteLater();
+        user_author = nullptr;
+        this->user_status = MainWindow::UserStatusType::None;
+    }
+
+    user_author = new class Author(QSqlDatabase::database());
+    if (user_author->sign_up(account, password)) {
+        this->user_status = MainWindow::Author;
+        return true;
+    }
+
+    caughted_error = user_author->last_error();
+    user_author->deleteLater();
+    user_author = nullptr;
+    return false;
+}
+
+bool MainWindow::author_sign_up_remote(QString account, QString password)
+{
+    QHostAddress host_address(this->main_scene->network_edit->text());
+    quint16 server_port = quint16(this->main_scene->port_edit->text().toShort());
+
+    this->try_connect_to_server(host_address, server_port);
+
+    if (this->client->waitForConnected(1000) == false) {
+        QMessageBox::critical(this, tr("错误"), tr("服务器连接失败"), QMessageBox::Ok);
+        return false;
+    }
+
+    QByteArray qbytes;
+    qbytes.append(account);
+    client->write(qbytes);
+
+    qbytes.clear();
+    qbytes.append(password);
+    client->write(qbytes);
+
+    return false;
 }
 

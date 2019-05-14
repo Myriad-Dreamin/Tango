@@ -1,13 +1,18 @@
 #ifndef REGISTERSCENE_H
 #define REGISTERSCENE_H
 
-
-#include <QLayout>
-#include <functional>
-#include <QWidget>
-#include <QPushButton>
-#include <QLineEdit>
 #include "Scene.h"
+
+namespace std
+{
+    template<typename function_signature>
+    class function;
+}
+
+class QGridLayout;
+class QPushButton;
+class QRadioButton;
+class QLineEdit;
 
 class RegisterScene : public Scene
 {
@@ -16,6 +21,7 @@ private:
     QGridLayout *lay;
 public:
     QPushButton *confirm_button, *cancel_button, *return_button;
+    QRadioButton *remote_button;
     QLineEdit *account_edit, *password_edit, *confirm_edit, *network_edit, *port_edit;
 
     RegisterScene(QWidget *parent=nullptr);
