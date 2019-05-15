@@ -1,8 +1,9 @@
 #ifndef USERSTATUSTYPE_H
 #define USERSTATUSTYPE_H
 
+#include <cstdint>
 
-enum UserStatus: unsigned char
+enum UserStatus: std::uint8_t
 {
     None      = 0x0 | 0x0,
     Author    = 0x1 | 0x0,

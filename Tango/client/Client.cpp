@@ -7,7 +7,11 @@
 #include "Client.h"
 #include "../players/Author.h"
 #include "../types/TangoPair.h"
+#include "../types/RetriveMode.h"
 #include "../players/Consumer.h"
+#include <random>
+#include <ctime>
+#include <set>
 
 Client::Client(QObject *parent) : QObject(parent)
 {
@@ -332,6 +336,111 @@ bool Client::submit_tango_items_remote(const std::vector<TangoPair> &tango_list)
     qDebug() << "tango list" << tango_list;
     _last_error = "TODO";
     return false;
+}
+
+
+bool Client::retrive_kth_tango_item(TangoPair &tp, int k) {
+    static const char *search_command = "select * from `tangos` order by length(key) limit :kth - 1, 1";
+
+    QSqlQuery query(this->local_handler);
+    query.prepare(search_command);
+    query.bindValue(":kth", k);
+    if (!query.exec()) {
+        _last_error = query.lastError().text();
+        qDebug() << "error occured: " << _last_error;
+        return false;
+    }
+    if (query.first()) {
+        tp = TangoPair(query.value(1).toString(), query.value(2).toString());
+        return true;
+    }
+    _last_error = "not found";
+    return false;
+}
+
+int Client::retrive_since_kth_tango_item(std::vector<TangoPair> &tango_list, unsigned int k, int n)
+{
+    static const char *search_command = "select * from `tangos` order by length(key) limit :kth - 1, :ntimes";
+
+    QSqlQuery query(this->local_handler);
+    query.prepare(search_command);
+    query.bindValue(":kth", k);
+    query.bindValue(":ntimes", n);
+    if (!query.exec()) {
+        _last_error = query.lastError().text();
+        qDebug() << "error occured: " << _last_error;
+        return 0;
+    }
+    int ret = 0;
+    while (query.next()) {
+        tango_list.push_back(TangoPair(query.value(1).toString(), query.value(2).toString()));
+        ret++;
+    }
+    return ret;
+}
+
+
+bool Client::retrive_tango_items(std::vector<TangoPair> &tango_list, int n, RetriveMode mode)
+{
+    static std::mt19937 mtrand(static_cast<unsigned int>(time(nullptr)));
+    static const char *query_count = "select count(*) from `tangos`";
+    QSqlQuery query(this->local_handler);
+    if (!query.exec(query_count)) {
+        _last_error = query.lastError().text();
+        qDebug() << "error occured: " << _last_error;
+        return false;
+    }
+    int tot_length = query.value(0).toInt();
+    unsigned int to_fetch;
+    switch (mode) {
+    case RetriveMode::Easy:
+        tot_length = static_cast<int>(0.3 * tot_length);
+        if (tot_length < n) {
+            _last_error = "not enough";
+            return false;
+        }
+        to_fetch = mtrand() % static_cast<unsigned int>(n - tot_length + 1);
+        _last_error = "";
+        if (!this->retrive_since_kth_tango_item(tango_list, to_fetch, tot_length)) {
+            if (_last_error != "") {
+                _last_error = "fetch error";
+            }
+            return false;
+        }
+        return true;
+    case RetriveMode::Normal:
+        tot_length = static_cast<int>(0.6 * tot_length);
+        if (tot_length < n) {
+            _last_error = "not enough";
+            return false;
+        }
+        to_fetch = mtrand() % static_cast<unsigned int>(n - tot_length + 1);
+        _last_error = "";
+        if (!this->retrive_since_kth_tango_item(tango_list, to_fetch, tot_length)) {
+            if (_last_error != "") {
+                _last_error = "fetch error";
+            }
+            return false;
+        }
+        return true;
+    case RetriveMode::Hard:
+        if (tot_length < n) {
+            _last_error = "not enough";
+            return false;
+        }
+        to_fetch = mtrand() % static_cast<unsigned int>(n - tot_length + 1);
+        _last_error = "";
+        if (!this->retrive_since_kth_tango_item(tango_list, to_fetch, tot_length)) {
+            if (_last_error != "") {
+                _last_error = "fetch error";
+            }
+            return false;
+        }
+        return true;
+    }
+
+
+    return true;
 }
 
 

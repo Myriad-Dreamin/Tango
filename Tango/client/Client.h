@@ -6,6 +6,7 @@
 #include <QHostAddress>
 #include <QSqlDatabase>
 #include "../types/UserStatus.h"
+#include "../types/RetriveMode.h"
 
 class QTcpSocket;
 class QSqlDatabase;
@@ -36,6 +37,7 @@ public:
     const QString last_error();
     bool is_remote_server_connected();
     bool is_local_handler_connected();
+    bool retrive_tango_items(std::vector<TangoPair> &tango_list, int n, RetriveMode mode = RetriveMode::Easy);
 private:
     UserStatus user_status;
 
@@ -70,6 +72,8 @@ private:
     bool consumer_sign_up_local(QString account, QString password);
     bool consumer_sign_in_remote(QString account, QString password);
     bool consumer_sign_up_remote(QString account, QString password);
+    bool retrive_kth_tango_item(TangoPair &tp, int k);
+    int retrive_since_kth_tango_item(std::vector<TangoPair> &tango_list, unsigned int k, int n);
 signals:
     void connected();
     void disconnected();

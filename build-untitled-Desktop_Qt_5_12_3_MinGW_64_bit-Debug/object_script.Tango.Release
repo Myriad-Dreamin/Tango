@@ -11,6 +11,7 @@ release/RegisterScene.o
 release/Scene.o
 release/SelectingScene.o
 release/PairTableItem.o
+release/RetriveMode.o
 release/TangoPair.o
 release/UserStatus.o
 release/moc_Client.o

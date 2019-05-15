@@ -11,6 +11,7 @@ debug/RegisterScene.o
 debug/Scene.o
 debug/SelectingScene.o
 debug/PairTableItem.o
+debug/RetriveMode.o
 debug/TangoPair.o
 debug/UserStatus.o
 debug/moc_Client.o

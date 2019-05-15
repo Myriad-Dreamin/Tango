@@ -39,6 +39,7 @@ SOURCES += \
         scene/Scene.cpp \
         scene/SelectingScene.cpp \
         types/PairTableItem.cpp \
+        types/RetriveMode.cpp \
         types/TangoPair.cpp \
         types/UserStatus.cpp
 
@@ -56,6 +57,7 @@ HEADERS += \
         scene/Scene.h \
         scene/SelectingScene.h \
         types/PairTableItem.h \
+        types/RetriveMode.h \
         types/TangoPair.h \
         types/UserStatus.h
 
