@@ -11,11 +11,13 @@ namespace std
 }
 
 class QGridLayout;
+class MainWindow;
 
 class SelectingScene : public Scene
 {
     Q_OBJECT
 private:
+    MainWindow *parent;
     QGridLayout *lay;
 public:
     QPushButton *creation_button;
@@ -24,7 +26,7 @@ public:
     ~SelectingScene();
 
 // c++11 public slots:
-    void set_creation_button_event(std::function<void ()> ev);
+    void set_creation_button_event(const std::function<void ()> &ev);
 };
 
 #endif // SELECTINGSCENE_H

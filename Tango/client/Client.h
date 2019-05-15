@@ -5,10 +5,12 @@
 #include <QObject>
 #include <QHostAddress>
 #include <QSqlDatabase>
+#include "../types/UserStatus.h"
 
 class QTcpSocket;
 class QSqlDatabase;
 class TangoPair;
+class Consumer;
 
 class Client : public QObject
 {
@@ -22,6 +24,8 @@ public:
 
     std::function<bool(QString,QString)> author_sign_in;
     std::function<bool(QString,QString)> author_sign_up;
+    std::function<bool(QString,QString)> consumer_sign_in;
+    std::function<bool(QString,QString)> consumer_sign_up;
     std::function<bool(std::vector<TangoPair>)> submit_tango_items;
 
     void switch_remote_mode();
@@ -33,15 +37,10 @@ public:
     bool is_remote_server_connected();
     bool is_local_handler_connected();
 private:
-    enum UserStatusType: unsigned char
-    {
-        None      = 0x0 | 0x0,
-        Author    = 0x1 | 0x0,
-        Consumer  = 0x0 | 0x2,
-        Both      = 0x1 | 0x2
-    } user_status;
+    UserStatus user_status;
 
     class Author *user_author;
+    class Consumer *user_consumer;
 
     QHostAddress remote_address;
     quint16 remote_port;
@@ -66,6 +65,11 @@ private:
     inline bool create_tangos_table();
     bool submit_tango_items_local(const std::vector<TangoPair> &tango_list);
     bool submit_tango_items_remote(const std::vector<TangoPair> &tango_list);
+    bool create_consumer_table();
+    bool consumer_sign_in_local(QString account, QString password);
+    bool consumer_sign_up_local(QString account, QString password);
+    bool consumer_sign_in_remote(QString account, QString password);
+    bool consumer_sign_up_remote(QString account, QString password);
 signals:
     void connected();
     void disconnected();

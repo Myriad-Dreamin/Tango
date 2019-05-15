@@ -40,7 +40,6 @@ private:
 
     QWidget *cur_scene;
 
-
     bool client_connected;
     Client *client;
 
@@ -59,6 +58,8 @@ private:
     bool author_sign_in(QString account, QString password);
     bool author_sign_up(QString account, QString password);
     bool submit_creation_table(const std::vector<TangoPair> &tango_pairs);
+    bool consumer_sign_in(QString account, QString password);
+    bool consumer_sign_up(QString account, QString password);
 };
 
 #endif // MAINWINDOW_H

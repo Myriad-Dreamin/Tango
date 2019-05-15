@@ -6,10 +6,11 @@
 #include <QDebug>
 
 #include "SelectingScene.h"
+#include "../mainwindow.h"
 
 SelectingScene::SelectingScene(QWidget *parent): Scene(parent)
 {
-
+    this->parent = dynamic_cast<MainWindow*>(parent);
     auto buttons_lay = new QHBoxLayout;
 
     buttons_lay->addStretch(1);
@@ -17,6 +18,7 @@ SelectingScene::SelectingScene(QWidget *parent): Scene(parent)
     creation_button = new QPushButton;
     creation_button->setText("开始创造");
     buttons_lay->addWidget(creation_button);
+
 
     buttons_lay->addStretch(1);
 
@@ -38,7 +40,7 @@ SelectingScene::~SelectingScene()
     qDebug() << "selecting scene deleted";
 }
 
-void SelectingScene::set_creation_button_event(std::function<void ()> ev)
+void SelectingScene::set_creation_button_event(const std::function<void ()> &ev)
 {
     connect(creation_button, &QPushButton::clicked, ev);
 }

@@ -1,17 +1,15 @@
-#ifndef AUTHOR_H
-#define AUTHOR_H
+#ifndef CONSUMER_H
+#define CONSUMER_H
+
 
 #include "Player.h"
 
 
-class QSqlError;
-
-class Author : public Player
+class Consumer : public Player
 {
-    Q_OBJECT
 public:
-    Author(QSqlDatabase db_handler, QObject *parent = nullptr);
-    ~Author();
+    Consumer(QSqlDatabase db_handler, QObject *parent = nullptr);
+    ~Consumer();
 
     bool sign_in_local(QString account, QString password);
     bool sign_in_remote(QString account, QString password);
@@ -42,4 +40,4 @@ private:
     QString _last_error;
 };
 
-#endif // AUTHOR_H
+#endif // CONSUMER_H

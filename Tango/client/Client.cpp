@@ -2,14 +2,18 @@
 #include <QTcpSocket>
 #include <QSqlError>
 #include <QSqlQuery>
+#include <QSqlDriver>
 
 #include "Client.h"
 #include "../players/Author.h"
 #include "../types/TangoPair.h"
+#include "../players/Consumer.h"
 
 Client::Client(QObject *parent) : QObject(parent)
 {
     this->user_author = nullptr;
+    this->user_consumer = nullptr;
+    this->user_status = UserStatus::None;
 
     this->remote_server = new QTcpSocket;
 
@@ -82,6 +86,7 @@ bool Client::setup_local_connection()
         this->switch_local_mode();
         return true;
     }
+    qDebug() << "might be open" << this->local_handler.isOpen();
     this->switch_local_mode();
     return true;
 }
@@ -138,17 +143,17 @@ inline void Client::make_remote_server_on_disconnected()
 
 bool Client::author_sign_in_local(QString account, QString password)
 {
-    if (this->user_status != Client::UserStatusType::None) {
+    if (this->user_status != UserStatus::None) {
         qDebug() << "user_doesn't logout";
         user_author->deleteLater();
         user_author = nullptr;
-        this->user_status = Client::UserStatusType::None;
+        this->user_status = UserStatus::None;
     }
 
-    user_author = new class Author(QSqlDatabase::database());
+    user_author = new class Author(this->local_handler);
     if (user_author->sign_in_local(account, password)) {
         _last_error = user_author->last_error();
-        this->user_status = Client::Author;
+        this->user_status = UserStatus::Author;
         return true;
     }
 
@@ -161,23 +166,68 @@ bool Client::author_sign_in_local(QString account, QString password)
 
 bool Client::author_sign_up_local(QString account, QString password)
 {
-    if (this->user_status != Client::UserStatusType::None) {
+    if (this->user_status != UserStatus::None) {
         qDebug() << "user_doesn't logout";
         user_author->deleteLater();
         user_author = nullptr;
-        this->user_status = Client::UserStatusType::None;
+        this->user_status = UserStatus::None;
     }
 
-    user_author = new class Author(QSqlDatabase::database());
+    user_author = new class Author(this->local_handler);
     if (user_author->sign_up_local(account, password)) {
         _last_error = user_author->last_error();
-        this->user_status = Client::Author;
+        this->user_status = UserStatus::Author;
         return true;
     }
 
     _last_error = user_author->last_error();
     user_author->deleteLater();
     user_author = nullptr;
+    return false;
+}
+
+bool Client::consumer_sign_in_local(QString account, QString password)
+{
+    if (this->user_status != UserStatus::None) {
+        qDebug() << "user_doesn't logout";
+        user_consumer->deleteLater();
+        user_consumer = nullptr;
+        this->user_status = UserStatus::None;
+    }
+
+    user_consumer = new class Consumer(this->local_handler);
+    if (user_consumer->sign_in_local(account, password)) {
+        _last_error = user_consumer->last_error();
+        this->user_status = UserStatus::Consumer;
+        return true;
+    }
+
+    _last_error = user_consumer->last_error();
+    user_consumer->deleteLater();
+    user_consumer = nullptr;
+    return false;
+}
+
+
+bool Client::consumer_sign_up_local(QString account, QString password)
+{
+    if (this->user_status != UserStatus::None) {
+        qDebug() << "user_doesn't logout";
+        user_consumer->deleteLater();
+        user_consumer = nullptr;
+        this->user_status = UserStatus::None;
+    }
+
+    user_consumer = new class Consumer(this->local_handler);
+    if (user_consumer->sign_up_local(account, password)) {
+        _last_error = user_consumer->last_error();
+        this->user_status = UserStatus::Consumer;
+        return true;
+    }
+
+    _last_error = user_consumer->last_error();
+    user_consumer->deleteLater();
+    user_consumer = nullptr;
     return false;
 }
 
@@ -210,12 +260,71 @@ bool Client::author_sign_up_remote(QString account, QString password)
     return false;
 }
 
-bool Client::submit_tango_items_local(const std::vector<TangoPair> &tango_list)
+bool Client::consumer_sign_in_remote(QString account, QString password)
 {
-    qDebug() << "tango list" << tango_list;
     _last_error = "TODO";
+    QByteArray qbytes;
+    qbytes.append(account);
+    this->remote_server->write(qbytes);
+
+    qbytes.clear();
+    qbytes.append(password);
+    this->remote_server->write(qbytes);
 
     return false;
+}
+
+bool Client::consumer_sign_up_remote(QString account, QString password)
+{
+    _last_error = "TODO";
+
+    QByteArray qbytes;
+    qbytes.append(account);
+    this->remote_server->write(qbytes);
+
+    qbytes.clear();
+    qbytes.append(password);
+    this->remote_server->write(qbytes);
+    return false;
+}
+
+bool Client::submit_tango_items_local(const std::vector<TangoPair> &tango_list)
+{
+    static const char *insert_command =
+        "insert into `tangos` ( `key`, `value`, `last_submit`) "
+        "               values (:key,  :value,  :ls)";
+    qDebug() << "tango list" << tango_list;
+    QSqlQuery query(this->local_handler);
+    if (!query.exec("start transaction")) {
+        qDebug() << "start transaction error" << query.lastError().text();
+        _last_error = query.lastError().text();
+        return false;
+    }
+    query.prepare(insert_command);
+    query.bindValue(":ls", this->user_author->name);
+
+    for (unsigned int i = 0; i < tango_list.size(); i++) {
+        query.bindValue(":key", tango_list[i].first);
+        query.bindValue(":value", tango_list[i].second);
+        if (!query.exec()) {
+             qDebug() << "exec error" << query.lastError().text();
+             _last_error = query.lastError().text();
+             if (!query.exec("rollback")) {
+                 qDebug() << "rollback error" << query.lastError().text();
+                 _last_error = query.lastError().text();
+                 return false;
+             }
+             return false;
+        }
+    }
+
+    if (!query.exec("commit")) {
+        qDebug() << "commit error" << query.lastError().text();
+        _last_error = query.lastError().text();
+        return false;
+    }
+
+    return true;
 }
 
 bool Client::submit_tango_items_remote(const std::vector<TangoPair> &tango_list)
@@ -234,6 +343,12 @@ std::function<void()> Client::switch_remote_mode_slottor()
         };
         this->author_sign_up = [this](QString account, QString password) mutable {
             return this->author_sign_up_remote(account, password);
+        };
+        this->consumer_sign_in = [this](QString account, QString password) mutable {
+            return this->consumer_sign_in_remote(account, password);
+        };
+        this->consumer_sign_up = [this](QString account, QString password) mutable {
+            return this->consumer_sign_up_remote(account, password);
         };
         this->submit_tango_items = [this](const std::vector<TangoPair> &tango_list) mutable {
             return this->submit_tango_items_remote(tango_list);
@@ -255,6 +370,12 @@ std::function<void()> Client::switch_local_mode_slottor()
         };
         this->author_sign_up = [this](QString account, QString password) mutable {
             return this->author_sign_up_local(account, password);
+        };
+        this->consumer_sign_in = [this](QString account, QString password) mutable {
+            return this->consumer_sign_in_local(account, password);
+        };
+        this->consumer_sign_up = [this](QString account, QString password) mutable {
+            return this->consumer_sign_up_local(account, password);
         };
         this->submit_tango_items = [this](const std::vector<TangoPair> &tango_list) mutable {
             return this->submit_tango_items_local(tango_list);
@@ -299,6 +420,32 @@ bool Client::create_author_table()
     return true;
 }
 
+bool Client::create_consumer_table()
+{
+    static const char *create_command =
+        "create table if not exists `consumers` ("
+        "    `id` int(11) NOT NULL AUTO_INCREMENT,"
+        "    `name` varchar(45) NOT NULL,"
+        "    `password` varchar(45) NOT NULL,"
+        "    `exp` int(10) unsigned NOT NULL DEFAULT '0',"
+        "    `level` int(10) unsigned NOT NULL DEFAULT '0',"
+        "    `tango_count` int(10) unsigned NOT NULL DEFAULT '0',"
+        "    `misson_count` int(10) unsigned NOT NULL DEFAULT '0',"
+        "    `motto` longtext,"
+        "     PRIMARY KEY (`id`),"
+        "     UNIQUE KEY `name_UNIQUE` (`name`)"
+        " ) engine=InnoDB default charset=utf8 comment='consumers that enjoy the happiness the tango world'";
+    QSqlQuery query(this->local_handler);
+    query.exec("set names 'utf8'");
+
+    if (!query.exec(create_command)) {
+        qDebug() << "create consumers table failed" << query.lastError().text();
+        _last_error = query.lastError().text();
+        return false;
+    }
+    return true;
+}
+
 inline bool Client::create_tangos_table()
 {
     static const char *create_command =
@@ -306,6 +453,8 @@ inline bool Client::create_tangos_table()
         "    `id` int(11) NOT NULL AUTO_INCREMENT,"
         "    `key` varchar(50) NOT NULL,"
         "    `value` longtext NOT NULL,"
+        "    `last_submit` varchar(45) DEFAULT NULL,"
+        "    `last_submit_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,"
         "    PRIMARY KEY (`id`),"
         "    UNIQUE KEY `key_UNIQUE` (`key`),"
         "    UNIQUE KEY `id_UNIQUE` (`id`)"
@@ -327,7 +476,10 @@ bool Client::create_tables()
     if (!this->create_author_table()) {
         return false;
     }
-    if (!this->create_author_table()) {
+    if (!this->create_consumer_table()) {
+        return false;
+    }
+    if (!this->create_tangos_table()) {
         return false;
     }
     return true;

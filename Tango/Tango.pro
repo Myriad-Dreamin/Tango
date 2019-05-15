@@ -27,10 +27,10 @@ CONFIG += c++11
 
 SOURCES += \
         client/Client.cpp \
-        db/db_connection.cpp \
         main.cpp \
         mainwindow.cpp \
         players/Author.cpp \
+        players/Consumer.cpp \
         players/Player.cpp \
         scene/CreationScene.cpp \
         scene/CreationTableItem.cpp \
@@ -39,13 +39,15 @@ SOURCES += \
         scene/Scene.cpp \
         scene/SelectingScene.cpp \
         types/PairTableItem.cpp \
-        types/TangoPair.cpp
+        types/TangoPair.cpp \
+        types/UserStatus.cpp
 
 HEADERS += \
         client/Client.h \
         db/db_connection.h \
         mainwindow.h \
         players/Author.h \
+        players/Consumer.h \
         players/Player.h \
         scene/CreationScene.h \
         scene/CreationTableItem.h \
@@ -54,7 +56,8 @@ HEADERS += \
         scene/Scene.h \
         scene/SelectingScene.h \
         types/PairTableItem.h \
-        types/TangoPair.h
+        types/TangoPair.h \
+        types/UserStatus.h
 
 FORMS +=
 

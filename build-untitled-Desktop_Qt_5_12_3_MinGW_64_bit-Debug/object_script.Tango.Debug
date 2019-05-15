@@ -1,8 +1,8 @@
 debug/Client.o
-debug/db_connection.o
 debug/main.o
 debug/mainwindow.o
 debug/Author.o
+debug/Consumer.o
 debug/Player.o
 debug/CreationScene.o
 debug/CreationTableItem.o
@@ -12,6 +12,7 @@ debug/Scene.o
 debug/SelectingScene.o
 debug/PairTableItem.o
 debug/TangoPair.o
+debug/UserStatus.o
 debug/moc_Client.o
 debug/moc_mainwindow.o
 debug/moc_Author.o

@@ -8,10 +8,11 @@
 #include <QLineEdit>
 #include <QDebug>
 #include "MainScene.h"
-
+#include "../mainwindow.h"
 
 MainScene::MainScene(QWidget *parent): Scene(parent)
 {
+    this->parent = dynamic_cast<MainWindow*>(parent);
     auto network_lay = new QHBoxLayout;
     auto network_host_lab = new QLabel("服务器地址: ");
     auto network_port_lab = new QLabel("端口: ");
@@ -23,6 +24,10 @@ MainScene::MainScene(QWidget *parent): Scene(parent)
     network_lay->addWidget(network_edit, 1);
     network_lay->addWidget(network_port_lab);
     network_lay->addWidget(port_edit, 1);
+
+    auto role_lay = new QHBoxLayout;
+    role_button = new QPushButton("author!");
+    role_lay->addWidget(role_button, 1);
 
     auto account_lay = new QHBoxLayout;
     auto account_lab = new QLabel("账户: ");
@@ -56,6 +61,7 @@ MainScene::MainScene(QWidget *parent): Scene(parent)
 
     auto main_center_lay = new QVBoxLayout;
     main_center_lay->addLayout(network_lay);
+    main_center_lay->addLayout(role_lay);
     main_center_lay->addLayout(account_lay);
     main_center_lay->addLayout(password_lay);
     main_center_lay->addLayout(buttons_lay);
@@ -75,19 +81,24 @@ MainScene::~MainScene()
     qDebug() << "main scene deleted";
 }
 
-void MainScene::set_sign_in_button_event(std::function<void ()> ev)
+void MainScene::set_sign_in_button_event(const std::function<void ()> &ev)
 {
     connect(sign_in_button, &QPushButton::clicked, ev);
 }
 
-void MainScene::set_sign_up_button_event(std::function<void ()> ev)
+void MainScene::set_sign_up_button_event(const std::function<void ()> &ev)
 {
     connect(sign_up_button, &QPushButton::clicked, ev);
 }
 
-void MainScene::set_cancel_button_event(std::function<void ()> ev)
+void MainScene::set_cancel_button_event(const std::function<void ()> &ev)
 {
     connect(cancel_button, &QPushButton::clicked, ev);
+}
+
+void MainScene::set_role_button_event(const std::function<void ()> &ev)
+{
+    connect(role_button, &QPushButton::clicked, ev);
 }
 
 
