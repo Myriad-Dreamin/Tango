@@ -7,6 +7,7 @@
 #include <QRadioButton>
 #include <QLineEdit>
 #include <QLabel>
+#include <QDebug>
 
 #include "RegisterScene.h"
 
@@ -15,7 +16,7 @@ RegisterScene::RegisterScene(QWidget *parent): Scene(parent)
     auto network_lay = new QHBoxLayout;
     auto network_host_lab = new QLabel("服务器地址: ");
     auto network_port_lab = new QLabel("端口: ");
-    remote_button = new QRadioButton("本地连接");
+    remote_button = new QRadioButton("远程连接");
     network_edit = new QLineEdit;
     port_edit = new QLineEdit;
     network_lay->addWidget(remote_button);
@@ -79,7 +80,7 @@ RegisterScene::RegisterScene(QWidget *parent): Scene(parent)
 
 RegisterScene::~RegisterScene()
 {
-
+    qDebug() << "register scene deleted";
 }
 
 void RegisterScene::set_confirm_button_event(std::function<void ()> ev)

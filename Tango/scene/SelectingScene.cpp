@@ -3,6 +3,7 @@
 
 #include <QPushButton>
 #include <QLayout>
+#include <QDebug>
 
 #include "SelectingScene.h"
 
@@ -34,7 +35,7 @@ SelectingScene::SelectingScene(QWidget *parent): Scene(parent)
 
 SelectingScene::~SelectingScene()
 {
-
+    qDebug() << "selecting scene deleted";
 }
 
 void SelectingScene::set_creation_button_event(std::function<void ()> ev)

@@ -13,13 +13,17 @@ public:
     Author(QSqlDatabase db_handler, QObject *parent = nullptr);
     ~Author();
 
-    static bool create_table();
+    bool sign_in_local(QString account, QString password);
+    bool sign_in_remote(QString account, QString password);
 
-    bool sign_up(QString account, QString password);
-    bool sign_in(QString account, QString password);
-    bool login_out();
+    bool sign_up_local(QString account, QString password);
+    bool sign_up_remote(QString account, QString password);
 
-    bool update_full_info();
+    bool login_out_local();
+    bool login_out_remote();
+
+    bool update_full_info_local();
+    bool update_full_info_remote();
 
     const QString last_error();
 

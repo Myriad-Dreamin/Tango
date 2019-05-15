@@ -16,31 +16,7 @@ Author::~Author()
 }
 
 
-bool Author::create_table() {
-    static const char *create_command =
-        "create table if not exists `authors` ("
-        "    `id` int(11) NOT NULL AUTO_INCREMENT,"
-        "    `name` varchar(45) NOT NULL,"
-        "    `password` varchar(45) NOT NULL,"
-        "    `exp` int(10) unsigned NOT NULL DEFAULT '0',"
-        "    `level` int(10) unsigned NOT NULL DEFAULT '0',"
-        "    `tango_count` int(10) unsigned NOT NULL DEFAULT '0',"
-        "    `misson_count` int(10) unsigned NOT NULL DEFAULT '0',"
-        "    `motto` longtext,"
-        "     PRIMARY KEY (`id`),"
-        "     UNIQUE KEY `name_UNIQUE` (`name`)"
-        " ) engine=InnoDB default charset=utf8 comment='authors that produce good tango list for users'";
-    QSqlQuery query(QSqlDatabase::database());
-    query.exec("set names 'utf8'");
-
-    if (!query.exec(create_command)) {
-        qDebug() << "create authors table failed" << query.lastError().text();
-        return false;
-    }
-    return true;
-}
-
-bool Author::sign_up(QString account, QString password)
+bool Author::sign_up_local(QString account, QString password)
 {
     qDebug() << "account: " << account << "password: " << password;
     static const char *sign_up_command = "insert into `authors` (name, password) VALUES (:Name, :Password)";
@@ -59,7 +35,14 @@ bool Author::sign_up(QString account, QString password)
     return true;
 }
 
-bool Author::sign_in(QString account, QString password)
+bool Author::sign_up_remote(QString account, QString password)
+{
+    _last_error = "TODO";
+    qDebug() << "account: " << account << "password: " << password;
+    return true;
+}
+
+bool Author::sign_in_local(QString account, QString password)
 {
     qDebug() << "account: " << account << "password: " << password;
     static const char *sign_in_command = "select * from `authors` where name = :name";
@@ -97,16 +80,29 @@ bool Author::sign_in(QString account, QString password)
     return true;
 }
 
-bool Author::login_out()
+bool Author::sign_in_remote(QString account, QString password)
 {
-    if (!this->update_full_info()) {
+    _last_error = "TODO";
+    qDebug() << "account: " << account << "password: " << password;
+    return false;
+}
+
+bool Author::login_out_local()
+{
+    if (!this->update_full_info_local()) {
         return false;
     }
 
     return true;
 }
 
-bool Author::update_full_info()
+bool Author::login_out_remote()
+{
+    _last_error = "TODO";
+    return false;
+}
+
+bool Author::update_full_info_local()
 {
     static const char *update_command =
         "update `authors` set "
@@ -130,6 +126,12 @@ bool Author::update_full_info()
     }
 
     return true;
+}
+
+bool Author::update_full_info_remote()
+{
+    _last_error = "TODO";
+    return false;
 }
 
 const QString Author::last_error()

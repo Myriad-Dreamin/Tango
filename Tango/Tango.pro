@@ -26,27 +26,35 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
+        client/Client.cpp \
         db/db_connection.cpp \
         main.cpp \
         mainwindow.cpp \
         players/Author.cpp \
         players/Player.cpp \
         scene/CreationScene.cpp \
+        scene/CreationTableItem.cpp \
         scene/MainScene.cpp \
         scene/RegisterScene.cpp \
         scene/Scene.cpp \
-        scene/SelectingScene.cpp
+        scene/SelectingScene.cpp \
+        types/PairTableItem.cpp \
+        types/TangoPair.cpp
 
 HEADERS += \
+        client/Client.h \
         db/db_connection.h \
         mainwindow.h \
         players/Author.h \
         players/Player.h \
         scene/CreationScene.h \
+        scene/CreationTableItem.h \
         scene/MainScene.h \
         scene/RegisterScene.h \
         scene/Scene.h \
-        scene/SelectingScene.h
+        scene/SelectingScene.h \
+        types/PairTableItem.h \
+        types/TangoPair.h
 
 FORMS +=
 

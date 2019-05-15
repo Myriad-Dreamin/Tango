@@ -15,11 +15,17 @@ signals:
 public slots:
 
 public:
-    virtual bool sign_up(QString account, QString password) = 0;
-    virtual bool sign_in(QString account, QString password) = 0;
-    virtual bool login_out() = 0;
+    virtual bool sign_up_local(QString account, QString password) = 0;
+    virtual bool sign_up_remote(QString account, QString password) = 0;
 
-    virtual bool update_full_info() = 0;
+    virtual bool sign_in_local(QString account, QString password) = 0;
+    virtual bool sign_in_remote(QString account, QString password) = 0;
+
+    virtual bool login_out_local() = 0;
+    virtual bool login_out_remote() = 0;
+
+    virtual bool update_full_info_local() = 0;
+    virtual bool update_full_info_remote() = 0;
 protected:
     QSqlDatabase handler;
 };

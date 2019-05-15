@@ -6,6 +6,7 @@
 #include <QPushButton>
 #include <QRadioButton>
 #include <QLineEdit>
+#include <QDebug>
 #include "MainScene.h"
 
 
@@ -14,7 +15,7 @@ MainScene::MainScene(QWidget *parent): Scene(parent)
     auto network_lay = new QHBoxLayout;
     auto network_host_lab = new QLabel("服务器地址: ");
     auto network_port_lab = new QLabel("端口: ");
-    remote_button = new QRadioButton("本地连接");
+    remote_button = new QRadioButton("远程连接");
     network_edit = new QLineEdit;
     port_edit = new QLineEdit;
     network_lay->addWidget(remote_button);
@@ -71,7 +72,7 @@ MainScene::MainScene(QWidget *parent): Scene(parent)
 
 MainScene::~MainScene()
 {
-
+    qDebug() << "main scene deleted";
 }
 
 void MainScene::set_sign_in_button_event(std::function<void ()> ev)

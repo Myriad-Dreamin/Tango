@@ -12,6 +12,8 @@ class RegisterScene;
 class SelectingScene;
 class CreationScene;
 class QSqlError;
+class Client;
+class TangoPair;
 
 namespace Ui {
 class MainWindow;
@@ -20,7 +22,10 @@ class MainWindow;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
-
+    friend class MainScene;
+    friend class RegisterScene;
+    friend class SelectingScene;
+    friend class CreationScene;
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     void makeLayout();
@@ -29,28 +34,15 @@ public:
 private slots:
 
     void switch_scene(QWidget *to_set);
-
-    void client_on_connected();
-    void client_on_closed();
 private:
 
-    bool client_connected;
-    QHostAddress connected_server_address;
-    quint16 connected_server_port;
-    QTcpSocket *client;
-
-    enum UserStatusType: unsigned char
-    {
-        None      = 0x0 | 0x0,
-        Author    = 0x1 | 0x0,
-        Consumer  = 0x0 | 0x2,
-        Both      = 0x1 | 0x2
-    } user_status;
-
-    class Author *user_author;
     QString caughted_error;
 
     QWidget *cur_scene;
+
+
+    bool client_connected;
+    Client *client;
 
     MainScene *main_scene;
     RegisterScene *register_scene;
@@ -64,14 +56,9 @@ private:
     bool init_selecting_scene();
     bool init_creation_scene();
 
-    // Ui::MainWindow *ui;
-    bool try_connect_to_server(QHostAddress host_address, quint16 server_host);
-
     bool author_sign_in(QString account, QString password);
-    bool author_sign_in_remote(QString account, QString password);
-
     bool author_sign_up(QString account, QString password);
-    bool author_sign_up_remote(QString account, QString password);
+    bool submit_creation_table(const std::vector<TangoPair> &tango_pairs);
 };
 
 #endif // MAINWINDOW_H
