@@ -7,12 +7,9 @@
 class Player : public QObject
 {
     Q_OBJECT
+
 public:
     Player(QSqlDatabase db_handler=QSqlDatabase::database(), QObject *parent = nullptr);
-
-signals:
-
-public slots:
 
 public:
     virtual bool sign_up_local(QString account, QString password) = 0;
@@ -26,6 +23,7 @@ public:
 
     virtual bool update_full_info_local() = 0;
     virtual bool update_full_info_remote() = 0;
+
 protected:
     QSqlDatabase handler;
 };

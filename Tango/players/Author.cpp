@@ -1,9 +1,9 @@
 
 #include "Author.h"
+
+#include <QDebug>
 #include <QSqlQuery>
 #include <QSqlError>
-#include <QDebug>
-
 
 
 Author::Author(QSqlDatabase db_handler, QObject *parent): Player(db_handler, parent)
@@ -14,7 +14,6 @@ Author::Author(QSqlDatabase db_handler, QObject *parent): Player(db_handler, par
 Author::~Author()
 {
 }
-
 
 bool Author::sign_up_local(QString account, QString password)
 {
@@ -31,7 +30,6 @@ bool Author::sign_up_local(QString account, QString password)
         return false;
     }
 
-
     return true;
 }
 
@@ -39,6 +37,7 @@ bool Author::sign_up_remote(QString account, QString password)
 {
     _last_error = "TODO";
     qDebug() << "account: " << account << "password: " << password;
+
     return true;
 }
 
@@ -84,6 +83,7 @@ bool Author::sign_in_remote(QString account, QString password)
 {
     _last_error = "TODO";
     qDebug() << "account: " << account << "password: " << password;
+
     return false;
 }
 
@@ -99,6 +99,7 @@ bool Author::login_out_local()
 bool Author::login_out_remote()
 {
     _last_error = "TODO";
+
     return false;
 }
 
@@ -131,6 +132,7 @@ bool Author::update_full_info_local()
 bool Author::update_full_info_remote()
 {
     _last_error = "TODO";
+
     return false;
 }
 

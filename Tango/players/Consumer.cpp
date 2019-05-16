@@ -1,10 +1,9 @@
 
 #include "Consumer.h"
+
+#include <QDebug>
 #include <QSqlQuery>
 #include <QSqlError>
-#include <QDebug>
-
-
 
 Consumer::Consumer(QSqlDatabase db_handler, QObject *parent): Player(db_handler, parent)
 {
@@ -14,7 +13,6 @@ Consumer::Consumer(QSqlDatabase db_handler, QObject *parent): Player(db_handler,
 Consumer::~Consumer()
 {
 }
-
 
 bool Consumer::sign_up_local(QString account, QString password)
 {
@@ -31,7 +29,6 @@ bool Consumer::sign_up_local(QString account, QString password)
         return false;
     }
 
-
     return true;
 }
 
@@ -39,6 +36,7 @@ bool Consumer::sign_up_remote(QString account, QString password)
 {
     _last_error = "TODO";
     qDebug() << "account: " << account << "password: " << password;
+
     return true;
 }
 
@@ -84,6 +82,7 @@ bool Consumer::sign_in_remote(QString account, QString password)
 {
     _last_error = "TODO";
     qDebug() << "account: " << account << "password: " << password;
+
     return false;
 }
 
@@ -99,6 +98,7 @@ bool Consumer::login_out_local()
 bool Consumer::login_out_remote()
 {
     _last_error = "TODO";
+
     return false;
 }
 
@@ -131,6 +131,7 @@ bool Consumer::update_full_info_local()
 bool Consumer::update_full_info_remote()
 {
     _last_error = "TODO";
+
     return false;
 }
 

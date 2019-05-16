@@ -2,6 +2,7 @@
 #define TIMERWIDGET_H
 
 #include <QWidget>
+
 #include <functional>
 
 class QTimer;
@@ -12,15 +13,21 @@ class TimerWidget : public QWidget
     Q_OBJECT
 public:
     explicit TimerWidget(QWidget *parent = nullptr);
-    std::function<void(int)> set_timer_slotter();
+
     void set_timer(int expire_time);
-    std::function<void()> stop_timer_slotter();
     void stop_timer();
 
-    std::function<void (int)> set_timer_slotter(const std::function<void ()> &shot_func);
+public:
+// c++ style public slots:
+    std::function<void(int)> set_timer_slotter();
+    std::function<void(int)> set_timer_slotter(const std::function<void ()> &shot_func);
+    std::function<void()> stop_timer_slotter();
+
 private:
+
     QTimer *timer, *show_timer;
     QLabel *text_show;
+
     std::function<void()> timeout_slotter;
     void make_timeout_slotter();
 };

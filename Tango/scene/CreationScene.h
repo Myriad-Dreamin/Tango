@@ -12,18 +12,26 @@ namespace std
     class function;
 }
 
-class QGridLayout;
+class MainWindow;
+
 class QLineEdit;
 class QVBoxLayout;
 class QHBoxLayout;
-class CreationTableItem;
-class MainWindow;
+class QGridLayout;
 
+class CreationTableItem;
 
 
 class CreationScene : public Scene
 {
     Q_OBJECT
+
+public:
+    CreationScene(QWidget *parent=nullptr);
+    ~CreationScene();
+
+    QLineEdit *table_name_edit;
+
 private:
     MainWindow *parent;
 
@@ -39,13 +47,6 @@ private:
     void reset_table();
     bool create_header();
     void try_submit_tangos();
-public:
-    QLineEdit *table_name_edit;
-
-
-
-    CreationScene(QWidget *parent=nullptr);
-    ~CreationScene();
 };
 
 #endif // CREATIONSCENE_H

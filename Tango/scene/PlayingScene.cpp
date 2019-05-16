@@ -1,10 +1,13 @@
 
+#include "PlayingScene.h"
+
 #include <QDebug>
+
 #include <QPushButton>
 
-#include "PlayingScene.h"
-#include "../types/TimerWidget.h"
 #include "../mainwindow.h"
+
+#include "../types/TimerWidget.h"
 
 PlayingScene::PlayingScene(QWidget *parent): Scene (parent)
 {

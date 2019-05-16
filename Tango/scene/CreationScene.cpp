@@ -1,21 +1,32 @@
 
+#include "CreationScene.h"
+
+/* 标准库 */
+#include <vector>
 #include <functional>
 
-#include <vector>
+/* 工具库 */
+#include <QDebug>
 
+/* 控件库 */
 #include <QLayout>
+
 #include <QLabel>
+#include <QLineEdit>
+#include <QMessageBox>
+#include <QTableWidget>
+
 #include <QPushButton>
 #include <QRadioButton>
-#include <QLineEdit>
-#include <QTableWidget>
-#include <QDebug>
-#include <QMessageBox>
 
+/* 主程序代理 */
 #include "../mainwindow.h"
-#include "../types/TangoPair.h"
-#include "CreationScene.h"
+
+/* 场景 */
 #include "SelectingScene.h"
+
+/* 自定义类型 */
+#include "../types/TangoPair.h"
 #include "CreationTableItem.h"
 
 CreationScene::CreationScene(QWidget *parent): Scene(parent)
@@ -44,13 +55,9 @@ CreationScene::CreationScene(QWidget *parent): Scene(parent)
         this->reset_table();
     });
 
-
     submit_lay->addWidget(submit_button, 1);
     submit_lay->addWidget(submit_reset_button, 1);
     submit_lay->addWidget(submit_cancel_button, 1);
-
-
-
 
     lay = new QGridLayout(this);
     lay->setColumnStretch(0, 1);
@@ -73,48 +80,49 @@ CreationScene::~CreationScene()
 CreationTableItem *CreationScene::make_creation_table_item()
 {
     auto item = new CreationTableItem;
+
     item->set_delete_this_event([this, item](){
         this->creation_table_row --;
         qDebug() << "deleted";
         item->hide();
         item->deleteLater();
     });
+
     return item;
 }
 
 bool CreationScene::create_header()
 {
-    this->header_lay = new QHBoxLayout;
+    this->header_lay = new QHBoxLayout(this);
 
     header_lay->addStretch(1);
-    auto header = new QLabel("Creation Space");
+    auto header = new QLabel("Creation Space", this);
     header_lay->addWidget(header, 1);
 
-    this->table_name_lay = new QHBoxLayout;
+    this->table_name_lay = new QHBoxLayout(this);
 
-    auto table_name_header = new QLabel("表名");
+    auto table_name_header = new QLabel("表名", this);
     table_name_lay->addWidget(table_name_header);
-    table_name_edit = new QLineEdit;
+    table_name_edit = new QLineEdit(this);
     table_name_lay->addWidget(table_name_edit, 1);
 
     return true;
 }
 
-
 bool CreationScene::create_table()
 {
-    creation_table = new QVBoxLayout;
+    creation_table = new QVBoxLayout(this);
 
-    auto insert_button = new QPushButton("+");
+    auto insert_button = new QPushButton("+", this);
     connect(insert_button, &QPushButton::clicked, [this]() mutable {
         this->insert_back_item(this->make_creation_table_item());
     });
-    auto insert_lay = new QHBoxLayout;
+    auto insert_lay = new QHBoxLayout(this);
     insert_lay->addStretch(1);
     insert_lay->addWidget(insert_button);
     insert_lay->addStretch(1);
 
-    auto insert_it_widget = new QWidget;
+    auto insert_it_widget = new QWidget(this);
     insert_it_widget->setLayout(insert_lay);
     this->creation_table->addWidget(insert_it_widget);
     this->creation_table_row = 1;
@@ -122,7 +130,6 @@ bool CreationScene::create_table()
     this->reset_table();
     return true;
 }
-
 
 void CreationScene::reset_table()
 {
@@ -138,7 +145,6 @@ void CreationScene::reset_table()
         this->insert_back_item(this->make_creation_table_item());
     }
 }
-
 
 void CreationScene::insert_back_item(QWidget *row_widget)
 {
@@ -159,7 +165,6 @@ void CreationScene::try_submit_tangos()
         QMessageBox::critical(this->parent, tr("错误"), "表格名不能为空", QMessageBox::Ok);
         return ;
     }
-
 
     for (int i = creation_table_row - 2; i >= 0; i--) {
         qDebug() << "try getting" << i;

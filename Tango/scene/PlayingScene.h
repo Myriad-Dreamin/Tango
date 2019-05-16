@@ -5,17 +5,21 @@
 
 
 class MainWindow;
+
 class QGridLayout;
+
 
 class PlayingScene : public Scene
 {
     Q_OBJECT
-private:
-    MainWindow *parent;
-    QGridLayout *lay;
+
 public:
     PlayingScene(QWidget *parent=nullptr);
     ~PlayingScene();
+
+private:
+    MainWindow *parent;
+    QGridLayout *lay;
 };
 
 #endif // PLAYINGSCENE_H

@@ -10,31 +10,36 @@ namespace std
     class function;
 }
 
+class MainWindow;
+
+class QLineEdit;
 class QGridLayout;
 class QPushButton;
 class QRadioButton;
-class QLineEdit;
-class MainWindow;
 
 class RegisterScene : public Scene
 {
     Q_OBJECT
-private:
-    MainWindow *parent;
-    QGridLayout *lay;
 public:
+    RegisterScene(QWidget *parent=nullptr);
+    ~RegisterScene();
+
     UserStatus user_selecting_status;
 
     QPushButton *confirm_button, *cancel_button, *return_button, *role_button;
     QRadioButton *remote_button;
     QLineEdit *account_edit, *password_edit, *confirm_edit, *network_edit, *port_edit;
 
-    RegisterScene(QWidget *parent=nullptr);
-    ~RegisterScene();
-    void set_confirm_button_event(const std::function<void ()> &ev);
+public:
+// c++11 public slots:
+    void set_role_button_event(const std::function<void ()> &ev);
     void set_cancel_button_event(const std::function<void ()> &ev);
     void set_return_button_event(const std::function<void ()> &ev);
-    void set_role_button_event(const std::function<void ()> &ev);
+    void set_confirm_button_event(const std::function<void ()> &ev);
+
+private:
+    MainWindow *parent;
+    QGridLayout *lay;
 };
 
 #endif // REGISTERSCENE_H

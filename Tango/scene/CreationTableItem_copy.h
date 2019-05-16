@@ -6,6 +6,7 @@
 class CreationTableItem : public PairTableItem
 {
     Q_OBJECT
+
 public:
     CreationTableItem(QWidget *parent = nullptr);
 };
