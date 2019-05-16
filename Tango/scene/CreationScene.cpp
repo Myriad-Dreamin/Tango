@@ -26,10 +26,10 @@ CreationScene::CreationScene(QWidget *parent): Scene(parent)
     this->create_header();
     this->create_table();
 
-    auto submit_lay = new QHBoxLayout;
-    auto submit_button = new QPushButton("提交");
-    auto submit_reset_button = new QPushButton("重置");
-    auto submit_cancel_button = new QPushButton("取消");
+    auto submit_lay = new QHBoxLayout(this);
+    auto submit_button = new QPushButton("提交", this);
+    auto submit_reset_button = new QPushButton("重置", this);
+    auto submit_cancel_button = new QPushButton("取消", this);
 
     connect(submit_button, &QPushButton::clicked, [this](){
         this->try_submit_tangos();
@@ -52,7 +52,7 @@ CreationScene::CreationScene(QWidget *parent): Scene(parent)
 
 
 
-    lay = new QGridLayout;
+    lay = new QGridLayout(this);
     lay->setColumnStretch(0, 1);
     lay->addLayout(header_lay, 1, 1, 1, 1, Qt::Alignment(Qt::AlignmentFlag::AlignLeft));
     lay->addLayout(table_name_lay, 1, 2, 1, 1);

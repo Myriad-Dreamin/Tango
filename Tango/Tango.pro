@@ -35,17 +35,18 @@ SOURCES += \
         scene/CreationScene.cpp \
         scene/CreationTableItem.cpp \
         scene/MainScene.cpp \
+        scene/PlayingScene.cpp \
         scene/RegisterScene.cpp \
         scene/Scene.cpp \
         scene/SelectingScene.cpp \
         types/PairTableItem.cpp \
         types/RetriveMode.cpp \
         types/TangoPair.cpp \
+        types/TimerWidget.cpp \
         types/UserStatus.cpp
 
 HEADERS += \
         client/Client.h \
-        db/db_connection.h \
         mainwindow.h \
         players/Author.h \
         players/Consumer.h \
@@ -53,12 +54,14 @@ HEADERS += \
         scene/CreationScene.h \
         scene/CreationTableItem.h \
         scene/MainScene.h \
+        scene/PlayingScene.h \
         scene/RegisterScene.h \
         scene/Scene.h \
         scene/SelectingScene.h \
         types/PairTableItem.h \
         types/RetriveMode.h \
         types/TangoPair.h \
+        types/TimerWidget.h \
         types/UserStatus.h
 
 FORMS +=

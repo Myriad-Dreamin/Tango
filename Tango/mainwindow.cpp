@@ -2,6 +2,7 @@
 #include <QDebug>
 #include <QMenu>
 #include <QMenuBar>
+#include <QStatusBar>
 #include <QMessageBox>
 #include <QAction>
 #include <QHostAddress>
@@ -9,17 +10,20 @@
 #include <QPushButton>
 #include <QString>
 #include <QLineEdit>
+#include <QLabel>
 
 #include <QSqlError>
 
 #include "scene/MainScene.h"
 #include "scene/RegisterScene.h"
 #include "scene/SelectingScene.h"
+#include "scene/PlayingScene.h"
 #include "scene/CreationScene.h"
 #include "client/Client.h"
 #include "types/TangoPair.h"
 #include "mainwindow.h"
 #include "types/UserStatus.h"
+#include "types/TimerWidget.h"
 
 // toolbar, statusbar
 
@@ -30,12 +34,12 @@ MainWindow::MainWindow(QWidget *parent) :
     qDebug() << "I...";
 
     this->cur_scene = nullptr;
-
     this->init_client();
     this->init_main_scene();
     this->init_register_scene();
     this->init_selecting_scene();
     this->init_creation_scene();
+    this->init_playing_scene();
 
     auto main_menubar = menuBar();
     auto menu_item = main_menubar->addMenu("File(&F)");
@@ -43,6 +47,13 @@ MainWindow::MainWindow(QWidget *parent) :
     menu_item->addAction("&Open", this, SLOT(close()), QKeySequence::Open);
     menu_item->setGeometry(0,0,this->width(),30);
     main_menubar->addMenu(menu_item);
+
+    auto main_statusbar = statusBar();
+    main_statusbar->addPermanentWidget(new QLabel("tango!"));
+    this->timer = new TimerWidget(this);
+    main_statusbar->addPermanentWidget(this->timer);
+
+
 
     this->switch_scene(main_scene);
 
@@ -62,6 +73,12 @@ MainWindow::~MainWindow()
     this->creation_scene->deleteLater();
     this->selecting_scene->deleteLater();
     // delete ui;
+}
+
+bool MainWindow::init_playing_scene()
+{
+    playing_scene = new PlayingScene(this);
+    return true;
 }
 
 
@@ -226,8 +243,12 @@ bool MainWindow::init_selecting_scene()
 {
     this->selecting_scene = new SelectingScene(this);
     this->selecting_scene->set_creation_button_event([this]() mutable {
-        qDebug() << "clicked creation button" << this->main_scene;
+        qDebug() << "clicked creation button";
         this->switch_scene(this->creation_scene);
+    });
+    this->selecting_scene->set_play_button_event([this]() mutable {
+        qDebug() << "clicked play button";
+        this->switch_scene(this->playing_scene);
     });
     return true;
 }

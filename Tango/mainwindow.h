@@ -11,9 +11,11 @@ class MainScene;
 class RegisterScene;
 class SelectingScene;
 class CreationScene;
+class PlayingScene;
 class QSqlError;
 class Client;
 class TangoPair;
+class TimerWidget;
 
 namespace Ui {
 class MainWindow;
@@ -22,6 +24,7 @@ class MainWindow;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
+    friend class PlayingScene;
     friend class MainScene;
     friend class RegisterScene;
     friend class SelectingScene;
@@ -36,6 +39,7 @@ private slots:
     void switch_scene(QWidget *to_set);
 private:
 
+    TimerWidget *timer;
     QString caughted_error;
 
     QWidget *cur_scene;
@@ -44,6 +48,7 @@ private:
     Client *client;
 
     MainScene *main_scene;
+    PlayingScene *playing_scene;
     RegisterScene *register_scene;
     SelectingScene *selecting_scene;
     CreationScene *creation_scene;
@@ -53,6 +58,7 @@ private:
     bool init_main_scene();
     bool init_register_scene();
     bool init_selecting_scene();
+    bool init_playing_scene();
     bool init_creation_scene();
 
     bool author_sign_in(QString account, QString password);
