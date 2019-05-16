@@ -15,6 +15,8 @@
 
 #include "../types/TangoPair.h"
 #include "../types/RetriveMode.h"
+#include "GameAutomation.h"
+#include "GameConfig.h"
 
 
 Client::Client(QObject *parent) : QObject(parent)
@@ -137,6 +139,62 @@ bool Client::is_local_handler_connected()
     return this->local_ready;
 }
 
+bool Client::author_sign_in(QString account, QString password)
+{
+    return this->_author_sign_in(account, password);
+}
+
+bool Client::author_sign_up(QString account, QString password)
+{
+    return this->_author_sign_up(account, password);
+}
+
+bool Client::consumer_sign_in(QString account, QString password)
+{
+    return this->_consumer_sign_in(account, password);
+}
+
+bool Client::consumer_sign_up(QString account, QString password)
+{
+    return this->_consumer_sign_up(account, password);
+}
+
+bool Client::logout()
+{
+    return this->logout_local();
+}
+
+int Client::consumer_exp()
+{
+    if (user_status::has_consumer_status(this->user_status)) {
+        return this->user_consumer->exp;
+    }
+    return -1;
+}
+
+int Client::consumer_level()
+{
+    if (user_status::has_consumer_status(this->user_status)) {
+        return this->user_consumer->level;
+    }
+    return -1;
+}
+
+bool Client::submit_tango_items(const std::vector<TangoPair> &tango_list)
+{
+    return this->_submit_tango_items(tango_list);
+}
+
+GameAutomation *Client::start_game_event(const GameConfig *game_config, int n, RetriveMode mode)
+{
+    return start_game_event_local(game_config, n, mode);
+}
+
+bool Client::settle_game_event(const GameAutomation *automate)
+{
+    return settle_game_event_local(automate);
+}
+
 inline void Client::make_remote_server_on_connected()
 {
     connect(this->remote_server, &QTcpSocket::connected, [this]() mutable {
@@ -166,7 +224,6 @@ bool Client::author_sign_in_local(QString account, QString password)
 
     user_author = new class Author(this->local_handler);
     if (user_author->sign_in_local(account, password)) {
-        _last_error = user_author->last_error();
         this->user_status = UserStatus::Author;
 
         return true;
@@ -190,7 +247,6 @@ bool Client::author_sign_up_local(QString account, QString password)
 
     user_author = new class Author(this->local_handler);
     if (user_author->sign_up_local(account, password)) {
-        _last_error = user_author->last_error();
         this->user_status = UserStatus::Author;
 
         return true;
@@ -214,7 +270,6 @@ bool Client::consumer_sign_in_local(QString account, QString password)
 
     user_consumer = new class Consumer(this->local_handler);
     if (user_consumer->sign_in_local(account, password)) {
-        _last_error = user_consumer->last_error();
         this->user_status = UserStatus::Consumer;
         return true;
     }
@@ -238,7 +293,6 @@ bool Client::consumer_sign_up_local(QString account, QString password)
 
     user_consumer = new class Consumer(this->local_handler);
     if (user_consumer->sign_up_local(account, password)) {
-        _last_error = user_consumer->last_error();
         this->user_status = UserStatus::Consumer;
 
         return true;
@@ -251,6 +305,31 @@ bool Client::consumer_sign_up_local(QString account, QString password)
     return false;
 }
 
+bool Client::logout_local()
+{
+    qDebug() << "logout";
+    if (user_status::has_author_status(this->user_status)) {
+        if (user_author->login_out_local()) {
+            user_author->deleteLater();
+            user_author = nullptr;
+            this->user_status = UserStatus(UserStatus::Author ^ this->user_status);
+        }
+        _last_error = user_author->last_error();
+        return false;
+    }
+
+    if (user_status::has_consumer_status(this->user_status)) {
+        if (user_consumer->login_out_local()) {
+            user_consumer->deleteLater();
+            user_consumer = nullptr;
+            this->user_status = UserStatus(UserStatus::Consumer ^ this->user_status);
+        }
+        _last_error = user_consumer->last_error();
+        return false;
+    }
+
+    return true;
+}
 
 bool Client::author_sign_in_remote(QString account, QString password)
 {
@@ -362,7 +441,7 @@ bool Client::submit_tango_items_remote(const std::vector<TangoPair> &tango_list)
 }
 
 
-bool Client::retrive_kth_tango_item(TangoPair &tp, int k) {
+bool Client::retrive_kth_tango_item_local(TangoPair &tp, int k) {
     static const char *search_command = "select * from `tangos` order by length(key) limit :kth - 1, 1";
 
     QSqlQuery query(this->local_handler);
@@ -386,15 +465,15 @@ bool Client::retrive_kth_tango_item(TangoPair &tp, int k) {
     return false;
 }
 
-int Client::retrive_since_kth_tango_item(std::vector<TangoPair> &tango_list, unsigned int k, int n)
+int Client::retrive_since_kth_tango_item_local(std::vector<TangoPair> &tango_list, unsigned int k, int n)
 {
-    static const char *search_command = "select * from `tangos` order by length(key) limit :kth - 1, :ntimes";
+    static const char *search_command = "select * from `tangos` order by length(`key`) limit :kth, :ntimes";
 
     QSqlQuery query(this->local_handler);
     query.prepare(search_command);
     query.bindValue(":kth", k);
     query.bindValue(":ntimes", n);
-
+    qDebug() << "k, n" << k << " " << n;
     if (!query.exec()) {
         _last_error = query.lastError().text();
         qDebug() << "error occured: " << _last_error;
@@ -405,6 +484,7 @@ int Client::retrive_since_kth_tango_item(std::vector<TangoPair> &tango_list, uns
     int ret = 0;
     while (query.next()) {
         tango_list.push_back(TangoPair(query.value(1).toString(), query.value(2).toString()));
+        qDebug() << "fetched " << TangoPair(query.value(1).toString(), query.value(2).toString());
         ret++;
     }
 
@@ -412,19 +492,24 @@ int Client::retrive_since_kth_tango_item(std::vector<TangoPair> &tango_list, uns
 }
 
 
-bool Client::retrive_tango_items(std::vector<TangoPair> &tango_list, int n, RetriveMode mode)
+bool Client::retrive_tango_items_local(std::vector<TangoPair> &tango_list, int n, RetriveMode mode)
 {
     static std::mt19937 mtrand(static_cast<unsigned int>(time(nullptr)));
     static const char *query_count = "select count(*) from `tangos`";
-
     QSqlQuery query(this->local_handler);
     if (!query.exec(query_count)) {
         _last_error = query.lastError().text();
         qDebug() << "error occured: " << _last_error;
         return false;
     }
+    if (!query.first()) {
+        _last_error = "first fetch error";
+        qDebug() << "error occured: " << _last_error;
+        return false;
+    }
 
     int tot_length = query.value(0).toInt();
+    qDebug() << "tot_length " << tot_length;
     unsigned int to_fetch;
     switch (mode) {
     case RetriveMode::Easy:
@@ -433,9 +518,9 @@ bool Client::retrive_tango_items(std::vector<TangoPair> &tango_list, int n, Retr
             _last_error = "not enough";
             return false;
         }
-        to_fetch = mtrand() % static_cast<unsigned int>(n - tot_length + 1);
+        to_fetch = mtrand() % static_cast<unsigned int>(tot_length - n + 1);
         _last_error = "";
-        if (!this->retrive_since_kth_tango_item(tango_list, to_fetch, tot_length)) {
+        if (!this->retrive_since_kth_tango_item_local(tango_list, to_fetch, tot_length)) {
             if (_last_error != "") {
                 _last_error = "fetch error";
             }
@@ -449,9 +534,9 @@ bool Client::retrive_tango_items(std::vector<TangoPair> &tango_list, int n, Retr
             _last_error = "not enough";
             return false;
         }
-        to_fetch = mtrand() % static_cast<unsigned int>(n - tot_length + 1);
+        to_fetch = mtrand() % static_cast<unsigned int>(tot_length - n + 1);
         _last_error = "";
-        if (!this->retrive_since_kth_tango_item(tango_list, to_fetch, tot_length)) {
+        if (!this->retrive_since_kth_tango_item_local(tango_list, to_fetch, tot_length)) {
             if (_last_error != "") {
                 _last_error = "fetch error";
             }
@@ -464,9 +549,9 @@ bool Client::retrive_tango_items(std::vector<TangoPair> &tango_list, int n, Retr
             _last_error = "not enough";
             return false;
         }
-        to_fetch = mtrand() % static_cast<unsigned int>(n - tot_length + 1);
+        to_fetch = mtrand() % static_cast<unsigned int>(tot_length - n + 1);
         _last_error = "";
-        if (!this->retrive_since_kth_tango_item(tango_list, to_fetch, tot_length)) {
+        if (!this->retrive_since_kth_tango_item_local(tango_list, to_fetch, tot_length)) {
             if (_last_error != "") {
                 _last_error = "fetch error";
             }
@@ -475,6 +560,30 @@ bool Client::retrive_tango_items(std::vector<TangoPair> &tango_list, int n, Retr
         return true;
     }
 
+    return true;
+}
+
+GameAutomation *Client::start_game_event_local(const GameConfig *game_config, int n, RetriveMode mode=RetriveMode::Hard)
+{
+    std::vector<TangoPair> tango_list;
+    tango_list.reserve(static_cast<unsigned int>(n));
+    qDebug() << "want " << n;
+    if (!this->retrive_tango_items_local(tango_list, n, mode)) {
+        return nullptr;
+    }
+
+    auto automate = new GameAutomation(game_config);
+    if (!automate->prepare_start(tango_list, static_cast<unsigned int>(n))) {
+        _last_error = automate->last_error();
+        automate->deleteLater();
+        return nullptr;
+    }
+    return automate;
+}
+
+bool Client::settle_game_event_local(const GameAutomation *automate)
+{
+    this->user_consumer->exp += automate->exp;
     return true;
 }
 

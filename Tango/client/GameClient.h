@@ -6,7 +6,7 @@
 class GameClient
 {
 public:
-    // virtual ~GameClient() = 0;
+    virtual ~GameClient();
     // virtual bool author_sign_in(QString account, QString password) = 0;
     virtual bool is_connected() = 0;
 };

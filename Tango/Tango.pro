@@ -28,7 +28,7 @@ CONFIG += c++11
 SOURCES += \
         client/Client.cpp \
         client/GameAutomation.cpp \
-        client/GameClient.cpp \
+        client/GameConfig.cpp \
         main.cpp \
         mainwindow.cpp \
         players/Author.cpp \
@@ -37,10 +37,13 @@ SOURCES += \
         scene/CreationScene.cpp \
         scene/CreationTableItem.cpp \
         scene/MainScene.cpp \
+        scene/PlaySettleScene.cpp \
+        scene/PlaySubScene.cpp \
         scene/PlayingScene.cpp \
         scene/RegisterScene.cpp \
         scene/Scene.cpp \
         scene/SelectingScene.cpp \
+        types/Logger.cpp \
         types/PairTableItem.cpp \
         types/RetriveMode.cpp \
         types/TangoPair.cpp \
@@ -50,7 +53,7 @@ SOURCES += \
 HEADERS += \
         client/Client.h \
         client/GameAutomation.h \
-        client/GameClient.h \
+        client/GameConfig.h \
         mainwindow.h \
         players/Author.h \
         players/Consumer.h \
@@ -58,10 +61,13 @@ HEADERS += \
         scene/CreationScene.h \
         scene/CreationTableItem.h \
         scene/MainScene.h \
+        scene/PlaySettleScene.h \
+        scene/PlaySubScene.h \
         scene/PlayingScene.h \
         scene/RegisterScene.h \
         scene/Scene.h \
         scene/SelectingScene.h \
+        types/Logger.h \
         types/PairTableItem.h \
         types/RetriveMode.h \
         types/TangoPair.h \

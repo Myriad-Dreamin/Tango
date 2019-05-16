@@ -37,10 +37,10 @@ CreationScene::CreationScene(QWidget *parent): Scene(parent)
     this->create_header();
     this->create_table();
 
-    auto submit_lay = new QHBoxLayout(this);
-    auto submit_button = new QPushButton("提交", this);
-    auto submit_reset_button = new QPushButton("重置", this);
-    auto submit_cancel_button = new QPushButton("取消", this);
+    auto submit_lay = new QHBoxLayout;
+    auto submit_button = new QPushButton("提交");
+    auto submit_reset_button = new QPushButton("重置");
+    auto submit_cancel_button = new QPushButton("取消");
 
     connect(submit_button, &QPushButton::clicked, [this](){
         this->try_submit_tangos();
@@ -59,7 +59,7 @@ CreationScene::CreationScene(QWidget *parent): Scene(parent)
     submit_lay->addWidget(submit_reset_button, 1);
     submit_lay->addWidget(submit_cancel_button, 1);
 
-    lay = new QGridLayout(this);
+    lay = new QGridLayout;
     lay->setColumnStretch(0, 1);
     lay->addLayout(header_lay, 1, 1, 1, 1, Qt::Alignment(Qt::AlignmentFlag::AlignLeft));
     lay->addLayout(table_name_lay, 1, 2, 1, 1);
@@ -93,17 +93,17 @@ CreationTableItem *CreationScene::make_creation_table_item()
 
 bool CreationScene::create_header()
 {
-    this->header_lay = new QHBoxLayout(this);
+    this->header_lay = new QHBoxLayout;
 
     header_lay->addStretch(1);
-    auto header = new QLabel("Creation Space", this);
+    auto header = new QLabel("Creation Space");
     header_lay->addWidget(header, 1);
 
-    this->table_name_lay = new QHBoxLayout(this);
+    this->table_name_lay = new QHBoxLayout;
 
-    auto table_name_header = new QLabel("表名", this);
+    auto table_name_header = new QLabel("表名");
     table_name_lay->addWidget(table_name_header);
-    table_name_edit = new QLineEdit(this);
+    table_name_edit = new QLineEdit;
     table_name_lay->addWidget(table_name_edit, 1);
 
     return true;
@@ -111,18 +111,18 @@ bool CreationScene::create_header()
 
 bool CreationScene::create_table()
 {
-    creation_table = new QVBoxLayout(this);
+    creation_table = new QVBoxLayout;
 
-    auto insert_button = new QPushButton("+", this);
+    auto insert_button = new QPushButton("+");
     connect(insert_button, &QPushButton::clicked, [this]() mutable {
         this->insert_back_item(this->make_creation_table_item());
     });
-    auto insert_lay = new QHBoxLayout(this);
+    auto insert_lay = new QHBoxLayout;
     insert_lay->addStretch(1);
     insert_lay->addWidget(insert_button);
     insert_lay->addStretch(1);
 
-    auto insert_it_widget = new QWidget(this);
+    auto insert_it_widget = new QWidget;
     insert_it_widget->setLayout(insert_lay);
     this->creation_table->addWidget(insert_it_widget);
     this->creation_table_row = 1;

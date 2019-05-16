@@ -1,6 +1,8 @@
 
 #include "mainwindow.h"
 
+# define QT_NO_DEBUG_OUTPUT
+
 /* 工具库 */
 #include <QDebug>
 #include <QString>
@@ -25,14 +27,17 @@
 /* 场景 */
 #include "scene/MainScene.h"
 #include "scene/PlayingScene.h"
+#include "scene/PlaySubScene.h"
 #include "scene/RegisterScene.h"
 #include "scene/CreationScene.h"
 #include "scene/SelectingScene.h"
+#include "scene/PlaySettleScene.h"
 
 /* 自定类型 */
 #include "types/TangoPair.h"
 #include "types/UserStatus.h"
 #include "types/TimerWidget.h"
+#include "types/Logger.h"
 
 /* 客户端代理 */
 #include "client/Client.h"
@@ -41,34 +46,49 @@
 MainWindow::MainWindow(QWidget *parent):
     QMainWindow(parent)
 {
+    this->client = nullptr;
+    this->cur_scene = nullptr;
+    this->main_scene = nullptr;
+    this->playing_scene = nullptr;
+    this->playsub_scene = nullptr;
+    this->playset_scene = nullptr;
+    this->register_scene = nullptr;
+    this->creation_scene = nullptr;
+    this->selecting_scene = nullptr;
+
+    this->logger = new Logger(this);
     this->init_client();
+
+    this->init_main_scene();
+    this->init_playing_scene();
+    this->init_playsub_scene();
+    this->init_register_scene();
+    this->init_creation_scene();
+    this->init_selecting_scene();
+    this->init_playset_scene();
 
     this->init_menubar();
     this->init_statusbar();
 
-    this->cur_scene = nullptr;
-    this->init_main_scene();
-    this->init_playing_scene();
-    this->init_register_scene();
-    this->init_creation_scene();
-    this->init_selecting_scene();
+    this->switch_scene(main_scene);
 
     this->setMinimumSize(800, 600);
     this->setWindowTitle("Tango!");
 
-    this->switch_scene(main_scene);
 }
 
 
 MainWindow::~MainWindow()
 {
     qDebug() << "mainwindow delete";
+    this->client->logout();
     this->client->deleteLater();
     this->main_scene->deleteLater();
     this->playing_scene->deleteLater();
     this->register_scene->deleteLater();
     this->creation_scene->deleteLater();
     this->selecting_scene->deleteLater();
+    this->logger->deleteLater();
 }
 
 /*********************************** Initialize ***********************************/
@@ -79,19 +99,19 @@ inline bool MainWindow::init_client()
     return true;
 }
 
-inline bool init_menubar()
+inline bool MainWindow::init_menubar()
 {
     auto main_menubar = menuBar();
     auto menu_item = main_menubar->addMenu("File(&F)");
 
     menu_item->addAction("&Open", this, SLOT(close()), QKeySequence::Open);
     menu_item->setGeometry(0, 0, this->width(), 30);
-    // main_menubar->addMenu(menu_item);
+    main_menubar->addMenu(menu_item);
 
     return true;
 }
 
-inline bool init_statusbar()
+inline bool MainWindow::init_statusbar()
 {
     auto main_statusbar = statusBar();
     this->timer = new TimerWidget(this);
@@ -305,9 +325,23 @@ inline bool MainWindow::init_selecting_scene()
     return true;
 }
 
+bool MainWindow::init_playset_scene()
+{
+    this->playset_scene = new PlaySettleScene(this);
+
+    return true;
+}
+
 inline bool MainWindow::init_creation_scene()
 {
     this->creation_scene = new CreationScene(this);
+
+    return true;
+}
+
+inline bool MainWindow::init_playsub_scene()
+{
+    this->playsub_scene = new PlaySubScene(this);
 
     return true;
 }

@@ -4,14 +4,18 @@
 #include <QMainWindow>
 
 class Client;
+class Logger;
 class TangoPair;
 class TimerWidget;
 
+
 class MainScene;
 class PlayingScene;
+class PlaySubScene;
 class RegisterScene;
 class CreationScene;
 class SelectingScene;
+class PlaySettleScene;
 
 namespace Ui {
 class MainWindow;
@@ -23,9 +27,11 @@ class MainWindow : public QMainWindow
     Q_OBJECT
     friend class MainScene;
     friend class PlayingScene;
+    friend class PlaySubScene;
     friend class RegisterScene;
     friend class CreationScene;
     friend class SelectingScene;
+    friend class PlaySettleScene;
 
 public:
     explicit MainWindow(QWidget *parent = nullptr);
@@ -34,6 +40,7 @@ public:
     void switch_scene(QWidget *to_set);
 private:
 
+    Logger *logger;
     TimerWidget *timer;
     QString caughted_error;
 
@@ -46,15 +53,21 @@ private:
     PlayingScene *playing_scene;
     RegisterScene *register_scene;
     CreationScene *creation_scene;
+    PlaySubScene *playsub_scene;
     SelectingScene *selecting_scene;
+    PlaySettleScene *playset_scene;
 
-    bool init_client();
+    inline bool init_client();
+    inline bool init_menubar();
+    inline bool init_statusbar();
 
-    bool init_main_scene();
-    bool init_playing_scene();
-    bool init_creation_scene();
-    bool init_register_scene();
-    bool init_selecting_scene();
+    inline bool init_main_scene();
+    inline bool init_playing_scene();
+    inline bool init_playsub_scene();
+    inline bool init_creation_scene();
+    inline bool init_register_scene();
+    inline bool init_selecting_scene();
+    inline bool init_playset_scene();
 
     bool author_sign_in(QString account, QString password);
     bool author_sign_up(QString account, QString password);

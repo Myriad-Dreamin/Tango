@@ -47,6 +47,15 @@ std::function<void (int)> TimerWidget::set_timer_slotter(const std::function<voi
 {
     return [this, shot_func](int expire_time) mutable {
 
+        if (this->timer->isActive()) {
+            this->timer->stop();
+        }
+        if (this->show_timer->isActive()) {
+            this->show_timer->stop();
+        }
+        disconnect(this->timer, nullptr, nullptr, nullptr);
+        disconnect(this->show_timer, nullptr, nullptr, nullptr);
+
         connect(this->timer, &QTimer::timeout, [this, shot_func]() mutable {
             this->stop_timer();
             shot_func();
@@ -60,6 +69,14 @@ std::function<void (int)> TimerWidget::set_timer_slotter(const std::function<voi
 
 void TimerWidget::set_timer(int expire_time)
 {
+    if (this->timer->isActive()) {
+        this->timer->stop();
+    }
+    if (this->show_timer->isActive()) {
+        this->show_timer->stop();
+    }
+    disconnect(this->timer, nullptr, nullptr, nullptr);
+    disconnect(this->show_timer, nullptr, nullptr, nullptr);
     connect(this->timer, &QTimer::timeout, this->stop_timer_slotter());
     this->timer->start(expire_time);
 
@@ -70,19 +87,29 @@ void TimerWidget::set_timer(int expire_time)
 std::function<void ()> TimerWidget::stop_timer_slotter()
 {
     return [this]() mutable {
-        this->timer->stop();
-        this->show_timer->stop();
+        if (this->timer->isActive()) {
+            this->timer->stop();
+        }
+        if(this->show_timer->isActive()) {
+            this->show_timer->stop();
+        }
 
         disconnect(this->timer, nullptr, nullptr, nullptr);
+        disconnect(this->show_timer, nullptr, nullptr, nullptr);
         this->text_show->setText("0.0");
     };
 }
 
 void TimerWidget::stop_timer()
 {
-    this->timer->stop();
-    this->show_timer->stop();
+    if (this->timer->isActive()) {
+        this->timer->stop();
+    }
+    if(this->show_timer->isActive()) {
+        this->show_timer->stop();
+    }
 
     disconnect(this->timer, nullptr, nullptr, nullptr);
+    disconnect(this->show_timer, nullptr, nullptr, nullptr);
     this->text_show->setText("0.0");
 }
