@@ -15,8 +15,6 @@ PlayingScene::PlayingScene(QWidget *parent): Scene (parent)
     connect(start_button, &QPushButton::clicked, [this]() mutable {
         this->parent->timer->set_timer(2000);
     });
-
-
 }
 
 PlayingScene::~PlayingScene()

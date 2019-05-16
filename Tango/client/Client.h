@@ -5,6 +5,7 @@
 #include <QObject>
 #include <QHostAddress>
 #include <QSqlDatabase>
+#include "GameClient.h"
 #include "../types/UserStatus.h"
 #include "../types/RetriveMode.h"
 
@@ -13,7 +14,7 @@ class QSqlDatabase;
 class TangoPair;
 class Consumer;
 
-class Client : public QObject
+class Client : public QObject, public GameClient
 {
     Q_OBJECT
 public:
@@ -28,6 +29,7 @@ public:
     std::function<bool(QString,QString)> consumer_sign_in;
     std::function<bool(QString,QString)> consumer_sign_up;
     std::function<bool(std::vector<TangoPair>)> submit_tango_items;
+    std::function<bool()> _is_connected;
 
     void switch_remote_mode();
     std::function<void ()> switch_remote_mode_slottor();
@@ -35,6 +37,7 @@ public:
     std::function<void ()> switch_local_mode_slottor();
 
     const QString last_error();
+    bool is_connected();
     bool is_remote_server_connected();
     bool is_local_handler_connected();
     bool retrive_tango_items(std::vector<TangoPair> &tango_list, int n, RetriveMode mode = RetriveMode::Easy);
@@ -60,18 +63,21 @@ private:
     bool author_sign_in_remote(QString account, QString password);
     bool author_sign_up_local(QString account, QString password);
     bool author_sign_up_remote(QString account, QString password);
+
+    bool consumer_sign_in_local(QString account, QString password);
+    bool consumer_sign_up_local(QString account, QString password);
+    bool consumer_sign_in_remote(QString account, QString password);
+    bool consumer_sign_up_remote(QString account, QString password);
+
+    bool submit_tango_items_local(const std::vector<TangoPair> &tango_list);
+    bool submit_tango_items_remote(const std::vector<TangoPair> &tango_list);
+
     bool disconnect_to_remote();
     bool disconnect_to_local();
     bool create_tables();
     inline bool create_author_table();
     inline bool create_tangos_table();
-    bool submit_tango_items_local(const std::vector<TangoPair> &tango_list);
-    bool submit_tango_items_remote(const std::vector<TangoPair> &tango_list);
     bool create_consumer_table();
-    bool consumer_sign_in_local(QString account, QString password);
-    bool consumer_sign_up_local(QString account, QString password);
-    bool consumer_sign_in_remote(QString account, QString password);
-    bool consumer_sign_up_remote(QString account, QString password);
     bool retrive_kth_tango_item(TangoPair &tp, int k);
     int retrive_since_kth_tango_item(std::vector<TangoPair> &tango_list, unsigned int k, int n);
 signals:

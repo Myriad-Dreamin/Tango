@@ -462,6 +462,9 @@ std::function<void()> Client::switch_remote_mode_slottor()
         this->submit_tango_items = [this](const std::vector<TangoPair> &tango_list) mutable {
             return this->submit_tango_items_remote(tango_list);
         };
+        this->_is_connected = [this]() mutable -> bool {
+            return this->is_remote_server_connected();
+        };
     };
 }
 
@@ -489,12 +492,20 @@ std::function<void()> Client::switch_local_mode_slottor()
         this->submit_tango_items = [this](const std::vector<TangoPair> &tango_list) mutable {
             return this->submit_tango_items_local(tango_list);
         };
+        this->_is_connected = [this]() mutable -> bool {
+            return this->is_local_handler_connected();
+        };
     };
 }
 
 const QString Client::last_error()
 {
     return this->_last_error;
+}
+
+bool Client::is_connected()
+{
+    return this->_is_connected();
 }
 
 void Client::switch_local_mode()

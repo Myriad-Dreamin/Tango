@@ -27,6 +27,8 @@ CONFIG += c++11
 
 SOURCES += \
         client/Client.cpp \
+        client/GameAutomation.cpp \
+        client/GameClient.cpp \
         main.cpp \
         mainwindow.cpp \
         players/Author.cpp \
@@ -47,6 +49,8 @@ SOURCES += \
 
 HEADERS += \
         client/Client.h \
+        client/GameAutomation.h \
+        client/GameClient.h \
         mainwindow.h \
         players/Author.h \
         players/Consumer.h \

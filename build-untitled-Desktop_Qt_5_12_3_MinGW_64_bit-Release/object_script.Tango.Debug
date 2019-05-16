@@ -1,4 +1,6 @@
 debug/Client.o
+debug/GameAutomation.o
+debug/GameClient.o
 debug/main.o
 debug/mainwindow.o
 debug/Author.o
@@ -17,6 +19,7 @@ debug/TangoPair.o
 debug/TimerWidget.o
 debug/UserStatus.o
 debug/moc_Client.o
+debug/moc_GameAutomation.o
 debug/moc_mainwindow.o
 debug/moc_Author.o
 debug/moc_Player.o
