@@ -15,6 +15,7 @@
 
 #include "../types/TangoPair.h"
 #include "../types/RetriveMode.h"
+#include "../types/UserBriefInfo.h"
 #include "GameAutomation.h"
 #include "GameConfig.h"
 
@@ -141,21 +142,45 @@ bool Client::is_local_handler_connected()
 
 bool Client::author_sign_in(QString account, QString password)
 {
+    if (user_status_util::has_author_status(this->user_status)) {
+        qDebug() << "user_doesn't logout";
+        user_author->deleteLater();
+        user_author = nullptr;
+        user_status_util::remove_author_status(this->user_status);
+    }
     return this->_author_sign_in(account, password);
 }
 
 bool Client::author_sign_up(QString account, QString password)
 {
+    if (user_status_util::has_author_status(this->user_status)) {
+        qDebug() << "author doesn't logout";
+        user_author->deleteLater();
+        user_author = nullptr;
+        user_status_util::remove_author_status(this->user_status);
+    }
     return this->_author_sign_up(account, password);
 }
 
 bool Client::consumer_sign_in(QString account, QString password)
 {
+    if (user_status_util::has_consumer_status(this->user_status)) {
+        qDebug() << "consumer doesn't logout";
+        user_consumer->deleteLater();
+        user_consumer = nullptr;
+        user_status_util::remove_consumer_status(this->user_status);
+    }
     return this->_consumer_sign_in(account, password);
 }
 
 bool Client::consumer_sign_up(QString account, QString password)
 {
+    if (user_status_util::has_consumer_status(this->user_status)) {
+        qDebug() << "consumer doesn't logout";
+        user_consumer->deleteLater();
+        user_consumer = nullptr;
+        user_status_util::remove_consumer_status(this->user_status);
+    }
     return this->_consumer_sign_up(account, password);
 }
 
@@ -166,15 +191,16 @@ bool Client::logout()
 
 int Client::consumer_exp()
 {
-    if (user_status::has_consumer_status(this->user_status)) {
+    if (user_status_util::has_consumer_status(this->user_status)) {
         return this->user_consumer->exp;
     }
+    qDebug() << "consumer exp=0";
     return -1;
 }
 
 int Client::consumer_level()
 {
-    if (user_status::has_consumer_status(this->user_status)) {
+    if (user_status_util::has_consumer_status(this->user_status)) {
         return this->user_consumer->level;
     }
     return -1;
@@ -182,17 +208,55 @@ int Client::consumer_level()
 
 bool Client::submit_tango_items(const std::vector<TangoPair> &tango_list)
 {
+    if (!user_status_util::has_author_status(this->user_status)) {
+        this->_last_error = "author doesn't sign in";
+        return false;
+    }
     return this->_submit_tango_items(tango_list);
 }
 
 GameAutomation *Client::start_game_event(const GameConfig *game_config, int n, RetriveMode mode)
 {
+    if (!user_status_util::has_consumer_status(this->user_status)) {
+        this->_last_error = "consumer doesn't sign in";
+        return nullptr;
+    }
     return start_game_event_local(game_config, n, mode);
 }
 
 bool Client::settle_game_event(const GameAutomation *automate)
 {
+    if (!user_status_util::has_consumer_status(this->user_status)) {
+        this->_last_error = "consumer doesn't sign in";
+        return false;
+    }
     return settle_game_event_local(automate);
+}
+
+bool Client::query_authors_brief_info(std::vector<UserBriefInfo> &info_list, int l, int r)
+{
+    if (l < 0 || r < 0) {
+        this->_last_error = "range must not be negative";
+        return false;
+    }
+    if (l > r) {
+        this->_last_error = "l must be less than or equal to r";
+        return false;
+    }
+    return query_authors_brief_info_local(info_list, l, r);
+}
+
+bool Client::query_consumers_brief_info(std::vector<UserBriefInfo> &info_list, int l, int r)
+{
+    if (l < 0 || r < 0) {
+        this->_last_error = "range must not be negative";
+        return false;
+    }
+    if (l > r) {
+        this->_last_error = "l must be less than or equal to r";
+        return false;
+    }
+    return query_consumers_brief_info_local(info_list, l, r);
 }
 
 inline void Client::make_remote_server_on_connected()
@@ -213,18 +277,12 @@ inline void Client::make_remote_server_on_disconnected()
     });
 }
 
+// 假定author已下线
 bool Client::author_sign_in_local(QString account, QString password)
 {
-    if (this->user_status != UserStatus::None) {
-        qDebug() << "user_doesn't logout";
-        user_author->deleteLater();
-        user_author = nullptr;
-        this->user_status = UserStatus::None;
-    }
-
     user_author = new class Author(this->local_handler);
     if (user_author->sign_in_local(account, password)) {
-        this->user_status = UserStatus::Author;
+        user_status_util::add_author_status(this->user_status);
 
         return true;
     }
@@ -236,18 +294,12 @@ bool Client::author_sign_in_local(QString account, QString password)
     return false;
 }
 
+// 假定author已下线
 bool Client::author_sign_up_local(QString account, QString password)
 {
-    if (this->user_status != UserStatus::None) {
-        qDebug() << "user_doesn't logout";
-        user_author->deleteLater();
-        user_author = nullptr;
-        this->user_status = UserStatus::None;
-    }
-
     user_author = new class Author(this->local_handler);
     if (user_author->sign_up_local(account, password)) {
-        this->user_status = UserStatus::Author;
+        user_status_util::add_author_status(this->user_status);
 
         return true;
     }
@@ -259,18 +311,13 @@ bool Client::author_sign_up_local(QString account, QString password)
     return false;
 }
 
+// 假定consumer已下线
 bool Client::consumer_sign_in_local(QString account, QString password)
 {
-    if (this->user_status != UserStatus::None) {
-        qDebug() << "user_doesn't logout";
-        user_consumer->deleteLater();
-        user_consumer = nullptr;
-        this->user_status = UserStatus::None;
-    }
-
     user_consumer = new class Consumer(this->local_handler);
     if (user_consumer->sign_in_local(account, password)) {
-        this->user_status = UserStatus::Consumer;
+        user_status_util::add_consumer_status(this->user_status);
+
         return true;
     }
 
@@ -282,18 +329,12 @@ bool Client::consumer_sign_in_local(QString account, QString password)
 }
 
 
+// 假定consumer已下线
 bool Client::consumer_sign_up_local(QString account, QString password)
 {
-    if (this->user_status != UserStatus::None) {
-        qDebug() << "user_doesn't logout";
-        user_consumer->deleteLater();
-        user_consumer = nullptr;
-        this->user_status = UserStatus::None;
-    }
-
     user_consumer = new class Consumer(this->local_handler);
     if (user_consumer->sign_up_local(account, password)) {
-        this->user_status = UserStatus::Consumer;
+        user_status_util::add_consumer_status(this->user_status);
 
         return true;
     }
@@ -307,25 +348,26 @@ bool Client::consumer_sign_up_local(QString account, QString password)
 
 bool Client::logout_local()
 {
-    qDebug() << "logout";
-    if (user_status::has_author_status(this->user_status)) {
+    qDebug() << "logouting";
+    if (user_status_util::has_author_status(this->user_status)) {
         if (user_author->login_out_local()) {
             user_author->deleteLater();
             user_author = nullptr;
-            this->user_status = UserStatus(UserStatus::Author ^ this->user_status);
+            user_status_util::remove_author_status(this->user_status);
+        } else {
+            _last_error = user_author->last_error();
+            return false;
         }
-        _last_error = user_author->last_error();
-        return false;
     }
-
-    if (user_status::has_consumer_status(this->user_status)) {
+    if (user_status_util::has_consumer_status(this->user_status)) {
         if (user_consumer->login_out_local()) {
             user_consumer->deleteLater();
             user_consumer = nullptr;
-            this->user_status = UserStatus(UserStatus::Consumer ^ this->user_status);
+            user_status_util::remove_consumer_status(this->user_status);
+        } else {
+            _last_error = user_consumer->last_error();
+            return false;
         }
-        _last_error = user_consumer->last_error();
-        return false;
     }
 
     return true;
@@ -390,6 +432,7 @@ bool Client::consumer_sign_up_remote(QString account, QString password)
     return false;
 }
 
+// 假定author已上线
 bool Client::submit_tango_items_local(const std::vector<TangoPair> &tango_list)
 {
     static const char *insert_command =
@@ -429,6 +472,7 @@ bool Client::submit_tango_items_local(const std::vector<TangoPair> &tango_list)
         return false;
     }
 
+    this->settle_creation_event_local(tango_list);
     return true;
 }
 
@@ -438,6 +482,22 @@ bool Client::submit_tango_items_remote(const std::vector<TangoPair> &tango_list)
     _last_error = "TODO";
 
     return false;
+}
+
+
+// 假定author已上线
+bool Client::settle_creation_event_local(const std::vector<TangoPair> &tango_list)
+{
+    this->user_author->misson_count++;
+    for (unsigned int i = 0; i < tango_list.size(); i++) {
+        this->user_author->exp += tango_list[i].first.length() + tango_list[i].second.length();
+    }
+    this->user_author->tango_count += tango_list.size();
+    while (this->user_author->level * 10 + 10 <= this->user_author->exp) {
+        this->user_author->exp -= this->user_author->level * 10 + 10;
+        this->user_author->level++;
+    }
+    return true;
 }
 
 
@@ -563,6 +623,7 @@ bool Client::retrive_tango_items_local(std::vector<TangoPair> &tango_list, int n
     return true;
 }
 
+// 假定consumer已上线
 GameAutomation *Client::start_game_event_local(const GameConfig *game_config, int n, RetriveMode mode=RetriveMode::Hard)
 {
     std::vector<TangoPair> tango_list;
@@ -581,11 +642,73 @@ GameAutomation *Client::start_game_event_local(const GameConfig *game_config, in
     return automate;
 }
 
+// 假定consumer已上线
 bool Client::settle_game_event_local(const GameAutomation *automate)
 {
+    this->user_consumer->misson_count++;
     this->user_consumer->exp += automate->exp;
+    this->user_consumer->tango_count += automate->tango_count;
+    while (this->user_consumer->level * 10 + 10 <= this->user_consumer->exp) {
+        this->user_consumer->exp -= this->user_consumer->level * 10 + 10;
+        this->user_consumer->level++;
+    }
     return true;
 }
+
+// 假定 l <= r
+bool Client::query_authors_brief_info_local(std::vector<UserBriefInfo> &info_list, int l, int r)
+{
+    static const char *query_command =
+        "select `id`, `name`, `level` from `authors`"
+        "     order by `level` desc, `exp` desc limit :kth, :ntimes";
+
+    QSqlQuery query(this->local_handler);
+    query.prepare(query_command);
+    query.bindValue(":kth", l);
+    query.bindValue(":ntimes", r-l+1);
+    qDebug() << "k, n" << l << " " << r-l+1;
+    if (!query.exec()) {
+        _last_error = query.lastError().text();
+        qDebug() << "error occured: " << _last_error;
+
+        return false;
+    }
+
+    while (query.next()) {
+        info_list.emplace_back(UserBriefInfo(query.value(0).toInt(), query.value(1).toString(), query.value(2).toInt()));
+        qDebug() << "fetched " << query.value(0).toInt() << query.value(1).toString() << query.value(2).toInt();
+    }
+
+    return true;
+}
+
+// 假定 l <= r
+bool Client::query_consumers_brief_info_local(std::vector<UserBriefInfo> &info_list, int l, int r)
+{
+    static const char *query_command =
+        "select `id`, `name`, `level` from `consumers`"
+        "     order by `level` desc, `exp` desc limit :kth, :ntimes";
+
+    QSqlQuery query(this->local_handler);
+    query.prepare(query_command);
+    query.bindValue(":kth", l);
+    query.bindValue(":ntimes", r-l+1);
+    qDebug() << "k, n" << l << " " << r-l+1;
+    if (!query.exec()) {
+        _last_error = query.lastError().text();
+        qDebug() << "error occured: " << _last_error;
+
+        return false;
+    }
+
+    while (query.next()) {
+        info_list.emplace_back(UserBriefInfo(query.value(0).toInt(), query.value(1).toString(), query.value(2).toInt()));
+        qDebug() << "fetched " << query.value(0).toInt() << query.value(1).toString() << query.value(2).toInt();
+    }
+
+    return true;
+}
+
 
 std::function<void()> Client::switch_remote_mode_slottor()
 {

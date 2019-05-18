@@ -11,9 +11,15 @@ enum UserStatus: std::uint8_t
     Both      = 0x1 | 0x2
 };
 
-namespace user_status {
+namespace user_status_util {
     bool has_author_status(UserStatus status);
     bool has_consumer_status(UserStatus status);
+
+    void remove_author_status(UserStatus &status);
+    void remove_consumer_status(UserStatus &status);
+
+    void add_author_status(UserStatus &status);
+    void add_consumer_status(UserStatus &status);
 }
 
 #endif // USERSTATUSTYPE_H

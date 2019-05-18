@@ -104,6 +104,7 @@ bool default_failed_functor()
 
 void default_exp_functor(int &x, TangoPair tango, int)
 {
+    qDebug() << x << tango;
     x += tango.first.length();
     return;
 }

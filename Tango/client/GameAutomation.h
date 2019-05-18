@@ -38,7 +38,7 @@ private:
 
     bool prepared;
     std::vector<TangoPair> *tango_pool;
-    int fade_time, ans_time;
+    int fade_time, ans_time, tango_count;
     int exp;
     unsigned int select_ptr;
     const GameConfig *config;
@@ -70,6 +70,7 @@ private:
     void select_new_tango();
     void make_faded_event();
     inline void stop_automation();
+    void clear_state();
 };
 
 #endif // GAMEAUTOMATION_H

@@ -13,6 +13,8 @@
 class QTcpSocket;
 class QSqlDatabase;
 class TangoPair;
+class UserBriefInfo;
+class UserFullInfo;
 class Consumer;
 class GameConfig;
 class GameAutomation;
@@ -57,6 +59,8 @@ public:
     bool submit_tango_items(const std::vector<TangoPair> &tango_list);
     GameAutomation *start_game_event(const GameConfig *game_config, int n, RetriveMode mode);
     bool settle_game_event(const GameAutomation *automate);
+    bool query_authors_brief_info(std::vector<UserBriefInfo> &info_list, int l, int r);
+    bool query_consumers_brief_info(std::vector<UserBriefInfo> &info_list, int l, int r);
 
     const QString last_error();
 
@@ -117,6 +121,9 @@ private:
     int retrive_since_kth_tango_item_local(std::vector<TangoPair> &tango_list, unsigned int k, int n);
     bool retrive_kth_tango_item_local(TangoPair &tp, int k);
     bool settle_game_event_local(const GameAutomation *automate);
+    bool settle_creation_event_local(const std::vector<TangoPair> &tango_list);
+    bool query_authors_brief_info_local(std::vector<UserBriefInfo> &info_list, int l, int r);
+    bool query_consumers_brief_info_local(std::vector<UserBriefInfo> &info_list, int l, int r);
 signals:
     void connected();
     void disconnected();

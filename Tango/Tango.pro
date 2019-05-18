@@ -40,6 +40,7 @@ SOURCES += \
         scene/PlaySettleScene.cpp \
         scene/PlaySubScene.cpp \
         scene/PlayingScene.cpp \
+        scene/RankingAuthorsScene.cpp \
         scene/RegisterScene.cpp \
         scene/Scene.cpp \
         scene/SelectingScene.cpp \
@@ -48,6 +49,7 @@ SOURCES += \
         types/RetriveMode.cpp \
         types/TangoPair.cpp \
         types/TimerWidget.cpp \
+        types/UserBriefInfo.cpp \
         types/UserStatus.cpp
 
 HEADERS += \
@@ -64,6 +66,7 @@ HEADERS += \
         scene/PlaySettleScene.h \
         scene/PlaySubScene.h \
         scene/PlayingScene.h \
+        scene/RankingAuthorsScene.h \
         scene/RegisterScene.h \
         scene/Scene.h \
         scene/SelectingScene.h \
@@ -72,6 +75,7 @@ HEADERS += \
         types/RetriveMode.h \
         types/TangoPair.h \
         types/TimerWidget.h \
+        types/UserBriefInfo.h \
         types/UserStatus.h
 
 FORMS +=

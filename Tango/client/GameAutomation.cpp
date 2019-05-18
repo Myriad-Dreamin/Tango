@@ -13,16 +13,13 @@
 
 GameAutomation::GameAutomation(const GameConfig *game_config, QObject *parent): QObject(parent)
 {
-    this->config = game_config;
-    this->tango_pool = this->config->tango_pool;
-    this->fade_time = this->config->fade_time;
-    this->ans_time = this->config->ans_time;
-    this->select_ptr = 0;
+    this->clear_state();
+    this->set_config(game_config);
+
     this->timer = new QTimer(this);
     this->elasped_timer = new QTimer(this);
     this->timer->setSingleShot(true);
     this->elasped_timer->setSingleShot(false);
-    this->prepared = false;
 }
 
 GameAutomation::~GameAutomation()
@@ -53,6 +50,7 @@ bool GameAutomation::prepare_tango_pool(const std::vector<TangoPair> &tango_list
     for(unsigned int i = mtrand() % tango_list.size();n--; i = (i + 1) % tango_list.size()) {
         this->tango_pool->push_back(tango_list[i]);
     }
+    this->tango_count = static_cast<int>(n);
     std::random_shuffle(this->tango_pool->begin(), this->tango_pool->end());
 
     return true;
@@ -60,6 +58,9 @@ bool GameAutomation::prepare_tango_pool(const std::vector<TangoPair> &tango_list
 
 bool GameAutomation::set_config(const GameConfig *game_config) {
     this->config = game_config;
+    this->tango_pool = game_config->tango_pool;
+    this->fade_time = game_config->fade_time;
+    this->ans_time = game_config->ans_time;
     return true;
 }
 
@@ -84,6 +85,7 @@ bool GameAutomation::start()
 
 bool GameAutomation::prepare_start(const std::vector<TangoPair> &tango_list, unsigned int n)
 {
+    this->clear_state();
     if (!this->prepare_tango_pool(tango_list, n)) {
         return false;
     }
@@ -178,6 +180,13 @@ inline void GameAutomation::stop_automation() {
     disconnect(this->elasped_timer, nullptr, nullptr, nullptr);
     this->timer->stop();
     this->elasped_timer->stop();
+}
+
+inline void GameAutomation::clear_state()
+{
     this->prepared = false;
     this->select_ptr = 0;
+    this->exp = 0;
+    this->tango_count = 0;
 }
+

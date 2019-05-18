@@ -32,6 +32,7 @@
 #include "scene/CreationScene.h"
 #include "scene/SelectingScene.h"
 #include "scene/PlaySettleScene.h"
+#include "scene/RankingAuthorsScene.h"
 
 /* 自定类型 */
 #include "types/TangoPair.h"
@@ -55,6 +56,7 @@ MainWindow::MainWindow(QWidget *parent):
     this->register_scene = nullptr;
     this->creation_scene = nullptr;
     this->selecting_scene = nullptr;
+    this->ranking_author_scene = nullptr;
 
     this->logger = new Logger(this);
     this->init_client();
@@ -66,6 +68,7 @@ MainWindow::MainWindow(QWidget *parent):
     this->init_creation_scene();
     this->init_selecting_scene();
     this->init_playset_scene();
+    this->init_ranking_authors_scene();
 
     this->init_menubar();
     this->init_statusbar();
@@ -328,6 +331,13 @@ inline bool MainWindow::init_selecting_scene()
 bool MainWindow::init_playset_scene()
 {
     this->playset_scene = new PlaySettleScene(this);
+
+    return true;
+}
+
+bool MainWindow::init_ranking_authors_scene()
+{
+    this->ranking_author_scene = new RankingAuthorsScene(this);
 
     return true;
 }
