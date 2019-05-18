@@ -40,7 +40,9 @@ SOURCES += \
         scene/PlaySettleScene.cpp \
         scene/PlaySubScene.cpp \
         scene/PlayingScene.cpp \
+        scene/QueryUsersScene.cpp \
         scene/RankingAuthorsScene.cpp \
+        scene/RankingConsumersScene.cpp \
         scene/RegisterScene.cpp \
         scene/Scene.cpp \
         scene/SelectingScene.cpp \
@@ -50,6 +52,7 @@ SOURCES += \
         types/TangoPair.cpp \
         types/TimerWidget.cpp \
         types/UserBriefInfo.cpp \
+        types/UserFullInfo.cpp \
         types/UserStatus.cpp
 
 HEADERS += \
@@ -66,7 +69,9 @@ HEADERS += \
         scene/PlaySettleScene.h \
         scene/PlaySubScene.h \
         scene/PlayingScene.h \
+        scene/QueryUsersScene.h \
         scene/RankingAuthorsScene.h \
+        scene/RankingConsumersScene.h \
         scene/RegisterScene.h \
         scene/Scene.h \
         scene/SelectingScene.h \
@@ -76,6 +81,7 @@ HEADERS += \
         types/TangoPair.h \
         types/TimerWidget.h \
         types/UserBriefInfo.h \
+        types/UserFullInfo.h \
         types/UserStatus.h
 
 FORMS +=
@@ -84,3 +90,8 @@ FORMS +=
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+DISTFILES +=
+
+RESOURCES += \
+    main.qrc

@@ -7,6 +7,8 @@
 #include <QDebug>
 #include <QString>
 #include <QAction>
+#include <QFile>
+
 
 #include <QSqlError>
 #include <QHostAddress>
@@ -33,6 +35,8 @@
 #include "scene/SelectingScene.h"
 #include "scene/PlaySettleScene.h"
 #include "scene/RankingAuthorsScene.h"
+#include "scene/RankingConsumersScene.h"
+#include "scene/QueryUsersScene.h"
 
 /* 自定类型 */
 #include "types/TangoPair.h"
@@ -56,7 +60,9 @@ MainWindow::MainWindow(QWidget *parent):
     this->register_scene = nullptr;
     this->creation_scene = nullptr;
     this->selecting_scene = nullptr;
-    this->ranking_author_scene = nullptr;
+    this->ranking_authors_scene = nullptr;
+    this->ranking_consumers_scene = nullptr;
+    this->query_users_scene = nullptr;
 
     this->logger = new Logger(this);
     this->init_client();
@@ -69,6 +75,8 @@ MainWindow::MainWindow(QWidget *parent):
     this->init_selecting_scene();
     this->init_playset_scene();
     this->init_ranking_authors_scene();
+    this->init_ranking_consumers_scene();
+    this->init_query_users_scene();
 
     this->init_menubar();
     this->init_statusbar();
@@ -78,6 +86,12 @@ MainWindow::MainWindow(QWidget *parent):
     this->setMinimumSize(800, 600);
     this->setWindowTitle("Tango!");
 
+    QFile qssf(":/qss/main.qss");
+    qssf.open(QFile::ReadOnly);
+    QString reading = qssf.readAll();
+    // qDebug() << reading;
+    this->setStyleSheet(reading);
+    qssf.close();
 }
 
 
@@ -91,6 +105,9 @@ MainWindow::~MainWindow()
     this->register_scene->deleteLater();
     this->creation_scene->deleteLater();
     this->selecting_scene->deleteLater();
+    this->ranking_authors_scene->deleteLater();
+    this->ranking_consumers_scene->deleteLater();
+    this->query_users_scene->deleteLater();
     this->logger->deleteLater();
 }
 
@@ -325,6 +342,27 @@ inline bool MainWindow::init_selecting_scene()
         this->switch_scene(this->playing_scene);
     });
 
+
+    this->selecting_scene->set_ranking_authors_button_event([this]() mutable {
+        qDebug() << "clicked ranking button";
+
+        this->ranking_authors_scene->switch_page(1);
+        this->switch_scene(this->ranking_authors_scene);
+    });
+
+    this->selecting_scene->set_ranking_consumers_button_event([this]() mutable {
+        qDebug() << "clicked ranking button";
+
+        this->ranking_consumers_scene->switch_page(1);
+        this->switch_scene(this->ranking_consumers_scene);
+    });
+
+    this->selecting_scene->set_player_list_button_event([this]() mutable {
+        qDebug() << "clicked player list button";
+
+        this->switch_scene(this->query_users_scene);
+    });
+
     return true;
 }
 
@@ -337,7 +375,21 @@ bool MainWindow::init_playset_scene()
 
 bool MainWindow::init_ranking_authors_scene()
 {
-    this->ranking_author_scene = new RankingAuthorsScene(this);
+    this->ranking_authors_scene = new RankingAuthorsScene(this);
+
+    return true;
+}
+
+bool MainWindow::init_ranking_consumers_scene()
+{
+    this->ranking_consumers_scene = new RankingConsumersScene(this);
+
+    return true;
+}
+
+bool MainWindow::init_query_users_scene()
+{
+    this->query_users_scene = new QueryUsersScene(this);
 
     return true;
 }

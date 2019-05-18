@@ -16,7 +16,7 @@ PlaySettleScene::PlaySettleScene(QWidget *parent): Scene(parent)
     from_level = new QLabel;
     to_level = new QLabel;
     level_flag = new QLabel;
-    confirm_button = new QPushButton;
+    confirm_button = new QPushButton("确认");
 
     connect(this->confirm_button, &QPushButton::clicked, [this]() mutable {
         this->parent->switch_scene(this->parent->selecting_scene);

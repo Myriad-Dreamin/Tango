@@ -16,6 +16,7 @@
 #include "../types/TangoPair.h"
 #include "../types/RetriveMode.h"
 #include "../types/UserBriefInfo.h"
+#include "../types/UserFullInfo.h"
 #include "GameAutomation.h"
 #include "GameConfig.h"
 
@@ -44,7 +45,6 @@ Client::Client(QObject *parent) : QObject(parent)
 Client::~Client()
 {
     qDebug() << "release client";
-
     this->disconnect_to_local();
     this->disconnect_to_remote();
 }
@@ -259,6 +259,26 @@ bool Client::query_consumers_brief_info(std::vector<UserBriefInfo> &info_list, i
     return query_consumers_brief_info_local(info_list, l, r);
 }
 
+bool Client::query_authors_by_id(UserFullInfo &query_container, int id)
+{
+    return this->query_authors_by_id_local(query_container, id);
+}
+
+bool Client::query_consumers_by_id(UserFullInfo &query_container, int id)
+{
+    return this->query_consumers_by_id_local(query_container, id);
+}
+
+bool Client::query_consumers_by_name(UserFullInfo &query_container, QString name)
+{
+    return this->query_consumers_by_name_local(query_container, name);
+}
+
+bool Client::query_authors_by_name(UserFullInfo &query_container, QString name)
+{
+    return this->query_authors_by_name_local(query_container, name);
+}
+
 inline void Client::make_remote_server_on_connected()
 {
     connect(this->remote_server, &QTcpSocket::connected, [this]() mutable {
@@ -350,22 +370,26 @@ bool Client::logout_local()
 {
     qDebug() << "logouting";
     if (user_status_util::has_author_status(this->user_status)) {
+        qDebug() << "logout author";
         if (user_author->login_out_local()) {
             user_author->deleteLater();
             user_author = nullptr;
             user_status_util::remove_author_status(this->user_status);
         } else {
             _last_error = user_author->last_error();
+            qDebug() << "error occured" << _last_error;
             return false;
         }
     }
     if (user_status_util::has_consumer_status(this->user_status)) {
+        qDebug() << "logout consumer" << user_consumer->tango_count;
         if (user_consumer->login_out_local()) {
             user_consumer->deleteLater();
             user_consumer = nullptr;
             user_status_util::remove_consumer_status(this->user_status);
         } else {
             _last_error = user_consumer->last_error();
+            qDebug() << "error occured" << _last_error;
             return false;
         }
     }
@@ -645,9 +669,12 @@ GameAutomation *Client::start_game_event_local(const GameConfig *game_config, in
 // 假定consumer已上线
 bool Client::settle_game_event_local(const GameAutomation *automate)
 {
-    this->user_consumer->misson_count++;
+    qDebug() << this->user_consumer << this->user_consumer->misson_count << this->user_consumer->exp << this->user_consumer->tango_count << this->user_consumer->level;
+    if (static_cast<unsigned int>(automate->success_count) < automate->tango_pool->size()) {
+        this->user_consumer->misson_count++;
+    }
     this->user_consumer->exp += automate->exp;
-    this->user_consumer->tango_count += automate->tango_count;
+    this->user_consumer->tango_count += automate->success_count;
     while (this->user_consumer->level * 10 + 10 <= this->user_consumer->exp) {
         this->user_consumer->exp -= this->user_consumer->level * 10 + 10;
         this->user_consumer->level++;
@@ -678,6 +705,130 @@ bool Client::query_authors_brief_info_local(std::vector<UserBriefInfo> &info_lis
         info_list.emplace_back(UserBriefInfo(query.value(0).toInt(), query.value(1).toString(), query.value(2).toInt()));
         qDebug() << "fetched " << query.value(0).toInt() << query.value(1).toString() << query.value(2).toInt();
     }
+
+    return true;
+}
+
+bool Client::query_authors_by_id_local(UserFullInfo &query_container, int id)
+{
+    static const char *query_command = "select * from `authors` where `id` = :id";
+
+    QSqlQuery query(this->local_handler);
+    query.prepare(query_command);
+    query.bindValue(":id", id);
+    if (!query.exec()) {
+        _last_error = query.lastError().text();
+        qDebug() << "error occured: " << _last_error;
+
+        return false;
+    }
+    if (!query.first()) {
+        _last_error = query.lastError().text();
+        qDebug() << "fetch first element error occured: " << _last_error;
+
+        return false;
+    }
+
+    query_container.user_id = query.value(0).toInt();
+    query_container.name = query.value(1).toString();
+    query_container.tango_count = query.value(5).toInt();
+    query_container.misson_count = query.value(6).toInt();
+    query_container.exp = query.value(3).toInt();
+    query_container.level = query.value(4).toInt();
+    query_container.motto = query.value(7).toString();
+
+    return true;
+}
+
+bool Client::query_consumers_by_id_local(UserFullInfo &query_container, int id)
+{
+    static const char *query_command = "select * from `consumers` where `id` = :id";
+
+    QSqlQuery query(this->local_handler);
+    query.prepare(query_command);
+    query.bindValue(":id", id);
+    if (!query.exec()) {
+        _last_error = query.lastError().text();
+        qDebug() << "error occured: " << _last_error;
+
+        return false;
+    }
+    if (!query.first()) {
+        _last_error = query.lastError().text();
+        qDebug() << "fetch first element error occured: " << _last_error;
+
+        return false;
+    }
+
+    query_container.user_id = query.value(0).toInt();
+    query_container.name = query.value(1).toString();
+    query_container.tango_count = query.value(5).toInt();
+    query_container.misson_count = query.value(6).toInt();
+    query_container.exp = query.value(3).toInt();
+    query_container.level = query.value(4).toInt();
+    query_container.motto = query.value(7).toString();
+
+    return true;
+}
+
+bool Client::query_authors_by_name_local(UserFullInfo &query_container, QString name)
+{
+    static const char *query_command = "select * from `authors` where `name` = :name";
+
+    QSqlQuery query(this->local_handler);
+    query.prepare(query_command);
+    query.bindValue(":name", name);
+    if (!query.exec()) {
+        _last_error = query.lastError().text();
+        qDebug() << "error occured: " << _last_error;
+
+        return false;
+    }
+    if (!query.first()) {
+        _last_error = query.lastError().text();
+        qDebug() << "fetch first element error occured: " << _last_error;
+
+        return false;
+    }
+
+    query_container.user_id = query.value(0).toInt();
+    query_container.name = query.value(1).toString();
+    query_container.tango_count = query.value(5).toInt();
+    query_container.misson_count = query.value(6).toInt();
+    query_container.exp = query.value(3).toInt();
+    query_container.level = query.value(4).toInt();
+    query_container.motto = query.value(7).toString();
+
+    return true;
+}
+
+bool Client::query_consumers_by_name_local(UserFullInfo &query_container, QString name)
+{
+    static const char *query_command = "select * from `consumers` where `name` = :name";
+
+    QSqlQuery query(this->local_handler);
+    query.prepare(query_command);
+    query.bindValue(":name", name);
+    if (!query.exec()) {
+        _last_error = query.lastError().text();
+        qDebug() << "error occured: " << _last_error;
+
+        return false;
+    }
+    if (!query.first()) {
+        _last_error = query.lastError().text();
+        qDebug() << "fetch first element error occured: " << _last_error;
+
+        return false;
+    }
+
+    query_container.user_id = query.value(0).toInt();
+    query_container.name = query.value(1).toString();
+    query_container.tango_count = query.value(5).toInt();
+    query_container.misson_count = query.value(6).toInt();
+    query_container.exp = query.value(3).toInt();
+    query_container.level = query.value(4).toInt();
+    query_container.motto = query.value(7).toString();
 
     return true;
 }

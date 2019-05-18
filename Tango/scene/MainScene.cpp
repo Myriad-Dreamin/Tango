@@ -74,13 +74,14 @@ MainScene::MainScene(QWidget *parent): Scene(parent)
     main_center_lay->addLayout(buttons_lay);
 
     lay = new QGridLayout;
-    lay->addLayout(main_center_lay, 1, 1);
+    lay->addLayout(main_center_lay, 1, 1, 9, 9);
     lay->setColumnStretch(0, 1);
-    lay->setColumnStretch(2, 1);
-    lay->setRowStretch(2, 1);
+    lay->setColumnStretch(10, 1);
+    lay->setRowStretch(10, 1);
     lay->setRowStretch(0, 1);
 
     setLayout(lay);
+
 }
 
 MainScene::~MainScene()

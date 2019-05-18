@@ -26,9 +26,12 @@ SelectingScene::SelectingScene(QWidget *parent): Scene(parent)
     player_list_button = new QPushButton;
     player_list_button->setText("其他玩家");
     main_center_lay->addWidget(player_list_button);
-    ranking_button = new QPushButton;
-    ranking_button->setText("排行榜");
-    main_center_lay->addWidget(ranking_button);
+    ranking_authors_button = new QPushButton;
+    ranking_authors_button->setText("作者排行榜");
+    main_center_lay->addWidget(ranking_authors_button);
+    ranking_consumers_button = new QPushButton;
+    ranking_consumers_button->setText("读者排行榜");
+    main_center_lay->addWidget(ranking_consumers_button);
 
 
 
@@ -72,7 +75,12 @@ void SelectingScene::set_player_list_button_event(const std::function<void ()> &
 }
 
 
-void SelectingScene::set_ranking_button_event(const std::function<void ()> &ev)
+void SelectingScene::set_ranking_authors_button_event(const std::function<void ()> &ev)
 {
-    connect(ranking_button, &QPushButton::clicked, ev);
+    connect(ranking_authors_button, &QPushButton::clicked, ev);
+}
+
+void SelectingScene::set_ranking_consumers_button_event(const std::function<void ()> &ev)
+{
+    connect(ranking_consumers_button, &QPushButton::clicked, ev);
 }

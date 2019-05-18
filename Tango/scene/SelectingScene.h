@@ -22,15 +22,16 @@ public:
     ~SelectingScene();
 
     QPushButton *creation_button, *play_button, *multi_play_button;
-    QPushButton *player_list_button, *ranking_button;
+    QPushButton *player_list_button, *ranking_authors_button, *ranking_consumers_button;
 
 public:
 // c++11 public slots:
     void set_play_button_event(const std::function<void ()> &ev);
-    void set_ranking_button_event(const std::function<void ()> &ev);
     void set_multi_play_button_event(const std::function<void ()> &ev);
     void set_player_list_button_event(const std::function<void ()> &ev);
     void set_creation_button_event(const std::function<void ()> &ev);
+    void set_ranking_authors_button_event(const std::function<void ()> &ev);
+    void set_ranking_consumers_button_event(const std::function<void ()> &ev);
 
 private:
     MainWindow *parent;

@@ -62,6 +62,11 @@ public:
     bool query_authors_brief_info(std::vector<UserBriefInfo> &info_list, int l, int r);
     bool query_consumers_brief_info(std::vector<UserBriefInfo> &info_list, int l, int r);
 
+    bool query_authors_by_id(UserFullInfo &query_container, int id);
+    bool query_authors_by_name(UserFullInfo &query_container, QString name);
+    bool query_consumers_by_id(UserFullInfo &query_container, int id);
+    bool query_consumers_by_name(UserFullInfo &query_container, QString name);
+
     const QString last_error();
 
 private:
@@ -122,8 +127,14 @@ private:
     bool retrive_kth_tango_item_local(TangoPair &tp, int k);
     bool settle_game_event_local(const GameAutomation *automate);
     bool settle_creation_event_local(const std::vector<TangoPair> &tango_list);
+
     bool query_authors_brief_info_local(std::vector<UserBriefInfo> &info_list, int l, int r);
+    bool query_authors_by_id_local(UserFullInfo &query_container, int id);
+    bool query_authors_by_name_local(UserFullInfo &query_container, QString name);
+
     bool query_consumers_brief_info_local(std::vector<UserBriefInfo> &info_list, int l, int r);
+    bool query_consumers_by_id_local(UserFullInfo &query_container, int id);
+    bool query_consumers_by_name_local(UserFullInfo &query_container, QString name);
 signals:
     void connected();
     void disconnected();

@@ -38,7 +38,7 @@ private:
 
     bool prepared;
     std::vector<TangoPair> *tango_pool;
-    int fade_time, ans_time, tango_count;
+    int fade_time, ans_time, success_count;
     int exp;
     unsigned int select_ptr;
     const GameConfig *config;

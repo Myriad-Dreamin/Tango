@@ -17,6 +17,8 @@ class CreationScene;
 class SelectingScene;
 class PlaySettleScene;
 class RankingAuthorsScene;
+class RankingConsumersScene;
+class QueryUsersScene;
 
 namespace Ui {
 class MainWindow;
@@ -34,6 +36,8 @@ class MainWindow : public QMainWindow
     friend class SelectingScene;
     friend class PlaySettleScene;
     friend class RankingAuthorsScene;
+    friend class RankingConsumersScene;
+    friend class QueryUsersScene;
 
 public:
     explicit MainWindow(QWidget *parent = nullptr);
@@ -58,7 +62,9 @@ private:
     PlaySubScene *playsub_scene;
     SelectingScene *selecting_scene;
     PlaySettleScene *playset_scene;
-    RankingAuthorsScene *ranking_author_scene;
+    RankingAuthorsScene *ranking_authors_scene;
+    RankingConsumersScene *ranking_consumers_scene;
+    QueryUsersScene *query_users_scene;
 
     inline bool init_client();
     inline bool init_menubar();
@@ -72,6 +78,8 @@ private:
     inline bool init_selecting_scene();
     inline bool init_playset_scene();
     inline bool init_ranking_authors_scene();
+    inline bool init_ranking_consumers_scene();
+    inline bool init_query_users_scene();
 
     bool author_sign_in(QString account, QString password);
     bool author_sign_up(QString account, QString password);

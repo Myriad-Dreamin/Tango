@@ -50,7 +50,6 @@ bool GameAutomation::prepare_tango_pool(const std::vector<TangoPair> &tango_list
     for(unsigned int i = mtrand() % tango_list.size();n--; i = (i + 1) % tango_list.size()) {
         this->tango_pool->push_back(tango_list[i]);
     }
-    this->tango_count = static_cast<int>(n);
     std::random_shuffle(this->tango_pool->begin(), this->tango_pool->end());
 
     return true;
@@ -109,6 +108,7 @@ inline bool GameAutomation::setup_automation()
         this->stop_automation();
     });
     connect(this, &GameAutomation::failed, [this]() mutable {
+
         this->stop_automation();
     });
 
@@ -154,6 +154,7 @@ void GameAutomation::make_faded_event()
 std::function<void()> GameAutomation::make_answer_success_slotter()
 {
     return [this]() mutable {
+        this->success_count++;
         this->config->exp_functor(this->exp, (*this->tango_pool)[this->select_ptr - 1], static_cast<int>(this->select_ptr));
         select_new_tango();
     };
@@ -162,8 +163,7 @@ std::function<void()> GameAutomation::make_answer_success_slotter()
 std::function<void()> GameAutomation::make_stop_slotter()
 {
     return [this]() mutable {
-        this->stop_automation();
-        this->deleteLater();
+        emit this->failed();
     };
 }
 
@@ -175,7 +175,7 @@ std::function<void()> GameAutomation::make_stop_slotter()
 //}
 
 inline void GameAutomation::stop_automation() {
-    qDebug() << "stop automation";
+    qDebug() << "stop automation" << this->select_ptr;
     disconnect(this->timer, nullptr, nullptr, nullptr);
     disconnect(this->elasped_timer, nullptr, nullptr, nullptr);
     this->timer->stop();
@@ -186,7 +186,7 @@ inline void GameAutomation::clear_state()
 {
     this->prepared = false;
     this->select_ptr = 0;
+    this->success_count = 0;
     this->exp = 0;
-    this->tango_count = 0;
 }
 

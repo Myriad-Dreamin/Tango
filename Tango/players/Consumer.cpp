@@ -8,6 +8,15 @@
 Consumer::Consumer(QSqlDatabase db_handler, QObject *parent): Player(db_handler, parent)
 {
     _last_error = nullptr;
+
+    this->user_id = 0;
+    this->tango_count = 0;
+    this->level = 0;
+    this->misson_count = 0;
+    this->exp = 0;
+
+    this->name = "";
+    this->motto = "";
 }
 
 Consumer::~Consumer()
