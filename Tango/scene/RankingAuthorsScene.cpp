@@ -57,7 +57,7 @@ void RankingAuthorsScene::switch_page(int page_count)
     this->ranking->clearContents();
     this->info_query.clear();
     this->parent->client->query_authors_brief_info(
-        info_query, (page_count - 1) * this->page_limit, page_count * this->page_limit
+        info_query, page_count * this->page_limit, (page_count + 1) * this->page_limit
     );
     for (unsigned int i = 0; i < info_query.size(); i++) {
         QLabel *idL = new QLabel(this->ranking),
@@ -66,9 +66,9 @@ void RankingAuthorsScene::switch_page(int page_count)
         idL->setNum(info_query[i].id);
         nameL->setText(info_query[i].name);
         levelL->setNum(info_query[i].level);
-        this->ranking->setCellWidget(i, 0, idL);
-        this->ranking->setCellWidget(i, 0, nameL);
-        this->ranking->setCellWidget(i, 0, levelL);
+        this->ranking->setCellWidget(static_cast<int>(i), 0, idL);
+        this->ranking->setCellWidget(static_cast<int>(i), 0, nameL);
+        this->ranking->setCellWidget(static_cast<int>(i), 0, levelL);
     }
 }
 
