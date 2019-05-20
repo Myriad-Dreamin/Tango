@@ -147,6 +147,7 @@ inline bool MainWindow::init_playing_scene()
 {
     playing_scene = new PlayingScene(this);
 
+    this->playing_scene->hide();
     return true;
 }
 
@@ -230,6 +231,7 @@ inline bool MainWindow::init_main_scene()
          this->switch_scene(this->register_scene);
     });
 
+    this->main_scene->hide();
     return true;
 }
 
@@ -321,6 +323,7 @@ inline bool MainWindow::init_register_scene()
         this->switch_scene(this->main_scene);
     });
 
+    this->register_scene->hide();
     return true;
 }
 
@@ -363,6 +366,7 @@ inline bool MainWindow::init_selecting_scene()
         this->switch_scene(this->query_users_scene);
     });
 
+    this->selecting_scene->hide();
     return true;
 }
 
@@ -370,6 +374,7 @@ bool MainWindow::init_playset_scene()
 {
     this->playset_scene = new PlaySettleScene(this);
 
+    this->playset_scene->hide();
     return true;
 }
 
@@ -377,6 +382,7 @@ bool MainWindow::init_ranking_authors_scene()
 {
     this->ranking_authors_scene = new RankingAuthorsScene(this);
 
+    this->ranking_authors_scene->hide();
     return true;
 }
 
@@ -384,6 +390,7 @@ bool MainWindow::init_ranking_consumers_scene()
 {
     this->ranking_consumers_scene = new RankingConsumersScene(this);
 
+    this->ranking_consumers_scene->hide();
     return true;
 }
 
@@ -391,6 +398,7 @@ bool MainWindow::init_query_users_scene()
 {
     this->query_users_scene = new QueryUsersScene(this);
 
+    this->query_users_scene->hide();
     return true;
 }
 
@@ -398,6 +406,7 @@ inline bool MainWindow::init_creation_scene()
 {
     this->creation_scene = new CreationScene(this);
 
+    this->creation_scene->hide();
     return true;
 }
 
@@ -405,6 +414,7 @@ inline bool MainWindow::init_playsub_scene()
 {
     this->playsub_scene = new PlaySubScene(this);
 
+    this->playsub_scene->hide();
     return true;
 }
 

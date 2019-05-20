@@ -6,11 +6,11 @@
 const int DEFAULT_CONSUMER_PAGE_LIMIT = 10;
 
 class MainWindow;
-class QTableWidget;
+class QVBoxLayout;
 class QLabel;
 class QPushButton;
 class QLineEdit;
-class QGridLayout;
+class QHBoxLayout;
 class UserBriefInfo;
 
 class RankingConsumersScene : public Scene
@@ -22,16 +22,18 @@ public:
     ~RankingConsumersScene();
 private:
     int page_limit = DEFAULT_CONSUMER_PAGE_LIMIT;
+    int ranking_table_row;
     std::vector<UserBriefInfo> info_query;
     MainWindow* parent;
     QLabel *title;
-    QTableWidget *ranking;
+    QVBoxLayout *ranking;
     QLabel *cur_page;
     QPushButton *return_button, *next_button, *last_button;
     QPushButton *switch_button;
     QLineEdit *switch_edit;
-    QGridLayout *lay;
+    QHBoxLayout *lay;
     void switch_page(int page_count);
+    void clear_table();
 };
 
 #endif // RANKINGCONSUMERSSCENE_H

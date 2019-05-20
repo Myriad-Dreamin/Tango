@@ -93,8 +93,8 @@ RankingAuthorsScene::RankingAuthorsScene(QWidget *parent): Scene(parent)
     lay->addStretch(1);
     lay->addLayout(center_lay, 8);
     lay->addStretch(1);
-
     this->setLayout(lay);
+
 }
 
 void RankingAuthorsScene::clear_table()
