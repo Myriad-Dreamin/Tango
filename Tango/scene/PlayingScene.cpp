@@ -37,7 +37,7 @@ PlayingScene::PlayingScene(QWidget *parent): Scene (parent)
         auto automate = this->parent->client->start_game_event(game_config, 5, RetriveMode::Hard);
 
         if (automate == nullptr) {
-            QMessageBox::critical(this, "错误", this->parent->client->last_error());
+            QMessageBox::critical(this, "错误", this->parent->client->last_error(), QMessageBox::Ok);
             return;
         }
 
@@ -53,12 +53,21 @@ PlayingScene::PlayingScene(QWidget *parent): Scene (parent)
             this->parent->playsub_scene->value_label->setText(tango.second);
             this->parent->playsub_scene->key_label->show();
             this->parent->playsub_scene->value_label->show();
+
+
+            this->parent->playsub_scene->user_ret->hide();
+            this->parent->playsub_scene->answer_button->hide();
+
             this->parent->timer->set_timer(5000);
         });
         connect(automate, &GameAutomation::tango_faded, [this]() mutable {
             qDebug() << "tango faded";
             this->parent->playsub_scene->key_label->hide();
             this->parent->playsub_scene->value_label->hide();
+
+            this->parent->playsub_scene->user_ret->show();
+            this->parent->playsub_scene->answer_button->show();
+
             this->parent->timer->set_timer(10000);
         });
         connect(automate, &GameAutomation::answer_failed, []() mutable {
@@ -73,6 +82,7 @@ PlayingScene::PlayingScene(QWidget *parent): Scene (parent)
             this->settle_game(automate);
         });
         connect(this->parent->playsub_scene->answer_button, &QPushButton::clicked, [this, automate]() mutable {
+
             if (this->parent->playsub_scene->user_ret->text() == this->parent->playsub_scene->key_label->text()) {
                 automate->make_answer_success_slotter()();
                 this->parent->playsub_scene->user_ret->setText("");

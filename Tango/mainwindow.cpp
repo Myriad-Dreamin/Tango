@@ -51,6 +51,7 @@
 MainWindow::MainWindow(QWidget *parent):
     QMainWindow(parent)
 {
+
     this->client = nullptr;
     this->cur_scene = nullptr;
     this->main_scene = nullptr;
@@ -154,6 +155,7 @@ inline bool MainWindow::init_playing_scene()
 
 inline bool MainWindow::init_main_scene()
 {
+
     main_scene = new MainScene(this);
 
     /* 登录事件 */
