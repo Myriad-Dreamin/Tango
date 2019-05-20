@@ -18,11 +18,14 @@ GameConfig::GameConfig(
 ) {
     this->tango_pool = new std::vector<TangoPair>;
     this->from_out_pool = false;
+
     this->enable_elasped = enable_elasped;
+
     this->fade_functor = fade_functor;
     this->ans_functor = ans_functor;
     this->if_failed_functor = if_failed_functor;
     this->exp_functor = exp_functor;
+
     this->fade_time = fade_time;
     this->ans_time = ans_time;
 }
@@ -37,13 +40,16 @@ GameConfig::GameConfig(
     const int fade_time,
     const int ans_time
 ) {
-    this->enable_elasped = enable_elasped;
     this->tango_pool = &stable_tango_pool;
     this->from_out_pool = true;
+
+    this->enable_elasped = enable_elasped;
+
     this->fade_functor = fade_functor;
     this->ans_functor = ans_functor;
     this->if_failed_functor = if_failed_functor;
     this->exp_functor = exp_functor;
+
     this->fade_time = fade_time;
     this->ans_time = ans_time;
 }
@@ -56,12 +62,15 @@ GameConfig::GameConfig(const GameConfig &game_config)
     } else {
         this->tango_pool = new std::vector<TangoPair>;
     }
-    this->enable_elasped = game_config.enable_elasped;
     this->from_out_pool = game_config.from_out_pool;
+
+    this->enable_elasped = game_config.enable_elasped;
+
     this->fade_functor = game_config.fade_functor;
     this->if_failed_functor = game_config.if_failed_functor;
     this->if_failed_functor = game_config.if_failed_functor;
     this->exp_functor = game_config.exp_functor;
+
     this->fade_time = game_config.fade_time;
     this->ans_time = game_config.ans_time;
 }
@@ -70,16 +79,19 @@ GameConfig::GameConfig(GameConfig &&game_config)
 {
     this->tango_pool = game_config.tango_pool;
     game_config.tango_pool = nullptr;
+
     this->from_out_pool = game_config.from_out_pool;
     game_config.from_out_pool = true;
+
     this->enable_elasped = game_config.enable_elasped;
+
     this->fade_functor = std::move(game_config.fade_functor);
     this->ans_functor = std::move(game_config.ans_functor);
     this->if_failed_functor = std::move(game_config.if_failed_functor);
     this->exp_functor = std::move(game_config.exp_functor);
+
     this->fade_time = game_config.fade_time;
     this->ans_time = game_config.ans_time;
-    game_config.tango_pool = nullptr;
 }
 GameConfig::~GameConfig()
 {

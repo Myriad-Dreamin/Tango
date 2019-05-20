@@ -10,6 +10,8 @@
 class GameClient;
 class TangoPair;
 
+
+/* 游戏自动机 */
 class GameAutomation : public QObject
 {
     Q_OBJECT
