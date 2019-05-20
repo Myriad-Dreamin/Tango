@@ -6,11 +6,11 @@
 const int DEFAULT_AUTHOR_PAGE_LIMIT = 10;
 
 class MainWindow;
-class QTableWidget;
 class QLabel;
 class QPushButton;
+class QVBoxLayout;
 class QLineEdit;
-class QGridLayout;
+class QHBoxLayout;
 class UserBriefInfo;
 
 class RankingAuthorsScene : public Scene
@@ -22,16 +22,18 @@ public:
     ~RankingAuthorsScene();
 private:
     int page_limit = DEFAULT_AUTHOR_PAGE_LIMIT;
+    int ranking_table_row;
     std::vector<UserBriefInfo> info_query;
     MainWindow* parent;
     QLabel *title;
-    QTableWidget *ranking;
+    QVBoxLayout *ranking;
     QLabel *cur_page;
     QPushButton *return_button, *next_button, *last_button;
     QPushButton *switch_button;
     QLineEdit *switch_edit;
-    QGridLayout *lay;
+    QHBoxLayout *lay;
     void switch_page(int page_count);
+    void clear_table();
 };
 
 #endif // RANKINGAUTHORSSCENE_H
