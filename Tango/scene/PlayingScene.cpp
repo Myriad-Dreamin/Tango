@@ -45,11 +45,11 @@ GameAutomation *PlayingScene::more_complex_automate()
 }
 
 
-std::function<void()> PlayingScene::single_round()
+std::function<void()> PlayingScene::single_round(const std::function<GameAutomation*()> &moder)
 {
-    return [this]() mutable {
+    return [this, moder]() mutable {
 
-        auto automate = this->more_complex_automate();
+        auto automate = moder();
 
         if (automate == nullptr) {
             MessageBox::critical(this, "错误", this->parent->client->last_error());
@@ -118,13 +118,17 @@ PlayingScene::PlayingScene(QWidget *parent): Scene (parent)
     this->parent = dynamic_cast<MainWindow*>(parent);
     game_config = new GameConfig();
 
-    start_button = new QPushButton;
-    start_button->setText("开始");
+    trial_button = new QPushButton;
+    trial_button->setText("体验");
 
     center_lay = new QVBoxLayout;
-    center_lay->addWidget(start_button);
+    center_lay->addWidget(trial_button);
 
-    connect(start_button, &QPushButton::clicked, this->single_round());
+    connect(trial_button, &QPushButton::clicked, [this]() mutable {
+        this->single_round([this]() mutable -> GameAutomation* {
+            return this->default_automate();
+        })();
+    });
 
     this->lay = new QGridLayout;
     this->lay->addLayout(center_lay, 1, 1, 3, 3);

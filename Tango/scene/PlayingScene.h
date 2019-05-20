@@ -12,6 +12,8 @@ class QGridLayout;
 class QLineEdit;
 class GameConfig;
 class GameAutomation;
+
+
 class PlayingScene : public Scene
 {
     Q_OBJECT
@@ -21,7 +23,10 @@ public:
     ~PlayingScene();
 
 private:
-    QPushButton *start_button;
+    QPushButton *trial_button;
+    QPushButton *normal_button;
+    QPushButton *endless_button;
+
     MainWindow *parent;
     GameConfig *game_config;
     QGridLayout *lay;
@@ -29,7 +34,7 @@ private:
     void settle_game(GameAutomation *automate);
     GameAutomation *default_automate();
     GameAutomation *more_complex_automate();
-    std::function<void ()> single_round();
+    std::function<void ()> single_round(const std::function<GameAutomation *()> &moder);
 };
 
 #endif // PLAYINGSCENE_H
