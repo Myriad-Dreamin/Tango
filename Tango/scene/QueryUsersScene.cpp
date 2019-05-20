@@ -17,8 +17,8 @@ QueryUsersScene::QueryUsersScene(QWidget *parent): Scene(parent)
     this->parent = dynamic_cast<MainWindow*>(parent);
 
     auto center_lay = new QVBoxLayout;
+    QHBoxLayout *lay;
 
-    QGridLayout *lay;
     auto user_info_lay = new QVBoxLayout;
     auto user_id_lay = new QHBoxLayout;
     user_id_key = new QLabel("id:");
@@ -62,6 +62,7 @@ QueryUsersScene::QueryUsersScene(QWidget *parent): Scene(parent)
     motto_lay->addWidget(motto_key);
     motto_lay->addWidget(motto, 7);
 
+    center_lay->addStretch(1);
     user_info_lay->addLayout(user_id_lay);
     user_info_lay->addLayout(name_lay);
     user_info_lay->addLayout(tango_count_lay);
@@ -71,6 +72,7 @@ QueryUsersScene::QueryUsersScene(QWidget *parent): Scene(parent)
     user_info_lay->addLayout(motto_lay);
 
     center_lay->addLayout(user_info_lay);
+    center_lay->addStretch(1);
 
     auto query_lay = new QVBoxLayout;
 
@@ -123,7 +125,6 @@ QueryUsersScene::QueryUsersScene(QWidget *parent): Scene(parent)
 
     consumer_query_lay->addWidget(consumer_by_id_button, 4);
     consumer_query_lay->addWidget(consumer_by_name_button, 4);
-    query_lay->addLayout(consumer_query_lay);
 
     center_lay->addLayout(query_lay);
 
@@ -133,15 +134,14 @@ QueryUsersScene::QueryUsersScene(QWidget *parent): Scene(parent)
     });
 
     center_lay->addWidget(return_button);
+    center_lay->addStretch(1);
 
 
-    lay = new QGridLayout;
-    lay->addLayout(center_lay, 1, 1, 8, 8);
-    lay->setRowStretch(0, 1);
-    lay->setRowStretch(9, 1);
-    lay->setColumnStretch(0, 1);
-    lay->setColumnStretch(9, 1);
-
+    lay = new QHBoxLayout;
+    query_lay->addLayout(consumer_query_lay);
+    lay->addStretch(1);
+    lay->addLayout(center_lay, 8);
+    lay->addStretch(1);
 
 
     this->setLayout(lay);
