@@ -1,5 +1,7 @@
 #include "GameConfig.h"
 
+#include <algorithm>
+
 #include <QDebug>
 
 #include "../types/TangoPair.h"
@@ -92,8 +94,21 @@ void default_fade_functor(int&)
     return;
 }
 
+void decreasing_fade_functor(int& x)
+{
+    x = std::max(1000, x - 50);
+    return;
+}
+
+
 void default_ans_functor(int&)
 {
+    return;
+}
+
+void decreasing_ans_functor(int& x)
+{
+    x = std::max(1000, x - 50);
     return;
 }
 
@@ -101,6 +116,20 @@ bool default_failed_functor()
 {
     return true;
 }
+
+std::function<void()> second_chance_functor_gen()
+{
+    bool change_count = 1;
+    return [change_count]() mutable {
+        if (change_count) {
+            change_count = false;
+            return false;
+        } else {
+            return true;
+        }
+    };
+}
+
 
 void default_exp_functor(int &x, TangoPair tango, int)
 {

@@ -1,6 +1,8 @@
 
 #include "PlayingScene.h"
 
+#include <algorithm>
+
 #include <QDebug>
 
 #include <QPushButton>
@@ -21,20 +23,26 @@
 #include "../types/RetriveMode.h"
 
 
-PlayingScene::PlayingScene(QWidget *parent): Scene (parent)
+GameAutomation *PlayingScene::default_automate()
 {
-    this->parent = dynamic_cast<MainWindow*>(parent);
-    game_config = new GameConfig();
+    return this->parent->client->start_game_event(game_config, 5, RetriveMode::Hard);
+}
 
-    start_button = new QPushButton;
-    start_button->setText("开始");
+GameAutomation *PlayingScene::more_complex_automate()
+{
+    return this->parent->client->start_game_event(
+        &DECREASE_TIMECONFIG,
+        std::max(1, rand() % ((this->parent->client->consumer_level() + 1) << 1)),
+        RetriveMode::Hard
+    );
+}
 
-    center_lay = new QVBoxLayout;
-    center_lay->addWidget(start_button);
 
-    connect(start_button, &QPushButton::clicked, [this]() mutable {
+std::function<void()> PlayingScene::single_round()
+{
+    return [this]() mutable {
 
-        auto automate = this->parent->client->start_game_event(game_config, 5, RetriveMode::Hard);
+        auto automate = this->more_complex_automate();
 
         if (automate == nullptr) {
             QMessageBox::critical(this, "错误", this->parent->client->last_error(), QMessageBox::Ok);
@@ -94,7 +102,22 @@ PlayingScene::PlayingScene(QWidget *parent): Scene (parent)
         });
 
         automate->start();
-    });
+    };
+}
+
+
+PlayingScene::PlayingScene(QWidget *parent): Scene (parent)
+{
+    this->parent = dynamic_cast<MainWindow*>(parent);
+    game_config = new GameConfig();
+
+    start_button = new QPushButton;
+    start_button->setText("开始");
+
+    center_lay = new QVBoxLayout;
+    center_lay->addWidget(start_button);
+
+    connect(start_button, &QPushButton::clicked, this->single_round());
 
     this->lay = new QGridLayout;
     this->lay->addLayout(center_lay, 1, 1, 3, 3);

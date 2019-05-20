@@ -2,6 +2,7 @@
 #define PLAYINGSCENE_H
 
 #include "Scene.h"
+#include <functional>
 
 class MainWindow;
 
@@ -26,6 +27,9 @@ private:
     QGridLayout *lay;
     QVBoxLayout *center_lay;
     void settle_game(GameAutomation *automate);
+    GameAutomation *default_automate();
+    GameAutomation *more_complex_automate();
+    std::function<void ()> single_round();
 };
 
 #endif // PLAYINGSCENE_H

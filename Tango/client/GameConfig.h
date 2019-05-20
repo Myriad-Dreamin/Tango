@@ -9,6 +9,12 @@ class GameAutomation;
 
 void default_fade_functor(int &x);
 void default_ans_functor(int &x);
+
+void decreasing_fade_functor(int &x);
+void decreasing_ans_functor(int &x);
+
+std::function<void()> second_chance_functor_gen(int &x);
+
 void default_exp_functor(int &x, TangoPair tango, int level_step);
 bool default_failed_functor();
 const int DEFALUT_FADE_TIME = 5000, DEFAULT_ANS_TIME = 10000;
@@ -53,5 +59,11 @@ private:
 };
 
 const GameConfig DEFAULT_CONFIG = GameConfig();
+const GameConfig DECREASE_TIMECONFIG = GameConfig(
+    false,
+    decreasing_fade_functor,
+    decreasing_ans_functor
+);
+
 
 #endif // GAMECONFIG_H

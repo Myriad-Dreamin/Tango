@@ -831,7 +831,3 @@ QPushButton#menuButton::menu-indicator{
     subcontrol-origin: padding;
     padding-right: 3px;
 }
-
-/*QMessageBox {
-    background-color: rgb(72, 72, 73);
-}*/
