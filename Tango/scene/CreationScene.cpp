@@ -13,7 +13,6 @@
 
 #include <QLabel>
 #include <QLineEdit>
-#include <QMessageBox>
 #include <QTableWidget>
 
 #include <QPushButton>
@@ -28,6 +27,7 @@
 /* 自定义类型 */
 #include "../types/TangoPair.h"
 #include "CreationTableItem.h"
+#include "../types/MessageBox.h"
 
 CreationScene::CreationScene(QWidget *parent): Scene(parent)
 {
@@ -157,12 +157,12 @@ void CreationScene::try_submit_tangos()
 {
     qDebug() << "try submitting";
     if (creation_table_row <= 1) {
-        QMessageBox::critical(this->parent, tr("错误"), "不能提交空的表格", QMessageBox::Ok);
+        MessageBox::critical(this->parent, tr("错误"), "不能提交空的表格");
         return ;
     }
 
     if (this->table_name_edit->text().isEmpty()) {
-        QMessageBox::critical(this->parent, tr("错误"), "表格名不能为空", QMessageBox::Ok);
+        MessageBox::critical(this->parent, tr("错误"), "表格名不能为空");
         return ;
     }
 
@@ -171,7 +171,7 @@ void CreationScene::try_submit_tangos()
         auto item = dynamic_cast<CreationTableItem*>(this->creation_table->itemAt(i)->widget());
         qDebug() << "getting" << item;
         if (item->first->text().isEmpty() || item->second->text().isEmpty()) {
-            QMessageBox::critical(this->parent, tr("错误"), "有空的单词格未填写", QMessageBox::Ok);
+            MessageBox::critical(this->parent, tr("错误"), "有空的单词格未填写");
             return ;
         }
     }

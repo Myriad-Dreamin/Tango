@@ -576,7 +576,7 @@ int Client::retrive_since_kth_tango_item_local(std::vector<TangoPair> &tango_lis
 }
 
 
-bool Client::retrive_tango_items_local(std::vector<TangoPair> &tango_list, int n, RetriveMode mode)
+bool Client::retrive_tango_items_local(std::vector<TangoPair> &tango_list, int &n, RetriveMode mode)
 {
     static std::mt19937 mtrand(static_cast<unsigned int>(time(nullptr)));
     static const char *query_count = "select count(*) from `tangos`";
@@ -594,13 +594,18 @@ bool Client::retrive_tango_items_local(std::vector<TangoPair> &tango_list, int n
 
     int tot_length = query.value(0).toInt();
     qDebug() << "tot_length " << tot_length;
+
+    if (tot_length == 0) {
+        _last_error = "empty pool in the tango database";
+        return false;
+    }
+
     unsigned int to_fetch;
     switch (mode) {
     case RetriveMode::Easy:
         tot_length = static_cast<int>(0.3 * tot_length);
         if (tot_length < n) {
-            _last_error = "not enough";
-            return false;
+            n = std::max(tot_length, 1);
         }
         to_fetch = mtrand() % static_cast<unsigned int>(tot_length - n + 1);
         _last_error = "";
@@ -615,8 +620,7 @@ bool Client::retrive_tango_items_local(std::vector<TangoPair> &tango_list, int n
     case RetriveMode::Normal:
         tot_length = static_cast<int>(0.6 * tot_length);
         if (tot_length < n) {
-            _last_error = "not enough";
-            return false;
+            n = std::max(tot_length, 1);
         }
         to_fetch = mtrand() % static_cast<unsigned int>(tot_length - n + 1);
         _last_error = "";
@@ -630,8 +634,7 @@ bool Client::retrive_tango_items_local(std::vector<TangoPair> &tango_list, int n
 
     case RetriveMode::Hard:
         if (tot_length < n) {
-            _last_error = "not enough";
-            return false;
+            n = std::max(tot_length, 1);
         }
         to_fetch = mtrand() % static_cast<unsigned int>(tot_length - n + 1);
         _last_error = "";
@@ -653,12 +656,13 @@ GameAutomation *Client::start_game_event_local(const GameConfig *game_config, in
     std::vector<TangoPair> tango_list;
     tango_list.reserve(static_cast<unsigned int>(n));
     qDebug() << "want " << n;
-    if (!this->retrive_tango_items_local(tango_list, n, mode)) {
+    int temp_n = n;
+    if (!this->retrive_tango_items_local(tango_list, temp_n, mode)) {
         return nullptr;
     }
 
     auto automate = new GameAutomation(game_config);
-    if (!automate->prepare_start(tango_list, static_cast<unsigned int>(n))) {
+    if (!automate->prepare_start(tango_list, static_cast<unsigned int>(temp_n))) {
         _last_error = automate->last_error();
         automate->deleteLater();
         return nullptr;

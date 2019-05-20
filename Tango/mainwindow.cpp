@@ -21,7 +21,6 @@
 
 #include <QLabel>
 #include <QLineEdit>
-#include <QMessageBox>
 
 #include <QPushButton>
 #include <QRadioButton>
@@ -43,6 +42,7 @@
 #include "types/UserStatus.h"
 #include "types/TimerWidget.h"
 #include "types/Logger.h"
+#include "types/MessageBox.h"
 
 /* 客户端代理 */
 #include "client/Client.h"
@@ -169,12 +169,12 @@ inline bool MainWindow::init_main_scene()
 
 
         if (account_text == "") {
-            QMessageBox::critical(this, tr("错误"), tr("用户名不能为空"), QMessageBox::Ok);
+            MessageBox::critical(this, tr("错误"), tr("用户名不能为空"));
             return;
         }
 
         if (password_text == "") {
-            QMessageBox::critical(this, tr("错误"), tr("密码不能为空"), QMessageBox::Ok);
+            MessageBox::critical(this, tr("错误"), tr("密码不能为空"));
             return;
         }
 
@@ -186,14 +186,14 @@ inline bool MainWindow::init_main_scene()
             quint16 server_port = quint16(this->main_scene->port_edit->text().toShort());
 
             if (!this->client->setup_remote_connection(host_address, server_port)) {
-                QMessageBox::critical(this, tr("错误"), this->client->last_error(), QMessageBox::Ok);
+                MessageBox::critical(this, tr("错误"), this->client->last_error());
                 return;
             }
         } else {
             qDebug() << "not checked";
 
             if (!this->client->setup_local_connection()) {
-                QMessageBox::critical(this, tr("错误"), this->client->last_error(), QMessageBox::Ok);
+                MessageBox::critical(this, tr("错误"), this->client->last_error());
                 return;
             }
         }
@@ -254,18 +254,18 @@ inline bool MainWindow::init_register_scene()
         qDebug() << "clicked confirm button" << confirm_password_text;
 
         if (account_text == "") {
-            QMessageBox::critical(this, tr("错误"), tr("用户名不能为空"), QMessageBox::Ok);
+            MessageBox::critical(this, tr("错误"), tr("用户名不能为空"));
             return;
         }
 
         if (password_text == "") {
-            QMessageBox::critical(this, tr("错误"), tr("密码不能为空"), QMessageBox::Ok);
+            MessageBox::critical(this, tr("错误"), tr("密码不能为空"));
             return;
         }
 
         if (password_text != confirm_password_text) {
             qDebug() << "not equal";
-            QMessageBox::critical(this, tr("错误"), tr("两次输入密码不一致"), QMessageBox::Ok);
+            MessageBox::critical(this, tr("错误"), tr("两次输入密码不一致"));
             return;
         }
 
@@ -277,14 +277,14 @@ inline bool MainWindow::init_register_scene()
             quint16 server_port = quint16(this->register_scene->port_edit->text().toShort());
 
             if (!this->client->setup_remote_connection(host_address, server_port)) {
-                QMessageBox::critical(this, tr("错误"), this->client->last_error(), QMessageBox::Ok);
+                MessageBox::critical(this, tr("错误"), this->client->last_error());
                 return;
             }
         } else {
             qDebug() << "not checked";
 
             if (!this->client->setup_local_connection()) {
-                QMessageBox::critical(this, tr("错误"), this->client->last_error(), QMessageBox::Ok);
+                MessageBox::critical(this, tr("错误"), this->client->last_error());
                 return;
             }
         }
@@ -442,7 +442,7 @@ void MainWindow::switch_scene(QWidget *to_set)
 bool MainWindow::author_sign_in(QString account, QString password)
 {
     if (!this->client->author_sign_in(account, password)) {
-        QMessageBox::critical(this, tr("错误"), "登录失败：" + this->client->last_error(), QMessageBox::Ok);
+        MessageBox::critical(this, tr("错误"), "登录失败：" + this->client->last_error());
         return false;
     }
 
@@ -452,7 +452,7 @@ bool MainWindow::author_sign_in(QString account, QString password)
 bool MainWindow::author_sign_up(QString account, QString password)
 {
     if (!this->client->author_sign_up(account, password)) {
-        QMessageBox::critical(this, tr("错误"), "注册失败：" + this->client->last_error(), QMessageBox::Ok);
+        MessageBox::critical(this, tr("错误"), "注册失败：" + this->client->last_error());
         return false;
     }
 
@@ -462,7 +462,7 @@ bool MainWindow::author_sign_up(QString account, QString password)
 bool MainWindow::consumer_sign_in(QString account, QString password)
 {
     if (!this->client->consumer_sign_in(account, password)) {
-        QMessageBox::critical(this, tr("错误"), "登录失败：" + this->client->last_error(), QMessageBox::Ok);
+        MessageBox::critical(this, tr("错误"), "登录失败：" + this->client->last_error());
         return false;
     }
 
@@ -472,7 +472,7 @@ bool MainWindow::consumer_sign_in(QString account, QString password)
 bool MainWindow::consumer_sign_up(QString account, QString password)
 {
     if (!this->client->consumer_sign_up(account, password)) {
-        QMessageBox::critical(this, tr("错误"), "注册失败：" + this->client->last_error(), QMessageBox::Ok);
+        MessageBox::critical(this, tr("错误"), "注册失败：" + this->client->last_error());
         return false;
     }
 
@@ -482,7 +482,7 @@ bool MainWindow::consumer_sign_up(QString account, QString password)
 bool MainWindow::submit_creation_table(const std::vector<TangoPair> &tango_pairs)
 {
     if (!this->client->submit_tango_items(tango_pairs)) {
-        QMessageBox::critical(this, tr("错误"), "添加单词失败：" + this->client->last_error(), QMessageBox::Ok);
+        MessageBox::critical(this, tr("错误"), "添加单词失败：" + this->client->last_error());
         return false;
     }
 

@@ -47,6 +47,7 @@ SOURCES += \
         scene/Scene.cpp \
         scene/SelectingScene.cpp \
         types/Logger.cpp \
+        types/MessageBox.cpp \
         types/PairTableItem.cpp \
         types/RetriveMode.cpp \
         types/TangoPair.cpp \
@@ -76,6 +77,7 @@ HEADERS += \
         scene/Scene.h \
         scene/SelectingScene.h \
         types/Logger.h \
+        types/MessageBox.h \
         types/PairTableItem.h \
         types/RetriveMode.h \
         types/TangoPair.h \

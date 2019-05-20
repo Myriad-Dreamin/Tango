@@ -2,6 +2,8 @@
 #include "PlayingScene.h"
 
 #include <algorithm>
+#include <random>
+#include <ctime>
 
 #include <QDebug>
 
@@ -22,6 +24,8 @@
 #include "../types/TimerWidget.h"
 #include "../types/RetriveMode.h"
 
+#include "../types/MessageBox.h"
+
 
 GameAutomation *PlayingScene::default_automate()
 {
@@ -30,9 +34,12 @@ GameAutomation *PlayingScene::default_automate()
 
 GameAutomation *PlayingScene::more_complex_automate()
 {
+    static std::uniform_int_distribution<int> uni_gen(0, (this->parent->client->consumer_level() + 1) << 1);
+    static auto uni_rand = std::bind(uni_gen, std::mt19937(static_cast<unsigned int>(time(nullptr)) * 12345U + 3U));
+
     return this->parent->client->start_game_event(
         &DECREASE_TIMECONFIG,
-        std::max(1, rand() % ((this->parent->client->consumer_level() + 1) << 1)),
+        std::max(1, static_cast<int>(uni_rand())) ,
         RetriveMode::Hard
     );
 }
@@ -45,7 +52,7 @@ std::function<void()> PlayingScene::single_round()
         auto automate = this->more_complex_automate();
 
         if (automate == nullptr) {
-            QMessageBox::critical(this, "错误", this->parent->client->last_error(), QMessageBox::Ok);
+            MessageBox::critical(this, "错误", this->parent->client->last_error());
             return;
         }
 

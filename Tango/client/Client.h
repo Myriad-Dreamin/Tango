@@ -9,6 +9,7 @@
 
 #include "../types/UserStatus.h"
 #include "../types/RetriveMode.h"
+#include "../types/MessageBox.h"
 
 class QTcpSocket;
 class QSqlDatabase;
@@ -122,7 +123,7 @@ private:
     std::function<bool()> _is_connected;
 
     GameAutomation *start_game_event_local(const GameConfig *game_config, int n, RetriveMode mode);
-    bool retrive_tango_items_local(std::vector<TangoPair> &tango_list, int n, RetriveMode mode);
+    bool retrive_tango_items_local(std::vector<TangoPair> &tango_list, int &n, RetriveMode mode);
     int retrive_since_kth_tango_item_local(std::vector<TangoPair> &tango_list, unsigned int k, int n);
     bool retrive_kth_tango_item_local(TangoPair &tp, int k);
     bool settle_game_event_local(const GameAutomation *automate);

@@ -10,6 +10,7 @@
 #include "../mainwindow.h"
 #include "SelectingScene.h"
 #include "../client/Client.h"
+#include "../types/MessageBox.h"
 #include "../types/UserFullInfo.h"
 
 QueryUsersScene::QueryUsersScene(QWidget *parent): Scene(parent)
@@ -87,7 +88,7 @@ QueryUsersScene::QueryUsersScene(QWidget *parent): Scene(parent)
         bool ok;
         int id = this->query_edit->text().toInt(&ok);
         if (!ok) {
-            QMessageBox::critical(this, "错误", "不能将输入转化为整数查询");
+            MessageBox::critical(this, "错误", "不能将输入转化为整数查询");
             return;
         }
 
@@ -111,7 +112,7 @@ QueryUsersScene::QueryUsersScene(QWidget *parent): Scene(parent)
         bool ok;
         int id = this->query_edit->text().toInt(&ok);
         if (!ok) {
-            QMessageBox::critical(this, "错误", "不能将输入转化为整数查询");
+            MessageBox::critical(this, "错误", "不能将输入转化为整数查询");
             return;
         }
 
@@ -151,7 +152,7 @@ bool QueryUsersScene::query_author_by_id(int id)
 {
     UserFullInfo query_container;
     if (!this->parent->client->query_authors_by_id(query_container, id)) {
-        QMessageBox::critical(this, "错误", this->parent->client->last_error());
+        MessageBox::critical(this, "错误", this->parent->client->last_error());
         return false;
     }
 
@@ -170,7 +171,7 @@ bool QueryUsersScene::query_consumer_by_id(int id)
 {
     UserFullInfo query_container;
     if (!this->parent->client->query_consumers_by_id(query_container, id)) {
-        QMessageBox::critical(this, "错误", this->parent->client->last_error());
+        MessageBox::critical(this, "错误", this->parent->client->last_error());
         return false;
     }
 
@@ -189,7 +190,7 @@ bool QueryUsersScene::query_author_by_name(QString name)
 {
     UserFullInfo query_container;
     if (!this->parent->client->query_authors_by_name(query_container, name)) {
-        QMessageBox::critical(this, "错误", this->parent->client->last_error());
+        MessageBox::critical(this, "错误", this->parent->client->last_error());
         return false;
     }
 
@@ -208,7 +209,7 @@ bool QueryUsersScene::query_consumer_by_name(QString name)
 {
     UserFullInfo query_container;
     if (!this->parent->client->query_consumers_by_name(query_container, name)) {
-        QMessageBox::critical(this, "错误", this->parent->client->last_error());
+        MessageBox::critical(this, "错误", this->parent->client->last_error());
         return false;
     }
 

@@ -19,6 +19,7 @@ debug/RegisterScene.o
 debug/Scene.o
 debug/SelectingScene.o
 debug/Logger.o
+debug/MessageBox.o
 debug/PairTableItem.o
 debug/RetriveMode.o
 debug/TangoPair.o
