@@ -17,6 +17,9 @@
 #include "../types/RetriveMode.h"
 #include "../types/UserBriefInfo.h"
 #include "../types/UserFullInfo.h"
+
+#include "../types/MessageBox.h"
+
 #include "GameAutomation.h"
 #include "GameConfig.h"
 

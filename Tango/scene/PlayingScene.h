@@ -32,9 +32,10 @@ private:
     QGridLayout *lay;
     QVBoxLayout *center_lay;
     void settle_game(GameAutomation *automate);
-    GameAutomation *default_automate();
-    GameAutomation *more_complex_automate();
     std::function<void ()> single_round(const std::function<GameAutomation *()> &moder);
+
+    std::function<GameAutomation *()> default_automate();
+    std::function<GameAutomation *()> easy_increment_automate();
 };
 
 #endif // PLAYINGSCENE_H

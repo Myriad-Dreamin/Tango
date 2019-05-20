@@ -27,21 +27,31 @@
 #include "../types/MessageBox.h"
 
 
-GameAutomation *PlayingScene::default_automate()
+std::function<GameAutomation *()> PlayingScene::default_automate()
 {
-    return this->parent->client->start_game_event(game_config, 5, RetriveMode::Hard);
+    return [this]() mutable -> GameAutomation * {
+        return this->parent->client->start_game_event(game_config, 5, RetriveMode::Hard);
+    };
 }
 
-GameAutomation *PlayingScene::more_complex_automate()
+std::function<GameAutomation *()> PlayingScene::easy_increment_automate()
 {
     static std::uniform_int_distribution<int> uni_gen(0, (this->parent->client->consumer_level() + 1) << 1);
     static auto uni_rand = std::bind(uni_gen, std::mt19937(static_cast<unsigned int>(time(nullptr)) * 12345U + 3U));
 
-    return this->parent->client->start_game_event(
-        &DECREASE_TIMECONFIG,
-        std::max(1, static_cast<int>(uni_rand())) ,
-        RetriveMode::Hard
-    );
+    return [this]() mutable -> GameAutomation * {
+        return this->parent->client->start_game_event(
+            &DECREASE_TIMECONFIG,
+            std::max(1, static_cast<int>(uni_rand())) ,
+            RetriveMode::Hard
+        );
+    };
+}
+
+GameAutomation *PlayingScene::easy_increment_automate()
+{
+
+
 }
 
 
@@ -129,6 +139,8 @@ PlayingScene::PlayingScene(QWidget *parent): Scene (parent)
             return this->default_automate();
         })();
     });
+
+
 
     this->lay = new QGridLayout;
     this->lay->addLayout(center_lay, 1, 1, 3, 3);
