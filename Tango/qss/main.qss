@@ -478,35 +478,32 @@ QRadioButton{
         spacing: 5px;
 }
 QRadioButton:enabled{
-        color: rgb(175, 175, 175);
-}
-QRadioButton:enabled:hover{
-        color: rgb(200, 200, 200);
-}
-QRadioButton:!enabled{
         color: rgb(155, 155, 155);
 }
+QRadioButton:!enabled{
+        color: rgb(55, 55, 55);
+}
 QRadioButton::indicator {
-        width: 20px;
-        height: 20px;
+        width: 0px;
+        height: 0px;
 }
-QRadioButton::indicator:unchecked {
-    image: url(:/Black/radioButton);
+QRadioButton:unchecked {
+    color: rgb(105, 105, 105);
 }
-QRadioButton::indicator:unchecked:hover {
-    image: url(:/Black/radioButtonHover);
+QRadioButton:unchecked:hover {
+    color: rgb(155, 155, 155);
 }
-QRadioButton::indicator:unchecked:pressed {
-    image: url(:/Black/radioButtonPressed);
+QRadioButton:unchecked:pressed {
+    color: rgb(222, 222, 222);
 }
-QRadioButton::indicator:checked {
-    image: url(:/Black/radioButtonChecked);
+QRadioButton:checked {
+    color: rgb(195, 195, 195);
 }
-QRadioButton::indicator:checked:hover {
-    image: url(:/Black/radioButtonCheckedHover);
+QRadioButton:checked:hover {
+    color: rgb(222, 222, 222);
 }
-QRadioButton::indicator:checked:pressed {
-    image: url(:/Black/radioButtonCheckedPressed);
+QRadioButton:checked:pressed {
+    color: rgb(244, 244, 244);
 }
 
 /**********输入框**********/
@@ -515,7 +512,6 @@ QLineEdit {
     font-size: 10pt;
     color: white;
     border-radius: 4px;
-    height: 25px;
     border: 1px solid rgb(100, 100, 100);
     background: rgb(72, 72, 73);
 }
