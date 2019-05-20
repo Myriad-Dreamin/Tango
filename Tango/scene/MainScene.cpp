@@ -35,6 +35,7 @@ MainScene::MainScene(QWidget *parent): Scene(parent)
     auto role_lay = new QHBoxLayout;
     role_button = new QPushButton("author!");
     role_lay->addWidget(role_button, 1);
+    role_button->setMinimumSize(400, 32);
 
     auto account_lay = new QHBoxLayout;
     auto account_lab = new QLabel("账户: ");
@@ -49,39 +50,49 @@ MainScene::MainScene(QWidget *parent): Scene(parent)
     password_lay->addWidget(password_edit, 1);
 
     auto buttons_lay = new QHBoxLayout;
-
     buttons_lay->addStretch(1);
 
     sign_in_button = new QPushButton;
     sign_in_button->setText("登录");
-    buttons_lay->addWidget(sign_in_button);
+    sign_in_button->setMinimumHeight(32);
+    buttons_lay->addWidget(sign_in_button, 3);
 
+    buttons_lay->addStretch(1);
     cancel_button = new QPushButton;
     cancel_button->setText("取消");
-    buttons_lay->addWidget(cancel_button);
+    cancel_button->setMinimumHeight(32);
+    buttons_lay->addWidget(cancel_button, 3);
+
+    buttons_lay->addStretch(1);
 
     sign_up_button = new QPushButton;
     sign_up_button->setText("注册");
-    buttons_lay->addWidget(sign_up_button);
+    sign_up_button->setMinimumHeight(32);
+    buttons_lay->addWidget(sign_up_button, 3);
 
     buttons_lay->addStretch(1);
 
     auto main_center_lay = new QVBoxLayout;
-    main_center_lay->addLayout(network_lay);
-    main_center_lay->addLayout(role_lay);
-    main_center_lay->addLayout(account_lay);
-    main_center_lay->addLayout(password_lay);
-    main_center_lay->addLayout(buttons_lay);
+    main_center_lay->addStretch(20);
+    main_center_lay->addLayout(network_lay, 10);
+    main_center_lay->addStretch(1);
+    main_center_lay->addLayout(role_lay, 10);
+    main_center_lay->addStretch(1);
+    main_center_lay->addLayout(account_lay, 10);
+    main_center_lay->addStretch(1);
+    main_center_lay->addLayout(password_lay, 10);
+    main_center_lay->addStretch(1);
+    main_center_lay->addLayout(buttons_lay, 10);
+    main_center_lay->addStretch(20);
 
-    lay = new QGridLayout;
-    lay->addLayout(main_center_lay, 1, 1, 9, 9);
-    lay->setColumnStretch(0, 1);
-    lay->setColumnStretch(10, 1);
-    lay->setRowStretch(10, 1);
-    lay->setRowStretch(0, 1);
+
+    lay = new QHBoxLayout;
+    lay->addStretch(2);
+    lay->addLayout(main_center_lay, 7);
+    lay->addStretch(2);
 
     setLayout(lay);
-
+    this->setMinimumSize(400, 400);
 }
 
 MainScene::~MainScene()

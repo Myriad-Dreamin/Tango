@@ -13,7 +13,7 @@ namespace std
 class MainWindow;
 
 class QLineEdit;
-class QGridLayout;
+class QHBoxLayout;
 
 class QPushButton;
 class QRadioButton;
@@ -40,7 +40,7 @@ public:
     void set_role_button_event(const std::function<void ()> &ev);
 private:
     MainWindow *parent;
-    QGridLayout *lay;
+    QHBoxLayout *lay;
 };
 
 #endif // MAINSCENE_H

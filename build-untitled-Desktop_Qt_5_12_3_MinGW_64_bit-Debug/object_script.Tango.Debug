@@ -12,6 +12,9 @@ debug/MainScene.o
 debug/PlaySettleScene.o
 debug/PlaySubScene.o
 debug/PlayingScene.o
+debug/QueryUsersScene.o
+debug/RankingAuthorsScene.o
+debug/RankingConsumersScene.o
 debug/RegisterScene.o
 debug/Scene.o
 debug/SelectingScene.o
@@ -20,7 +23,10 @@ debug/PairTableItem.o
 debug/RetriveMode.o
 debug/TangoPair.o
 debug/TimerWidget.o
+debug/UserBriefInfo.o
+debug/UserFullInfo.o
 debug/UserStatus.o
+debug/qrc_main.o
 debug/moc_Client.o
 debug/moc_GameAutomation.o
 debug/moc_mainwindow.o
@@ -32,6 +38,9 @@ debug/moc_MainScene.o
 debug/moc_PlaySettleScene.o
 debug/moc_PlaySubScene.o
 debug/moc_PlayingScene.o
+debug/moc_QueryUsersScene.o
+debug/moc_RankingAuthorsScene.o
+debug/moc_RankingConsumersScene.o
 debug/moc_RegisterScene.o
 debug/moc_Scene.o
 debug/moc_SelectingScene.o

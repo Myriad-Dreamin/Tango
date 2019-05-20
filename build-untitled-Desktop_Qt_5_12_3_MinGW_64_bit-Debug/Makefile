@@ -223,7 +223,6 @@ Makefile: ../Tango/Tango.pro E:/Qt5/5.12.3/mingw73_64/mkspecs/win32-g++/qmake.co
 		E:/Qt5/5.12.3/mingw73_64/mkspecs/features/qt_config.prf \
 		E:/Qt5/5.12.3/mingw73_64/mkspecs/win32-g++/qmake.conf \
 		E:/Qt5/5.12.3/mingw73_64/mkspecs/features/spec_post.prf \
-		.qmake.stash \
 		E:/Qt5/5.12.3/mingw73_64/mkspecs/features/exclusive_builds.prf \
 		E:/Qt5/5.12.3/mingw73_64/mkspecs/features/toolchain.prf \
 		E:/Qt5/5.12.3/mingw73_64/mkspecs/features/default_pre.prf \
@@ -414,7 +413,6 @@ E:/Qt5/5.12.3/mingw73_64/mkspecs/features/qt_functions.prf:
 E:/Qt5/5.12.3/mingw73_64/mkspecs/features/qt_config.prf:
 E:/Qt5/5.12.3/mingw73_64/mkspecs/win32-g++/qmake.conf:
 E:/Qt5/5.12.3/mingw73_64/mkspecs/features/spec_post.prf:
-.qmake.stash:
 E:/Qt5/5.12.3/mingw73_64/mkspecs/features/exclusive_builds.prf:
 E:/Qt5/5.12.3/mingw73_64/mkspecs/features/toolchain.prf:
 E:/Qt5/5.12.3/mingw73_64/mkspecs/features/default_pre.prf:
