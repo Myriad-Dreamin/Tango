@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui network
+QT       += core gui network sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -25,17 +25,55 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
-        engine/SocketX.cpp \
+    ../TangoCommon/client/AbstractClient.cpp \
+    ../TangoCommon/client/AbstractGameAutomation.cpp \
+    ../TangoCommon/client/GameAutomation.cpp \
+    ../TangoCommon/client/GameClient.cpp \
+    ../TangoCommon/client/GameConfig.cpp \
+    ../TangoCommon/client/LocalClient.cpp \
+    ../TangoCommon/client/json_rpc.cpp \
+    ../TangoCommon/players/Author.cpp \
+    ../TangoCommon/players/Consumer.cpp \
+    ../TangoCommon/players/player.cpp \
+    ../TangoCommon/types/Logger.cpp \
+    ../TangoCommon/types/MessageBox.cpp \
+    ../TangoCommon/types/PairTableItem.cpp \
+    ../TangoCommon/types/RetriveMode.cpp \
+    ../TangoCommon/types/TangoPair.cpp \
+    ../TangoCommon/types/TimerWidget.cpp \
+    ../TangoCommon/types/UserBriefInfo.cpp \
+    ../TangoCommon/types/UserFullInfo.cpp \
+    ../TangoCommon/types/UserStatus.cpp \
+    ../TangoCommon/network/SocketX.cpp \
         engine/TangoThread.cpp \
         engine/TcpServer.cpp \
         main.cpp \
-        mainwindow.cpp
+        mainwindow.cpp \
 
 HEADERS += \
-        engine/SocketX.h \
+    ../TangoCommon/client/AbstractClient.h \
+    ../TangoCommon/client/AbstractGameAutomation.h \
+    ../TangoCommon/client/GameAutomation.h \
+    ../TangoCommon/client/GameClient.h \
+    ../TangoCommon/client/GameConfig.h \
+    ../TangoCommon/client/LocalClient.h \
+    ../TangoCommon/client/json_rpc.h \
+    ../TangoCommon/players/Author.h \
+    ../TangoCommon/players/Consumer.h \
+    ../TangoCommon/players/Player.h \
+    ../TangoCommon/types/Logger.h \
+    ../TangoCommon/types/MessageBox.h \
+    ../TangoCommon/types/PairTableItem.h \
+    ../TangoCommon/types/RetriveMode.h \
+    ../TangoCommon/types/TangoPair.h \
+    ../TangoCommon/types/TimerWidget.h \
+    ../TangoCommon/types/UserBriefInfo.h \
+    ../TangoCommon/types/UserFullInfo.h \
+    ../TangoCommon/types/UserStatus.h \
+    ../TangoCommon/network/SocketX.h \
         engine/TangoThread.h \
         engine/TcpServer.h \
-        mainwindow.h
+        mainwindow.h \
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

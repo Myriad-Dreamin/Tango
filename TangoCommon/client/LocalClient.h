@@ -11,6 +11,7 @@ class LocalClient : public QObject, public AbstractClient
     Q_OBJECT
 public:
     explicit LocalClient(QObject *parent = nullptr);
+    explicit LocalClient(QSqlDatabase out_link, QObject *parent = nullptr);
     virtual ~LocalClient() override;
 signals:
     /* 连接信号 */
@@ -23,6 +24,7 @@ public:
 
     bool setup_connection();
     bool stop_connection();
+    bool set_handler(QSqlDatabase out_link);
 
     bool author_sign_in(QString account, QString password) override;
     bool author_sign_up(QString account, QString password) override;
@@ -58,8 +60,8 @@ public:
     int consumer_exp() override;
     int consumer_level() override;
 
-    const UserFullInfo consumer_info() override;
-    const UserFullInfo author_info() override;
+    const UserFullInfo &consumer_info() override;
+    const UserFullInfo &author_info() override;
 
     bool create_tables();
 private:

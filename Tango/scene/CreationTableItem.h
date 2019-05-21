@@ -1,7 +1,7 @@
 #ifndef CREATIONTABLEITEM_H
 #define CREATIONTABLEITEM_H
 
-#include "../types/PairTableItem.h"
+#include "../../TangoCommon/types/PairTableItem.h"
 
 class CreationTableItem : public PairTableItem
 {

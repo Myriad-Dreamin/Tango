@@ -12,8 +12,20 @@ MainWindow::MainWindow(QWidget *parent)
 {
     server = new TcpServer(this);
     server->listen(QHostAddress::AnyIPv4,8888);
+    this->make_layers();
     // connect(server, &QTcpServer::newConnection,this,&MainWindow::newCon);
+}
 
+MainWindow::MainWindow(QSqlDatabase &out_link, QWidget *parent)
+    : QMainWindow(parent)
+{
+    server = new TcpServer(out_link, this);
+    server->listen(QHostAddress::AnyIPv4,8888);
+    this->make_layers();
+}
+
+void MainWindow::make_layers()
+{
 
     connect(server, &TcpServer::client_disconnected, [this](qintptr sockDesc) mutable {
         this->text_edit->setText(QString::number(sockDesc));
@@ -60,8 +72,6 @@ MainWindow::MainWindow(QWidget *parent)
     main_wid->setLayout(main_lay);
 
     this->setCentralWidget(main_wid);
-
-
 }
 
 MainWindow::~MainWindow()

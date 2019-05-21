@@ -38,14 +38,14 @@
 #include "scene/QueryUsersScene.h"
 
 /* 自定类型 */
-#include "types/TangoPair.h"
-#include "types/UserStatus.h"
-#include "types/TimerWidget.h"
-#include "types/Logger.h"
-#include "types/MessageBox.h"
+#include "../TangoCommon/types/TangoPair.h"
+#include "../TangoCommon/types/UserStatus.h"
+#include "../TangoCommon/types/TimerWidget.h"
+#include "../TangoCommon/types/Logger.h"
+#include "../TangoCommon/types/MessageBox.h"
 
 /* 客户端代理 */
-#include "client/Client.h"
+#include "../TangoCommon/client/Client.h"
 
 
 MainWindow::MainWindow(QWidget *parent):
@@ -339,6 +339,7 @@ inline bool MainWindow::init_register_scene()
     /* 返回登录界面事件 */
     register_scene->set_return_button_event([this]() mutable {
         qDebug() << "clicked return button" << this->main_scene;
+        this->client->logout();
         this->switch_scene(this->main_scene);
     });
 

@@ -25,7 +25,9 @@ MainScene::MainScene(QWidget *parent): Scene(parent)
     auto network_port_lab = new QLabel("端口: ");
     remote_button = new QRadioButton("远程连接");
     network_edit = new QLineEdit;
+    network_edit->setText("127.0.0.1");
     port_edit = new QLineEdit;
+    port_edit->setText("8888");
     network_lay->addWidget(remote_button);
     network_lay->addWidget(network_host_lab);
     network_lay->addWidget(network_edit, 1);

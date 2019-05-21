@@ -21,7 +21,11 @@ class Author;
 class Consumer;
 
 class GameConfig;
-class GameAutomation;
+class AbstractGameAutomation;
+
+class AbstractClient;
+class LocalClient;
+class RemoteClient;
 
 
 /* 客户端 */
@@ -36,16 +40,6 @@ public:
     bool setup_remote_connection(QHostAddress host_address, quint16 server_port);
     /* 本地登陆 */
     bool setup_local_connection();
-
-    // TODO: check if mode is valid
-    /* 转到远程模式 */
-    void switch_remote_mode();
-    /* 远程模式槽 */
-    std::function<void ()> switch_remote_mode_slottor();
-    /* 转到远程模式 */
-    void switch_local_mode();
-    /* 转到本地模式槽 */
-    std::function<void ()> switch_local_mode_slottor();
 
     /* 作者登录 */
     bool author_sign_in(QString account, QString password);
@@ -75,10 +69,10 @@ public:
      *
      * 返回nullptr如果失败, 否则返回一个可以执行游戏的自动机.
      */
-    GameAutomation *start_game_event(const GameConfig *game_config, int n, RetriveMode mode);
+    AbstractGameAutomation *start_game_event(const GameConfig *game_config, int n, RetriveMode mode);
 
     /* 结算一场游戏 */
-    bool settle_game_event(const GameAutomation *automate);
+    bool settle_game_event(const AbstractGameAutomation *automate);
 
     /*
      * 查询作者简略信息
@@ -153,28 +147,10 @@ public:
     bool consumer_logining();
     bool author_logining();
 private:
+    AbstractClient *handler;
+    LocalClient *local_handler;
+    RemoteClient *remote_handler;
 
-    /* 用户状态 */
-    UserStatus user_status;
-
-    /* author用户handler */
-    class Author *user_author;
-    /* consumer用户handler */
-    class Consumer *user_consumer;
-
-    /* 远程连接地址 */
-    QHostAddress remote_address;
-    /* 远程连接端口 */
-    quint16 remote_port;
-    /* 远程连接handler */
-    QTcpSocket *remote_server;
-    /* 本地连接handler */
-    QSqlDatabase local_handler;
-
-    /* 远程连接是否成功 */
-    bool remote_ready;
-    /* 本地连接是否成功 */
-    bool local_ready;
     /* 最后一个错误 */
     QString _last_error;
 
@@ -184,78 +160,26 @@ private:
     inline void make_remote_server_on_disconnected();
 
     /* 用户本地登录函数组开始 */
-    bool author_sign_in_local(QString account, QString password);
     bool author_sign_in_remote(QString account, QString password);
 
-    bool author_sign_up_local(QString account, QString password);
     bool author_sign_up_remote(QString account, QString password);
 
-    bool consumer_sign_in_local(QString account, QString password);
-    bool consumer_sign_up_local(QString account, QString password);
-
     bool consumer_sign_in_remote(QString account, QString password);
+
     bool consumer_sign_up_remote(QString account, QString password);
     /* 用户本地登录函数组结束 */
 
-    /* 向本地提交一组单词 */
-    bool submit_tango_items_local(const std::vector<TangoPair> &tango_list);
     /* 向远程提交一组单词 */
     bool submit_tango_items_remote(const std::vector<TangoPair> &tango_list);
 
-    /* 本地登出 */
-    bool logout_local();
-    /* 本地同步用户状态 */
-    bool sync_status_local();
 
     /* 断开远程连接 */
-    bool disconnect_to_remote();
+    bool stop_remote_connection();
     /* 断开本地连接 */
-    bool disconnect_to_local();
+    bool stop_local_connection();
 
     /* 创建表格 */
     bool create_tables();
-    inline bool create_author_table();
-    inline bool create_tangos_table();
-    inline bool create_consumer_table();
-
-    /* 本地开始游戏 */
-    GameAutomation *start_game_event_local(const GameConfig *game_config, int n, RetriveMode mode);
-
-    /* 本地获取单词组 [random(), random() + retrive_mode(n) - 1)*/
-    bool retrive_tango_items_local(std::vector<TangoPair> &tango_list, int &n, RetriveMode mode);
-
-    /* 本地获取单词组 [k, k+n-1) */
-    int retrive_since_kth_tango_item_local(std::vector<TangoPair> &tango_list, unsigned int k, int n);
-
-    /* 本地获取第k个单词 */
-    bool retrive_kth_tango_item_local(TangoPair &tp, int k);
-
-    /* 结算游戏 读者经验提升策略 */
-    bool settle_game_event_local(const GameAutomation *automate);
-    /* 结算创造 作者经验提升策略 */
-    bool settle_creation_event_local(const std::vector<TangoPair> &tango_list);
-
-    /* 查询事件 开始 */
-    bool query_authors_brief_info_local(std::vector<UserBriefInfo> &info_list, int l, int r);
-    bool query_authors_by_id_local(UserFullInfo &query_container, int id);
-    bool query_authors_by_name_local(UserFullInfo &query_container, QString name);
-
-    bool query_consumers_brief_info_local(std::vector<UserBriefInfo> &info_list, int l, int r);
-    bool query_consumers_by_id_local(UserFullInfo &query_container, int id);
-    bool query_consumers_by_name_local(UserFullInfo &query_container, QString name);
-
-    bool query_users_local(int &query_count);
-    /* 查询事件 结束 */
-
-    /* 当前mode的函数组 开始 */
-    std::function<bool(QString,QString)> _author_sign_in;
-    std::function<bool(QString,QString)> _author_sign_up;
-    std::function<bool(QString,QString)> _consumer_sign_in;
-    std::function<bool(QString,QString)> _consumer_sign_up;
-    std::function<bool(const std::vector<TangoPair>&)> _submit_tango_items;
-    std::function<bool()> _is_connected;
-    /* 当前mode的函数组 结束 */
-
 signals:
     /* 连接信号 */
     void connected();

@@ -2,6 +2,7 @@
 #define USERFULLINFO_H
 
 #include <QString>
+#include <QJsonArray>
 
 class UserFullInfo
 {
@@ -18,6 +19,8 @@ public:
     int exp;
 
     QString motto;
+    static QJsonArray to_json_array(const UserFullInfo &info);
+    static UserFullInfo from_json_array(const QJsonArray &arr, const int offset=0);
 };
 
 #endif // USERFULLINFO_H

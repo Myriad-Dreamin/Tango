@@ -10,6 +10,7 @@ class Player : public QObject
 
 public:
     Player(QSqlDatabase db_handler=QSqlDatabase::database(), QObject *parent = nullptr);
+    Player(QObject *parent = nullptr);
 
 public:
 

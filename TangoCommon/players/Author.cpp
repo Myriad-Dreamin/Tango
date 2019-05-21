@@ -1,24 +1,32 @@
 
-#include "Consumer.h"
+#include "Author.h"
 
 #include <QDebug>
 #include <QSqlQuery>
 #include <QSqlError>
 
 
-Consumer::Consumer(QSqlDatabase db_handler, QObject *parent): Player(db_handler, parent)
+Author::Author(QSqlDatabase db_handler, QObject *parent): Player(db_handler, parent)
 {
     _last_error = nullptr;
+
 }
 
-Consumer::~Consumer()
+Author::Author(QObject *parent): Player(parent)
+{
+    _last_error = nullptr;
+
+}
+
+
+Author::~Author()
 {
 }
 
-bool Consumer::sign_up_local(QString account, QString password)
+bool Author::sign_up_local(QString account, QString password)
 {
     qDebug() << "account: " << account << "password: " << password;
-    static const char *sign_up_command = "insert into `consumers` (name, password) VALUES (:Name, :Password)";
+    static const char *sign_up_command = "insert into `authors` (name, password) VALUES (:Name, :Password)";
     QSqlQuery query(this->handler);
     query.prepare(sign_up_command);
     query.bindValue(":Name", account);
@@ -33,7 +41,7 @@ bool Consumer::sign_up_local(QString account, QString password)
     return true;
 }
 
-bool Consumer::sign_up_remote(QString account, QString password)
+bool Author::sign_up_remote(QString account, QString password)
 {
     _last_error = "TODO";
     qDebug() << "account: " << account << "password: " << password;
@@ -41,10 +49,10 @@ bool Consumer::sign_up_remote(QString account, QString password)
     return true;
 }
 
-bool Consumer::sign_in_local(QString account, QString password)
+bool Author::sign_in_local(QString account, QString password)
 {
     qDebug() << "account: " << account << "password: " << password;
-    static const char *sign_in_command = "select * from `consumers` where name = :name";
+    static const char *sign_in_command = "select * from `authors` where name = :name";
 
     QSqlQuery query(this->handler);
     query.prepare(sign_in_command);
@@ -79,7 +87,7 @@ bool Consumer::sign_in_local(QString account, QString password)
     return true;
 }
 
-bool Consumer::sign_in_remote(QString account, QString password)
+bool Author::sign_in_remote(QString account, QString password)
 {
     _last_error = "TODO";
     qDebug() << "account: " << account << "password: " << password;
@@ -87,7 +95,7 @@ bool Consumer::sign_in_remote(QString account, QString password)
     return false;
 }
 
-bool Consumer::login_out_local()
+bool Author::login_out_local()
 {
     if (!this->update_full_info_local()) {
         return false;
@@ -96,17 +104,17 @@ bool Consumer::login_out_local()
     return true;
 }
 
-bool Consumer::login_out_remote()
+bool Author::login_out_remote()
 {
     _last_error = "TODO";
 
     return false;
 }
 
-bool Consumer::update_full_info_local()
+bool Author::update_full_info_local()
 {
     static const char *update_command =
-        "update `consumers` set "
+        "update `authors` set "
         "    `exp` = :exp,"
         "    `level` = :level,"
         "    `tango_count` = :tangocount,"
@@ -129,14 +137,14 @@ bool Consumer::update_full_info_local()
     return true;
 }
 
-bool Consumer::update_full_info_remote()
+bool Author::update_full_info_remote()
 {
     _last_error = "TODO";
 
     return false;
 }
 
-const QString Consumer::last_error()
+const QString Author::last_error()
 {
     return this->_last_error;
 }

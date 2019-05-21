@@ -10,6 +10,7 @@ class Consumer : public Player
 {
 public:
     Consumer(QSqlDatabase db_handler, QObject *parent = nullptr);
+    Consumer(QObject *parent = nullptr);
     ~Consumer();
 
     /* 本地登录 */

@@ -9,9 +9,9 @@
 
 #include "../mainwindow.h"
 #include "SelectingScene.h"
-#include "../client/Client.h"
-#include "../types/MessageBox.h"
-#include "../types/UserFullInfo.h"
+#include "../../TangoCommon/client/Client.h"
+#include "../../TangoCommon/types/MessageBox.h"
+#include "../../TangoCommon/types/UserFullInfo.h"
 
 QueryUsersScene::QueryUsersScene(QWidget *parent): Scene(parent)
 {

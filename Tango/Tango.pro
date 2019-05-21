@@ -26,18 +26,30 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
-        client/AbstractClient.cpp \
-        client/AbstractGameAutomation.cpp \
-        client/Client.cpp \
-        client/GameAutomation.cpp \
-        client/GameConfig.cpp \
-        client/LocalClient.cpp \
-        client/RemoteClient.cpp \
+        ../TangoCommon/client/AbstractClient.cpp \
+        ../TangoCommon/client/AbstractGameAutomation.cpp \
+        ../TangoCommon/client/Client.cpp \
+        ../TangoCommon/client/GameAutomation.cpp \
+        ../TangoCommon/client/GameClient.cpp \
+        ../TangoCommon/client/GameConfig.cpp \
+        ../TangoCommon/client/LocalClient.cpp \
+        ../TangoCommon/client/RemoteClient.cpp \
+        ../TangoCommon/client/json_rpc.cpp \
+        ../TangoCommon/network/SocketX.cpp \
+        ../TangoCommon/players/Author.cpp \
+        ../TangoCommon/players/Consumer.cpp \
+        ../TangoCommon/players/player.cpp \
+        ../TangoCommon/types/Logger.cpp \
+        ../TangoCommon/types/MessageBox.cpp \
+        ../TangoCommon/types/PairTableItem.cpp \
+        ../TangoCommon/types/RetriveMode.cpp \
+        ../TangoCommon/types/TangoPair.cpp \
+        ../TangoCommon/types/TimerWidget.cpp \
+        ../TangoCommon/types/UserBriefInfo.cpp \
+        ../TangoCommon/types/UserFullInfo.cpp \
+        ../TangoCommon/types/UserStatus.cpp \
         main.cpp \
         mainwindow.cpp \
-        players/Author.cpp \
-        players/Consumer.cpp \
-        players/Player.cpp \
         scene/CreationScene.cpp \
         scene/CreationTableItem.cpp \
         scene/MainScene.cpp \
@@ -49,29 +61,32 @@ SOURCES += \
         scene/RankingConsumersScene.cpp \
         scene/RegisterScene.cpp \
         scene/Scene.cpp \
-        scene/SelectingScene.cpp \
-        types/Logger.cpp \
-        types/MessageBox.cpp \
-        types/PairTableItem.cpp \
-        types/RetriveMode.cpp \
-        types/TangoPair.cpp \
-        types/TimerWidget.cpp \
-        types/UserBriefInfo.cpp \
-        types/UserFullInfo.cpp \
-        types/UserStatus.cpp
+        scene/SelectingScene.cpp
 
 HEADERS += \
-        client/AbstractClient.h \
-        client/AbstractGameAutomation.h \
-        client/Client.h \
-        client/GameAutomation.h \
-        client/GameConfig.h \
-        client/LocalClient.h \
-        client/RemoteClient.h \
+        ../TangoCommon/client/AbstractClient.h \
+        ../TangoCommon/client/AbstractGameAutomation.h \
+        ../TangoCommon/client/Client.h \
+        ../TangoCommon/client/GameAutomation.h \
+        ../TangoCommon/client/GameClient.h \
+        ../TangoCommon/client/GameConfig.h \
+        ../TangoCommon/client/LocalClient.h \
+        ../TangoCommon/client/RemoteClient.h \
+        ../TangoCommon/client/json_rpc.h \
+        ../TangoCommon/network/SocketX.h \
+        ../TangoCommon/players/Author.h \
+        ../TangoCommon/players/Consumer.h \
+        ../TangoCommon/players/Player.h \
+        ../TangoCommon/types/Logger.h \
+        ../TangoCommon/types/MessageBox.h \
+        ../TangoCommon/types/PairTableItem.h \
+        ../TangoCommon/types/RetriveMode.h \
+        ../TangoCommon/types/TangoPair.h \
+        ../TangoCommon/types/TimerWidget.h \
+        ../TangoCommon/types/UserBriefInfo.h \
+        ../TangoCommon/types/UserFullInfo.h \
+        ../TangoCommon/types/UserStatus.h \
         mainwindow.h \
-        players/Author.h \
-        players/Consumer.h \
-        players/Player.h \
         scene/CreationScene.h \
         scene/CreationTableItem.h \
         scene/MainScene.h \
@@ -83,16 +98,7 @@ HEADERS += \
         scene/RankingConsumersScene.h \
         scene/RegisterScene.h \
         scene/Scene.h \
-        scene/SelectingScene.h \
-        types/Logger.h \
-        types/MessageBox.h \
-        types/PairTableItem.h \
-        types/RetriveMode.h \
-        types/TangoPair.h \
-        types/TimerWidget.h \
-        types/UserBriefInfo.h \
-        types/UserFullInfo.h \
-        types/UserStatus.h
+        scene/SelectingScene.h
 
 FORMS +=
 

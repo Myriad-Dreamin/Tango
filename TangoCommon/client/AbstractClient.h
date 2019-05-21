@@ -123,8 +123,8 @@ public:
     virtual int consumer_level() = 0;
 
     /* 读者信息 */
-    virtual const UserFullInfo consumer_info() = 0;
-    virtual const UserFullInfo author_info() = 0;
+    virtual const UserFullInfo &consumer_info() = 0;
+    virtual const UserFullInfo &author_info() = 0;
 };
 
 #endif // ABSTRACTCLIENT_H

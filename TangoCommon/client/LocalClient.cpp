@@ -23,6 +23,16 @@ LocalClient::LocalClient(QObject *parent): QObject (parent), AbstractClient ()
     handler.setDatabaseName("tango");
     handler.setUserName("tangosql");
     handler.setPassword("123456");
+    this->ready = false;
+}
+
+LocalClient::LocalClient(QSqlDatabase out_link, QObject *parent): QObject (parent), AbstractClient ()
+{
+    this->user_author = nullptr;
+    this->user_consumer = nullptr;
+    this->user_status = UserStatus::None;
+
+    handler = out_link;
     this->ready = true;
 }
 
@@ -53,6 +63,13 @@ bool LocalClient::setup_connection()
     qDebug() << "might be open" << this->handler.isOpen();
     return true;
 }
+
+bool LocalClient::set_handler(QSqlDatabase out_link)
+{
+    this->handler = out_link;
+    return true;
+}
+
 
 bool LocalClient::stop_connection()
 {
@@ -579,13 +596,21 @@ int LocalClient::consumer_level()
     return -1;
 }
 
-const UserFullInfo LocalClient::consumer_info()
+const UserFullInfo &LocalClient::consumer_info()
 {
+    static auto empty_info = UserFullInfo();
+    if (this->user_consumer == nullptr) {
+        return empty_info;
+    }
     return this->user_consumer->user_info;
 }
 
-const UserFullInfo LocalClient::author_info()
+const UserFullInfo &LocalClient::author_info()
 {
+    static auto empty_info = UserFullInfo();
+    if (this->user_author == nullptr) {
+        return empty_info;
+    }
     return this->user_author->user_info;
 }
 

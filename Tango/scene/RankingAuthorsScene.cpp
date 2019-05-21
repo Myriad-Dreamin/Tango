@@ -10,8 +10,8 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include "../mainwindow.h"
-#include "../client/Client.h"
-#include "../types/UserBriefInfo.h"
+#include "../../TangoCommon/client/Client.h"
+#include "../../TangoCommon/types/UserBriefInfo.h"
 
 #include "SelectingScene.h"
 

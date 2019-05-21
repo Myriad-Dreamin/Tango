@@ -12,6 +12,7 @@ class Author : public Player
     Q_OBJECT
 public:
     Author(QSqlDatabase db_handler, QObject *parent = nullptr);
+    Author(QObject *parent = nullptr);
     ~Author();
 
     /* 本地登录 */

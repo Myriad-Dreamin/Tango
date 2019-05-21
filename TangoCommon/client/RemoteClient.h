@@ -4,7 +4,7 @@
 #include "AbstractClient.h"
 #include <QObject>
 #include <QSqlDatabase>
-
+class SocketX;
 
 class RemoteClient : public QObject, public AbstractClient
 {
@@ -56,8 +56,8 @@ public:
     int consumer_exp() override;
     int consumer_level() override;
 
-    const UserFullInfo consumer_info() override;
-    const UserFullInfo author_info() override;
+    const UserFullInfo &consumer_info() override;
+    const UserFullInfo &author_info() override;
 
     bool create_tables();
 private:
@@ -75,7 +75,7 @@ private:
     /* 远程连接端口 */
     quint16 remote_port;
     /* 远程连接handler */
-    QTcpSocket *handler;
+    SocketX *handler;
     QString _last_error;
     void make_server_on_connected();
     void make_server_on_disconnected();

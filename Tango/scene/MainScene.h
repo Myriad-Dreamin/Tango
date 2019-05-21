@@ -2,7 +2,7 @@
 #define MAINSCENE_H
 
 #include "Scene.h"
-#include "../types/UserStatus.h"
+#include "../../TangoCommon/types/UserStatus.h"
 
 namespace std
 {

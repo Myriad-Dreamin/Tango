@@ -26,10 +26,10 @@
 #include "SelectingScene.h"
 
 /* 自定义类型 */
-#include "../types/TangoPair.h"
+#include "../../TangoCommon/types/TangoPair.h"
 #include "CreationTableItem.h"
-#include "../types/MessageBox.h"
-#include "../client/Client.h"
+#include "../../TangoCommon/types/MessageBox.h"
+#include "../../TangoCommon/client/Client.h"
 
 CreationScene::CreationScene(QWidget *parent): Scene(parent)
 {

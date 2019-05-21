@@ -17,14 +17,14 @@
 #include "PlaySubScene.h"
 #include "PlaySettleScene.h"
 #include "../mainwindow.h"
-#include "../client/Client.h"
-#include "../client/GameAutomation.h"
-#include "../client/GameConfig.h"
+#include "../../TangoCommon/client/Client.h"
+#include "../../TangoCommon/client/GameAutomation.h"
+#include "../../TangoCommon/client/GameConfig.h"
 
-#include "../types/TimerWidget.h"
-#include "../types/RetriveMode.h"
+#include "../../TangoCommon/types/TimerWidget.h"
+#include "../../TangoCommon/types/RetriveMode.h"
 
-#include "../types/MessageBox.h"
+#include "../../TangoCommon/types/MessageBox.h"
 
 void easy_increment(int &exp, TangoPair tango, int success_count) {
     exp = exp + static_cast<int>(tango.first.length() * (1 + success_count * 0.01) + 0.99);
