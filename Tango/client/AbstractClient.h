@@ -23,11 +23,6 @@ public:
     AbstractClient();
     virtual ~AbstractClient() = 0;
 
-    /* 连接 */
-    virtual bool setup_connection() = 0;
-    /* 连接 */
-    virtual bool stop_connection() = 0;
-
     /* 作者登录 */
     virtual bool author_sign_in(QString account, QString password) = 0;
     /* 作者注册 */
@@ -41,9 +36,6 @@ public:
     virtual bool logout() = 0;
     /* 本地同步用户状态 */
     virtual bool sync_status() = 0;
-
-    /* 初始化默认词库 */
-    virtual bool init_default_tangos() = 0;
 
     /* 提交一组单词 */
     virtual bool submit_tango_items(const std::vector<TangoPair> &tango_list) = 0;

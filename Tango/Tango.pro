@@ -32,6 +32,7 @@ SOURCES += \
         client/GameAutomation.cpp \
         client/GameConfig.cpp \
         client/LocalClient.cpp \
+        client/RemoteClient.cpp \
         main.cpp \
         mainwindow.cpp \
         players/Author.cpp \
@@ -66,6 +67,7 @@ HEADERS += \
         client/GameAutomation.h \
         client/GameConfig.h \
         client/LocalClient.h \
+        client/RemoteClient.h \
         mainwindow.h \
         players/Author.h \
         players/Consumer.h \

@@ -4,6 +4,7 @@ debug/Client.o
 debug/GameAutomation.o
 debug/GameConfig.o
 debug/LocalClient.o
+debug/RemoteClient.o
 debug/main.o
 debug/mainwindow.o
 debug/Author.o
@@ -35,6 +36,7 @@ debug/moc_AbstractGameAutomation.o
 debug/moc_Client.o
 debug/moc_GameAutomation.o
 debug/moc_LocalClient.o
+debug/moc_RemoteClient.o
 debug/moc_mainwindow.o
 debug/moc_Author.o
 debug/moc_Player.o

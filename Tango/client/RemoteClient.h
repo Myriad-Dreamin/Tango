@@ -1,17 +1,17 @@
-#ifndef LOCALCLIENT_H
-#define LOCALCLIENT_H
+#ifndef REMOTECLIENT_H
+#define REMOTECLIENT_H
 
 #include "AbstractClient.h"
 #include <QObject>
 #include <QSqlDatabase>
 
 
-class LocalClient : public QObject, public AbstractClient
+class RemoteClient : public QObject, public AbstractClient
 {
     Q_OBJECT
 public:
-    explicit LocalClient(QObject *parent = nullptr);
-    virtual ~LocalClient() override;
+    explicit RemoteClient(QObject *parent = nullptr);
+    virtual ~RemoteClient() override;
 signals:
     /* 连接信号 */
     void connected();
@@ -21,7 +21,7 @@ signals:
     // AbstractClient interface
 public:
 
-    bool setup_connection();
+    bool setup_connection(QHostAddress host_address, quint16 server_port);
     bool stop_connection();
 
     bool author_sign_in(QString account, QString password) override;
@@ -31,8 +31,6 @@ public:
 
     bool logout() override;
     bool sync_status() override;
-
-    bool init_default_tangos();
 
     bool submit_tango_items(const std::vector<TangoPair> &tango_list) override;
 
@@ -71,26 +69,16 @@ private:
     /* consumer用户handler */
     class Consumer *user_consumer;
 
-    /* 本地连接handler */
-    QSqlDatabase handler;
     bool ready;
-
+    /* 远程连接地址 */
+    QHostAddress remote_address;
+    /* 远程连接端口 */
+    quint16 remote_port;
+    /* 远程连接handler */
+    QTcpSocket *handler;
     QString _last_error;
-
-    bool create_author_table();
-    bool create_consumer_table();
-    bool create_tangos_table();
-
-    bool _author_sign_in(QString account, QString password);
-    bool _author_sign_up(QString account, QString password);
-    bool _consumer_sign_in(QString account, QString password);
-    bool _consumer_sign_up(QString account, QString password);
-    bool _submit_tango_items(const std::vector<TangoPair> &tango_list);
-    bool settle_creation_event(const std::vector<TangoPair> &tango_list);
-    AbstractGameAutomation *_start_game_event(const GameConfig *game_config, int n, RetriveMode mode);
-    bool retrive_tango_items(std::vector<TangoPair> &tango_list, int &n, RetriveMode mode);
-    int retrive_since_kth_tango_item(std::vector<TangoPair> &tango_list, unsigned int k, int n);
-    bool retrive_kth_tango_item(TangoPair &tp, int k);
+    void make_server_on_connected();
+    void make_server_on_disconnected();
 };
 
-#endif // LOCALCLIENT_H
+#endif // REMOTECLIENT_H

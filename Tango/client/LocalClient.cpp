@@ -23,8 +23,7 @@ LocalClient::LocalClient(QObject *parent): QObject (parent), AbstractClient ()
     handler.setDatabaseName("tango");
     handler.setUserName("tangosql");
     handler.setPassword("123456");
-
-    this->ready = false;
+    this->ready = true;
 }
 
 LocalClient::~LocalClient()
