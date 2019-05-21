@@ -4,6 +4,7 @@
 
 #include "Player.h"
 
+#include "../types/UserFullInfo.h"
 
 class Consumer : public Player
 {
@@ -33,16 +34,7 @@ public:
 
     const QString last_error();
 
-    int user_id;
-    QString name;
-
-    int tango_count;
-    int misson_count;
-
-    int level;
-    int exp;
-
-    QString motto;
+    UserFullInfo user_info;
 
 private:
     QString _last_error;

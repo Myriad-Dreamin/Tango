@@ -426,23 +426,29 @@ QRadioButton::indicator {
         width: 0px;
         height: 0px;
 }
+
 QRadioButton:unchecked {
     color: rgb(105, 105, 105);
 }
+
 QRadioButton:unchecked:hover {
     color: rgb(155, 155, 155);
 }
+
 QRadioButton:unchecked:pressed {
-    color: rgb(222, 222, 222);
-}
-QRadioButton:checked {
-    color: rgb(195, 195, 195);
-}
-QRadioButton:checked:hover {
-    color: rgb(222, 222, 222);
-}
-QRadioButton:checked:pressed {
     color: rgb(244, 244, 244);
+}
+
+QRadioButton:checked {
+    color: rgb(222, 222, 222);
+}
+
+QRadioButton:checked:hover {
+    color: rgb(244, 244, 244);
+}
+
+QRadioButton:checked:pressed {
+    color: rgb(255, 255, 255);
 }
 
 /**********输入框**********/

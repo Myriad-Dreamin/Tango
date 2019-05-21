@@ -24,6 +24,7 @@ void SocketX::make_ready_read_slot(void)
     connect(this, &QIODevice::readyRead, [this]() mutable {
         qDebug() << "new Socket X Data from " << this->peerName() << " " << this->peerAddress() << " " << this->peerPort();
         QByteArray data = readAll();
+        qDebug() << "retriving data" << data;
         emit this->data_ready(peerAddress().toString().remove(0, 7), data);
     });
 }

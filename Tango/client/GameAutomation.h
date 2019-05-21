@@ -16,6 +16,8 @@ class GameAutomation : public QObject
 {
     Q_OBJECT
     friend class Client;
+    friend class AbstractClient;
+    friend class LocalClient;
 public:
     explicit GameAutomation(const GameConfig *game_config=&DEFAULT_CONFIG, QObject *parent = nullptr);
     ~GameAutomation();

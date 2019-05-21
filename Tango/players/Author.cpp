@@ -10,14 +10,6 @@ Author::Author(QSqlDatabase db_handler, QObject *parent): Player(db_handler, par
 {
     _last_error = nullptr;
 
-    this->user_id = 0;
-    this->tango_count = 0;
-    this->level = 0;
-    this->misson_count = 0;
-    this->exp = 0;
-
-    this->name = "";
-    this->motto = "";
 }
 
 Author::~Author()
@@ -77,13 +69,13 @@ bool Author::sign_in_local(QString account, QString password)
         return false;
     }
 
-    this->user_id = query.value(0).toInt();
-    this->name = query.value(1).toString();
-    this->exp = query.value(3).toInt();
-    this->level = query.value(4).toInt();
-    this->tango_count = query.value(5).toInt();
-    this->misson_count = query.value(6).toInt();
-    this->motto = query.value(7).toString();
+    this->user_info.user_id = query.value(0).toInt();
+    this->user_info.name = query.value(1).toString();
+    this->user_info.exp = query.value(3).toInt();
+    this->user_info.level = query.value(4).toInt();
+    this->user_info.tango_count = query.value(5).toInt();
+    this->user_info.misson_count = query.value(6).toInt();
+    this->user_info.motto = query.value(7).toString();
 
     return true;
 }
@@ -124,11 +116,11 @@ bool Author::update_full_info_local()
 
     QSqlQuery query(this->handler);
     query.prepare(update_command);
-    query.bindValue(":id", this->user_id);
-    query.bindValue(":exp", this->exp);
-    query.bindValue(":level", this->level);
-    query.bindValue(":tangocount", this->tango_count);
-    query.bindValue(":missoncount", this->misson_count);
+    query.bindValue(":id", this->user_info.user_id);
+    query.bindValue(":exp", this->user_info.exp);
+    query.bindValue(":level", this->user_info.level);
+    query.bindValue(":tangocount", this->user_info.tango_count);
+    query.bindValue(":missoncount", this->user_info.misson_count);
 
     if (query.exec() == false) {
         _last_error = query.lastError().text();

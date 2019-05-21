@@ -3,7 +3,7 @@
 
 #include "Player.h"
 
-
+#include "../types/UserFullInfo.h"
 class QSqlError;
 
 /* 作者类 */
@@ -36,16 +36,7 @@ public:
 
     const QString last_error();
 
-    int user_id;
-    QString name;
-
-    int tango_count;
-    int misson_count;
-
-    int level;
-    int exp;
-
-    QString motto;
+    UserFullInfo user_info;
 
 private:
     QString _last_error;

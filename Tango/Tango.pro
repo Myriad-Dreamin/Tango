@@ -26,9 +26,11 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
+        client/AbstractClient.cpp \
         client/Client.cpp \
         client/GameAutomation.cpp \
         client/GameConfig.cpp \
+        client/LocalClient.cpp \
         main.cpp \
         mainwindow.cpp \
         players/Author.cpp \
@@ -57,9 +59,11 @@ SOURCES += \
         types/UserStatus.cpp
 
 HEADERS += \
+        client/AbstractClient.h \
         client/Client.h \
         client/GameAutomation.h \
         client/GameConfig.h \
+        client/LocalClient.h \
         mainwindow.h \
         players/Author.h \
         players/Consumer.h \

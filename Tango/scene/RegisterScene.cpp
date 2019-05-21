@@ -26,9 +26,6 @@ RegisterScene::RegisterScene(QWidget *parent): Scene(parent)
     remote_button = new QRadioButton("远程连接");
     network_edit = new QLineEdit;
     port_edit = new QLineEdit;
-    remote_button->setEnabled(false);
-    network_edit->setEnabled(false);
-    port_edit->setEnabled(false);
     network_lay->addWidget(remote_button);
     network_lay->addWidget(network_host_lab);
     network_lay->addWidget(network_edit, 1);
