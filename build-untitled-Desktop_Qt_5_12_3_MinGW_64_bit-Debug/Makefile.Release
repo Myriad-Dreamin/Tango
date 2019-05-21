@@ -3113,7 +3113,20 @@ release/CreationScene.o: ../Tango/scene/CreationScene.cpp ../Tango/scene/Creatio
 		../Tango/types/MessageBox.h \
 		E:/Qt5/5.12.3/mingw73_64/include/QtWidgets/QMessageBox \
 		E:/Qt5/5.12.3/mingw73_64/include/QtWidgets/qmessagebox.h \
-		E:/Qt5/5.12.3/mingw73_64/include/QtWidgets/qdialog.h
+		E:/Qt5/5.12.3/mingw73_64/include/QtWidgets/qdialog.h \
+		../Tango/client/Client.h \
+		E:/Qt5/5.12.3/mingw73_64/include/QtCore/QObject \
+		E:/Qt5/5.12.3/mingw73_64/include/QtNetwork/QHostAddress \
+		E:/Qt5/5.12.3/mingw73_64/include/QtNetwork/qhostaddress.h \
+		E:/Qt5/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
+		E:/Qt5/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
+		E:/Qt5/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
+		E:/Qt5/5.12.3/mingw73_64/include/QtSql/QSqlDatabase \
+		E:/Qt5/5.12.3/mingw73_64/include/QtSql/qsqldatabase.h \
+		E:/Qt5/5.12.3/mingw73_64/include/QtSql/qtsqlglobal.h \
+		E:/Qt5/5.12.3/mingw73_64/include/QtSql/qtsql-config.h \
+		../Tango/types/UserStatus.h \
+		../Tango/types/RetriveMode.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release/CreationScene.o ../Tango/scene/CreationScene.cpp
 
 release/CreationTableItem.o: ../Tango/scene/CreationTableItem.cpp ../Tango/scene/CreationTableItem.h \

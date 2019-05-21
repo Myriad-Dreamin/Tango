@@ -2,6 +2,7 @@
 #include "CreationScene.h"
 
 /* 标准库 */
+#include <cctype>
 #include <vector>
 #include <functional>
 
@@ -71,6 +72,49 @@ CreationScene::CreationScene(QWidget *parent): Scene(parent)
     lay->setRowStretch(0, 1);
 
     setLayout(lay);
+}
+
+/*
+#undef isalnum
+#undef isalpha
+#undef iscntrl
+#undef isdigit
+#undef isgraph
+#undef islower
+#undef isprint
+#undef ispunct
+#undef isspace
+#undef isupper
+#undef isxdigit
+#undef tolower
+#undef toupper
+*/
+bool is_legal(QCharRef x) {
+    return x.isLetter() || x.isSpace();
+}
+
+bool tango_en_check(QString tango, QString &err_info) {
+    int block_check=0;
+    if (tango.length() > 0 && (tango[0] == ' ' || tango[tango.length() - 1] == ' ')) {
+        err_info = "首尾不能有空格";
+        return false;
+    }
+    for (int i = 0; i < tango.length(); i++) {
+        if (!is_legal(tango[i])) {
+            err_info = "存在不合法字符";
+            return false;
+        }
+        if (tango[i] == ' ') {
+            block_check++;
+        } else {
+            block_check = 0;
+        }
+        if (block_check > 1) {
+            err_info = "空格不能连续超过两个";
+            return false;
+        }
+    }
+    return true;
 }
 
 CreationScene::~CreationScene()
@@ -173,6 +217,11 @@ void CreationScene::try_submit_tangos()
         qDebug() << "getting" << item;
         if (item->first->text().isEmpty() || item->second->text().isEmpty()) {
             MessageBox::critical(this->parent, tr("错误"), "有空的单词格未填写");
+            return ;
+        }
+        QString err;
+        if (!tango_en_check(item->first->text(), err)) {
+            MessageBox::critical(this->parent, tr("单词合法性检查未通过"), err);
             return ;
         }
     }
