@@ -55,6 +55,17 @@ bool LocalClient::setup_connection()
     return true;
 }
 
+bool LocalClient::stop_connection()
+{
+    if (this->ready) {
+        handler.close();
+
+        return true;
+    }
+
+    return true;
+}
+
 bool LocalClient::author_sign_in(QString account, QString password)
 {
     if (user_status_util::has_author_status(this->user_status)) {
@@ -291,7 +302,7 @@ bool LocalClient::submit_tango_items(const std::vector<TangoPair> &tango_list)
     return this->_submit_tango_items(tango_list);
 }
 
-GameAutomation *LocalClient::start_game_event(const GameConfig *game_config, int n, RetriveMode mode)
+AbstractGameAutomation *LocalClient::start_game_event(const GameConfig *game_config, int n, RetriveMode mode)
 {
     if (!user_status_util::has_consumer_status(this->user_status)) {
         this->_last_error = "consumer doesn't sign in";
@@ -300,7 +311,7 @@ GameAutomation *LocalClient::start_game_event(const GameConfig *game_config, int
     return _start_game_event(game_config, n, mode);
 }
 
-bool LocalClient::settle_game_event(const GameAutomation *automate)
+bool LocalClient::settle_game_event(const AbstractGameAutomation *automate)
 {
     qDebug() << this->user_consumer << this->user_consumer->user_info.misson_count << this->user_consumer->user_info.exp << this->user_consumer->user_info.tango_count << this->user_consumer->user_info.level;
     if (static_cast<unsigned int>(automate->success_count) < automate->tango_pool->size()) {
@@ -312,6 +323,7 @@ bool LocalClient::settle_game_event(const GameAutomation *automate)
         this->user_consumer->user_info.exp -= this->user_consumer->user_info.level * 10 + 10;
         this->user_consumer->user_info.level++;
     }
+    qDebug() << this->user_consumer << this->user_consumer->user_info.misson_count << this->user_consumer->user_info.exp << this->user_consumer->user_info.tango_count << this->user_consumer->user_info.level;
     return true;
 }
 
@@ -578,7 +590,7 @@ const UserFullInfo LocalClient::author_info()
     return this->user_author->user_info;
 }
 
-GameAutomation *LocalClient::_start_game_event(const GameConfig *game_config, int n, RetriveMode mode)
+AbstractGameAutomation *LocalClient::_start_game_event(const GameConfig *game_config, int n, RetriveMode mode)
 {
     std::vector<TangoPair> tango_list;
     tango_list.reserve(static_cast<unsigned int>(n));

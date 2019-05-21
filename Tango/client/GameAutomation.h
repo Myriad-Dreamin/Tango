@@ -5,6 +5,7 @@
 #include <functional>
 #include "GameConfig.h"
 #include <QTimer>
+#include "AbstractGameAutomation.h"
 #include "../types/TangoPair.h"
 
 class GameClient;
@@ -12,7 +13,7 @@ class TangoPair;
 
 
 /* 游戏自动机 */
-class GameAutomation : public QObject
+class GameAutomation :public AbstractGameAutomation
 {
     Q_OBJECT
     friend class Client;
@@ -29,26 +30,8 @@ public:
 // c++ style public slots:
     std::function<void ()> make_answer_success_slotter();
     std::function<void ()> make_stop_slotter();
-signals:
-    void start_game();
-    void elasped();
-    void new_tango(TangoPair);
-    void tango_faded();
-    void answer_failed();
-    void success();
-    void failed();
 private:
     GameClient *client;
-
-    bool prepared;
-    std::vector<TangoPair> *tango_pool;
-    int fade_time, ans_time, success_count;
-    int exp;
-    unsigned int select_ptr;
-    const GameConfig *config;
-    QString _last_error;
-    QTimer *timer, *elasped_timer;
-
 //    std::function<void()> elasped_event;
 //    std::function<void(TangoPair)> new_tango_event;
 //    std::function<void()> tango_faded_event;

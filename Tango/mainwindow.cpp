@@ -307,7 +307,7 @@ inline bool MainWindow::init_register_scene()
                 }
                 qDebug() << "querying" << query_count;
                 if (query_count > 0) {
-                    if (!this->client->init_default_tangosf()) {
+                    if (!this->client->init_default_tangos()) {
                         MessageBox::critical(this, tr("初始化词库失败"), this->client->last_error());
                         return;
                     }

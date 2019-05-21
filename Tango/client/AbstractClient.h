@@ -15,7 +15,7 @@ class UserBriefInfo;
 class UserFullInfo;
 
 class GameConfig;
-class GameAutomation;
+class AbstractGameAutomation;
 
 class AbstractClient
 {
@@ -25,6 +25,8 @@ public:
 
     /* 连接 */
     virtual bool setup_connection() = 0;
+    /* 连接 */
+    virtual bool stop_connection() = 0;
 
     /* 作者登录 */
     virtual bool author_sign_in(QString account, QString password) = 0;
@@ -42,8 +44,6 @@ public:
 
     /* 初始化默认词库 */
     virtual bool init_default_tangos() = 0;
-    /* QT bug, init_default_tangos不能被自动链接 */
-    virtual bool init_default_tangosf() = 0;
 
     /* 提交一组单词 */
     virtual bool submit_tango_items(const std::vector<TangoPair> &tango_list) = 0;
@@ -55,10 +55,10 @@ public:
      *
      * 返回nullptr如果失败, 否则返回一个可以执行游戏的自动机.
      */
-    virtual GameAutomation *start_game_event(const GameConfig *game_config, int n, RetriveMode mode) = 0;
+    virtual AbstractGameAutomation *start_game_event(const GameConfig *game_config, int n, RetriveMode mode) = 0;
 
     /* 结算一场游戏 */
-    virtual bool settle_game_event(const GameAutomation *automate) = 0;
+    virtual bool settle_game_event(const AbstractGameAutomation *automate) = 0;
 
     /*
      * 查询作者简略信息

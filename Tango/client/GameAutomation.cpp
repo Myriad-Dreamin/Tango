@@ -11,7 +11,7 @@
 
 #include "GameClient.h"
 
-GameAutomation::GameAutomation(const GameConfig *game_config, QObject *parent): QObject(parent)
+GameAutomation::GameAutomation(const GameConfig *game_config, QObject *parent): AbstractGameAutomation(parent)
 {
     this->clear_state();
     this->set_config(game_config);
@@ -72,12 +72,12 @@ bool GameAutomation::start()
     this->setup_automation();
     if (this->config->enable_elasped) {
         connect(this->elasped_timer, &QTimer::timeout, [this]() mutable {
-            emit this->elasped();
+            emit AbstractGameAutomation::elasped();
         });
         this->elasped_timer->start(100);
         qDebug() << "timer";
     }
-    emit this->start_game();
+    emit AbstractGameAutomation::start_game();
 
     return true;
 }
@@ -119,10 +119,10 @@ void GameAutomation::select_new_tango()
 {
     qDebug() << "new tango" << this->select_ptr << this->tango_pool->size();
     if (this->select_ptr >= this->tango_pool->size()) {
-        emit this->success();
+        emit AbstractGameAutomation::success();
     } else {
         qDebug() << "selecting " << (*this->tango_pool)[this->select_ptr];
-        emit this->new_tango((*this->tango_pool)[this->select_ptr++]);
+        emit AbstractGameAutomation::new_tango((*this->tango_pool)[this->select_ptr++]);
 
         disconnect(this->timer, nullptr, nullptr, nullptr);
         connect(this->timer, &QTimer::timeout, [this]() mutable {
@@ -137,12 +137,12 @@ void GameAutomation::select_new_tango()
 
 void GameAutomation::make_faded_event()
 {
-    emit this->tango_faded();
+    emit AbstractGameAutomation::tango_faded();
     disconnect(this->timer, nullptr, nullptr, nullptr);
     connect(this->timer, &QTimer::timeout, [this]() mutable {
-        emit this->answer_failed();
+        emit AbstractGameAutomation::answer_failed();
         if (this->config->if_failed_functor()) {
-            emit this->failed();
+            emit AbstractGameAutomation::failed();
         } else {
             this->select_ptr--;
             this->select_new_tango();
@@ -164,7 +164,7 @@ std::function<void()> GameAutomation::make_answer_success_slotter()
 std::function<void()> GameAutomation::make_stop_slotter()
 {
     return [this]() mutable {
-        emit this->failed();
+        emit AbstractGameAutomation::failed();
     };
 }
 

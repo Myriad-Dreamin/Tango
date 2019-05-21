@@ -30,13 +30,13 @@ void easy_increment(int &exp, TangoPair tango, int success_count) {
     exp = exp + static_cast<int>(tango.first.length() * (1 + success_count * 0.01) + 0.99);
 }
 
-std::function<GameAutomation *()> PlayingScene::default_automate()
+std::function<AbstractGameAutomation *()> PlayingScene::default_automate()
 {
     if (game_config != nullptr) {
         delete game_config;
     }
     game_config = new GameConfig();
-    return [this]() mutable -> GameAutomation * {
+    return [this]() mutable -> AbstractGameAutomation * {
         return this->parent->client->start_game_event(game_config, 5, RetriveMode::Hard);
     };
 }
@@ -46,7 +46,7 @@ void normal_increment(int &exp, TangoPair tango, int success_count)
     exp = exp + static_cast<int>(tango.first.length() * (1.2 + success_count * 0.02) + 0.99);
 }
 
-std::function<GameAutomation *()> PlayingScene::easy_increment_automate()
+std::function<AbstractGameAutomation *()> PlayingScene::easy_increment_automate()
 {
     std::uniform_int_distribution<int> uni_gen(
         0,
@@ -65,7 +65,7 @@ std::function<GameAutomation *()> PlayingScene::easy_increment_automate()
         easy_increment
     );
 
-    return [this, uni_rand]() mutable -> GameAutomation * {
+    return [this, uni_rand]() mutable -> AbstractGameAutomation * {
         return this->parent->client->start_game_event(
             this->game_config,
             std::max(1, static_cast<int>(uni_rand())) ,
@@ -79,7 +79,7 @@ void normal_increment_automate(int &exp, TangoPair tango, int success_count)
     exp = exp + static_cast<int>(tango.first.length() * (1.2 + success_count * 0.02) + 0.99);
 }
 
-std::function<GameAutomation *()> PlayingScene::normal_increment_automate()
+std::function<AbstractGameAutomation *()> PlayingScene::normal_increment_automate()
 {
     std::uniform_int_distribution<int> uni_gen(
         31 - (30 + this->parent->client->consumer_level())/(this->parent->client->consumer_level() + 1),
@@ -98,7 +98,7 @@ std::function<GameAutomation *()> PlayingScene::normal_increment_automate()
         easy_increment
     );
 
-    return [this, uni_rand]() mutable -> GameAutomation * {
+    return [this, uni_rand]() mutable -> AbstractGameAutomation * {
         return this->parent->client->start_game_event(
             this->game_config,
             std::max(1, static_cast<int>(uni_rand())) ,
@@ -111,7 +111,7 @@ void hard_increment(int &exp, TangoPair tango, int success_count)
     exp = exp + static_cast<int>(tango.first.length() * (1.4 + success_count * 0.03) + 0.99);
 }
 
-std::function<GameAutomation *()> PlayingScene::hard_increment_automate()
+std::function<AbstractGameAutomation *()> PlayingScene::hard_increment_automate()
 {
      std::uniform_int_distribution<int> uni_gen(
          51 - (50 + this->parent->client->consumer_level())/(this->parent->client->consumer_level() + 1),
@@ -130,7 +130,7 @@ std::function<GameAutomation *()> PlayingScene::hard_increment_automate()
          easy_increment
      );
 
-    return [this, uni_rand]() mutable -> GameAutomation * {
+    return [this, uni_rand]() mutable -> AbstractGameAutomation * {
         return this->parent->client->start_game_event(
             game_config,
             std::max(1, static_cast<int>(uni_rand())) ,
@@ -146,7 +146,7 @@ std::function<GameAutomation *()> PlayingScene::hard_increment_automate()
 //}
 
 
-std::function<void()> PlayingScene::single_round(const std::function<GameAutomation*()> &moder)
+std::function<void()> PlayingScene::single_round(const std::function<AbstractGameAutomation*()> &moder)
 {
     return [this, moder]() mutable {
 
@@ -213,7 +213,7 @@ std::function<void()> PlayingScene::single_round(const std::function<GameAutomat
     };
 }
 
-std::function<void()> PlayingScene::single_round_must_done(const std::function<GameAutomation*()> &moder)
+std::function<void()> PlayingScene::single_round_must_done(const std::function<AbstractGameAutomation*()> &moder)
 {
     return [this, moder]() mutable {
 
@@ -337,7 +337,7 @@ PlayingScene::~PlayingScene()
     delete game_config;
 }
 
-void PlayingScene::settle_game(GameAutomation *automate)
+void PlayingScene::settle_game(AbstractGameAutomation *automate)
 {
     qDebug() << "setting...";
     disconnect(this->parent->playsub_scene->answer_button, nullptr, nullptr, nullptr);
@@ -367,7 +367,7 @@ void PlayingScene::settle_game(GameAutomation *automate)
     this->parent->playsub_scene->user_ret->setText("");
 }
 
-void PlayingScene::abort_game(GameAutomation *automate)
+void PlayingScene::abort_game(AbstractGameAutomation *automate)
 {
     qDebug() << "setting...";
     disconnect(this->parent->playsub_scene->answer_button, nullptr, nullptr, nullptr);

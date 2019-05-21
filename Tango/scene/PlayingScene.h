@@ -11,7 +11,7 @@ class QVBoxLayout;
 class QGridLayout;
 class QLineEdit;
 class GameConfig;
-class GameAutomation;
+class AbstractGameAutomation;
 
 
 class PlayingScene : public Scene
@@ -33,15 +33,15 @@ private:
     GameConfig *game_config;
     QGridLayout *lay;
     QVBoxLayout *center_lay;
-    void settle_game(GameAutomation *automate);
-    void abort_game(GameAutomation *automate);
-    std::function<void ()> single_round(const std::function<GameAutomation *()> &moder);
-    std::function<void ()> single_round_must_done(const std::function<GameAutomation *()> &moder);
+    void settle_game(AbstractGameAutomation *automate);
+    void abort_game(AbstractGameAutomation *automate);
+    std::function<void ()> single_round(const std::function<AbstractGameAutomation *()> &moder);
+    std::function<void ()> single_round_must_done(const std::function<AbstractGameAutomation *()> &moder);
 
-    std::function<GameAutomation *()> default_automate();
-    std::function<GameAutomation *()> easy_increment_automate();
-    std::function<GameAutomation *()> normal_increment_automate();
-    std::function<GameAutomation *()> hard_increment_automate();
+    std::function<AbstractGameAutomation *()> default_automate();
+    std::function<AbstractGameAutomation *()> easy_increment_automate();
+    std::function<AbstractGameAutomation *()> normal_increment_automate();
+    std::function<AbstractGameAutomation *()> hard_increment_automate();
 };
 
 #endif // PLAYINGSCENE_H

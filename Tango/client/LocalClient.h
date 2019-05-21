@@ -22,6 +22,7 @@ signals:
 public:
 
     bool setup_connection() override;
+    bool stop_connection() override;
 
     bool author_sign_in(QString account, QString password) override;
     bool author_sign_up(QString account, QString password) override;
@@ -35,8 +36,8 @@ public:
 
     bool submit_tango_items(const std::vector<TangoPair> &tango_list) override;
 
-    GameAutomation *start_game_event(const GameConfig *game_config, int n, RetriveMode mode) override;
-    bool settle_game_event(const GameAutomation *automate) override;
+    AbstractGameAutomation *start_game_event(const GameConfig *game_config, int n, RetriveMode mode) override;
+    bool settle_game_event(const AbstractGameAutomation *automate) override;
 
     bool query_authors_brief_info(std::vector<UserBriefInfo> &info_list, int l, int r) override;
     bool query_consumers_brief_info(std::vector<UserBriefInfo> &info_list, int l, int r) override;
@@ -59,6 +60,8 @@ public:
 
     const UserFullInfo consumer_info() override;
     const UserFullInfo author_info() override;
+
+    bool create_tables();
 private:
     /* 用户状态 */
     UserStatus user_status;
@@ -74,7 +77,6 @@ private:
 
     QString _last_error;
 
-    bool create_tables();
     bool create_author_table();
     bool create_consumer_table();
     bool create_tangos_table();
@@ -85,7 +87,7 @@ private:
     bool _consumer_sign_up(QString account, QString password);
     bool _submit_tango_items(const std::vector<TangoPair> &tango_list);
     bool settle_creation_event(const std::vector<TangoPair> &tango_list);
-    GameAutomation *_start_game_event(const GameConfig *game_config, int n, RetriveMode mode);
+    AbstractGameAutomation *_start_game_event(const GameConfig *game_config, int n, RetriveMode mode);
     bool retrive_tango_items(std::vector<TangoPair> &tango_list, int &n, RetriveMode mode);
     int retrive_since_kth_tango_item(std::vector<TangoPair> &tango_list, unsigned int k, int n);
     bool retrive_kth_tango_item(TangoPair &tp, int k);

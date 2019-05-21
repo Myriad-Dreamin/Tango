@@ -1,4 +1,5 @@
 debug/AbstractClient.o
+debug/AbstractGameAutomation.o
 debug/Client.o
 debug/GameAutomation.o
 debug/GameConfig.o
@@ -30,6 +31,7 @@ debug/UserBriefInfo.o
 debug/UserFullInfo.o
 debug/UserStatus.o
 debug/qrc_main.o
+debug/moc_AbstractGameAutomation.o
 debug/moc_Client.o
 debug/moc_GameAutomation.o
 debug/moc_LocalClient.o

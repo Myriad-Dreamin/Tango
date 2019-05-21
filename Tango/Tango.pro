@@ -27,6 +27,7 @@ CONFIG += c++11
 
 SOURCES += \
         client/AbstractClient.cpp \
+        client/AbstractGameAutomation.cpp \
         client/Client.cpp \
         client/GameAutomation.cpp \
         client/GameConfig.cpp \
@@ -60,6 +61,7 @@ SOURCES += \
 
 HEADERS += \
         client/AbstractClient.h \
+        client/AbstractGameAutomation.h \
         client/Client.h \
         client/GameAutomation.h \
         client/GameConfig.h \
