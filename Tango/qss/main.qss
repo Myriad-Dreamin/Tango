@@ -420,7 +420,7 @@ QRadioButton:enabled{
         color: rgb(155, 155, 155);
 }
 QRadioButton:!enabled{
-        color: rgb(55, 55, 55);
+    color: rgb(105, 105, 105);
 }
 QRadioButton::indicator {
         width: 0px;
