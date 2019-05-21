@@ -13,7 +13,7 @@ namespace std
 class MainWindow;
 
 class QLineEdit;
-class QGridLayout;
+class QHBoxLayout;
 class QPushButton;
 class QRadioButton;
 
@@ -39,7 +39,7 @@ public:
 
 private:
     MainWindow *parent;
-    QGridLayout *lay;
+    QHBoxLayout *lay;
 };
 
 #endif // REGISTERSCENE_H

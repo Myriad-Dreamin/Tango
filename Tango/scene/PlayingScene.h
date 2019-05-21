@@ -24,7 +24,9 @@ public:
 
 private:
     QPushButton *trial_button;
+    QPushButton *easy_button;
     QPushButton *normal_button;
+    QPushButton *hard_button;
     QPushButton *endless_button;
 
     MainWindow *parent;
@@ -32,10 +34,14 @@ private:
     QGridLayout *lay;
     QVBoxLayout *center_lay;
     void settle_game(GameAutomation *automate);
+    void abort_game(GameAutomation *automate);
     std::function<void ()> single_round(const std::function<GameAutomation *()> &moder);
+    std::function<void ()> single_round_must_done(const std::function<GameAutomation *()> &moder);
 
     std::function<GameAutomation *()> default_automate();
     std::function<GameAutomation *()> easy_increment_automate();
+    std::function<GameAutomation *()> normal_increment_automate();
+    std::function<GameAutomation *()> hard_increment_automate();
 };
 
 #endif // PLAYINGSCENE_H

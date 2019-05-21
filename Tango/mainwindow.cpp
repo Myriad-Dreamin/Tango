@@ -186,14 +186,14 @@ inline bool MainWindow::init_main_scene()
             quint16 server_port = quint16(this->main_scene->port_edit->text().toShort());
 
             if (!this->client->setup_remote_connection(host_address, server_port)) {
-                MessageBox::critical(this, tr("错误"), this->client->last_error());
+                MessageBox::critical(this, tr("远程连接失败"), this->client->last_error());
                 return;
             }
         } else {
             qDebug() << "not checked";
 
             if (!this->client->setup_local_connection()) {
-                MessageBox::critical(this, tr("错误"), this->client->last_error());
+                MessageBox::critical(this, tr("本地连接失败"), this->client->last_error());
                 return;
             }
         }
@@ -207,6 +207,7 @@ inline bool MainWindow::init_main_scene()
         }
 
         if (sign_in_success) {
+            this->selecting_scene->set_visble_buttons();
             this->switch_scene(this->selecting_scene);
         }
     });
@@ -277,14 +278,14 @@ inline bool MainWindow::init_register_scene()
             quint16 server_port = quint16(this->register_scene->port_edit->text().toShort());
 
             if (!this->client->setup_remote_connection(host_address, server_port)) {
-                MessageBox::critical(this, tr("错误"), this->client->last_error());
+                MessageBox::critical(this, tr("远程连接失败"), this->client->last_error());
                 return;
             }
         } else {
             qDebug() << "not checked";
 
             if (!this->client->setup_local_connection()) {
-                MessageBox::critical(this, tr("错误"), this->client->last_error());
+                MessageBox::critical(this, tr("本地连接失败"), this->client->last_error());
                 return;
             }
         }
@@ -298,6 +299,22 @@ inline bool MainWindow::init_register_scene()
         }
 
         if (sign_up_success) {
+            if (!this->register_scene->remote_button->isChecked()) {
+                int query_count;
+                if (!this->client->query_users(query_count)) {
+                    MessageBox::critical(this, tr("查询用户总量失败"), this->client->last_error());
+                    return;
+                }
+                qDebug() << "querying" << query_count;
+                if (query_count > 0) {
+                    if (!this->client->init_default_tangosf()) {
+                        MessageBox::critical(this, tr("初始化词库失败"), this->client->last_error());
+                        return;
+                    }
+                }
+            }
+
+            this->selecting_scene->set_visble_buttons();
             this->switch_scene(this->selecting_scene);
         }
     });
@@ -366,6 +383,13 @@ inline bool MainWindow::init_selecting_scene()
         qDebug() << "clicked player list button";
 
         this->switch_scene(this->query_users_scene);
+    });
+
+    this->selecting_scene->set_return_button_event([this]() mutable {
+        qDebug() << "clicked return button";
+
+        this->client->logout();
+        this->switch_scene(this->main_scene);
     });
 
     this->selecting_scene->hide();

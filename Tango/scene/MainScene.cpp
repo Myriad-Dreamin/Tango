@@ -46,6 +46,7 @@ MainScene::MainScene(QWidget *parent): Scene(parent)
     auto password_lay = new QHBoxLayout;
     auto password_lab = new QLabel("密码: ");
     password_edit = new QLineEdit;
+    password_edit->setEchoMode(QLineEdit::Password);
     password_lay->addWidget(password_lab);
     password_lay->addWidget(password_edit, 1);
 

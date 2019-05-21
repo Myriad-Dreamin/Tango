@@ -38,6 +38,11 @@ bool Consumer::sign_up_local(QString account, QString password)
         return false;
     }
 
+    this->tango_count = 0;
+    this->level = 0;
+    this->misson_count = 0;
+    this->exp = 0;
+
     return true;
 }
 

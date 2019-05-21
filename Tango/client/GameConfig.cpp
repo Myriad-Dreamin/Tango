@@ -57,6 +57,7 @@ GameConfig::GameConfig(
 
 GameConfig::GameConfig(const GameConfig &game_config)
 {
+    qDebug() << "game configing";
     if (game_config.from_out_pool) {
         this->tango_pool = game_config.tango_pool;
     } else {
@@ -67,7 +68,7 @@ GameConfig::GameConfig(const GameConfig &game_config)
     this->enable_elasped = game_config.enable_elasped;
 
     this->fade_functor = game_config.fade_functor;
-    this->if_failed_functor = game_config.if_failed_functor;
+    this->ans_functor = game_config.ans_functor;
     this->if_failed_functor = game_config.if_failed_functor;
     this->exp_functor = game_config.exp_functor;
 
@@ -77,11 +78,12 @@ GameConfig::GameConfig(const GameConfig &game_config)
 
 GameConfig::GameConfig(GameConfig &&game_config)
 {
+    qDebug() << "game configinggg";
     this->tango_pool = game_config.tango_pool;
     game_config.tango_pool = nullptr;
 
     this->from_out_pool = game_config.from_out_pool;
-    game_config.from_out_pool = true;
+    game_config.from_out_pool = false;
 
     this->enable_elasped = game_config.enable_elasped;
 
@@ -129,10 +131,10 @@ bool default_failed_functor()
     return true;
 }
 
-std::function<void()> second_chance_functor_gen()
+std::function<bool()> second_chance_functor_gen()
 {
     bool change_count = 1;
-    return [change_count]() mutable {
+    return [change_count]() mutable-> bool {
         if (change_count) {
             change_count = false;
             return false;

@@ -57,7 +57,13 @@ public:
     bool consumer_sign_up(QString account, QString password);
     /* 登出 */
     bool logout();
+    /* 本地同步用户状态 */
+    bool sync_status();
 
+    /* 初始化默认词库 */
+    bool init_default_tangos();
+    /* QT bug, init_default_tangos不能被自动链接 */
+    bool init_default_tangosf();
 
     /* 提交一组单词 */
     bool submit_tango_items(const std::vector<TangoPair> &tango_list);
@@ -121,6 +127,13 @@ public:
     bool query_consumers_by_name(UserFullInfo &query_container, QString name);
 
     /*
+     * 查询玩家总量
+     * @query_count: 查询结果载体
+     *
+     */
+    bool query_users(int &query_count);
+
+    /*
      * 返回最后错误
      */
     const QString last_error();
@@ -136,6 +149,9 @@ public:
     int consumer_exp();
     /* 读者等级 */
     int consumer_level();
+
+    bool consumer_logining();
+    bool author_logining();
 private:
 
     /* 用户状态 */
@@ -188,6 +204,8 @@ private:
 
     /* 本地登出 */
     bool logout_local();
+    /* 本地同步用户状态 */
+    bool sync_status_local();
 
     /* 断开远程连接 */
     bool disconnect_to_remote();
@@ -225,6 +243,8 @@ private:
     bool query_consumers_brief_info_local(std::vector<UserBriefInfo> &info_list, int l, int r);
     bool query_consumers_by_id_local(UserFullInfo &query_container, int id);
     bool query_consumers_by_name_local(UserFullInfo &query_container, QString name);
+
+    bool query_users_local(int &query_count);
     /* 查询事件 结束 */
 
     /* 当前mode的函数组 开始 */

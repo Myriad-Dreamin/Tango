@@ -192,6 +192,11 @@ bool Client::logout()
     return this->logout_local();
 }
 
+bool Client::sync_status()
+{
+    return this->sync_status_local();
+}
+
 int Client::consumer_exp()
 {
     if (user_status_util::has_consumer_status(this->user_status)) {
@@ -207,6 +212,16 @@ int Client::consumer_level()
         return this->user_consumer->level;
     }
     return -1;
+}
+
+bool Client::consumer_logining()
+{
+    return user_status_util::has_consumer_status(this->user_status);
+}
+
+bool Client::author_logining()
+{
+    return user_status_util::has_author_status(this->user_status);
 }
 
 bool Client::submit_tango_items(const std::vector<TangoPair> &tango_list)
@@ -275,6 +290,11 @@ bool Client::query_consumers_by_id(UserFullInfo &query_container, int id)
 bool Client::query_consumers_by_name(UserFullInfo &query_container, QString name)
 {
     return this->query_consumers_by_name_local(query_container, name);
+}
+
+bool Client::query_users(int &query_count)
+{
+    return this->query_users_local(query_count);
 }
 
 bool Client::query_authors_by_name(UserFullInfo &query_container, QString name)
@@ -400,6 +420,29 @@ bool Client::logout_local()
     return true;
 }
 
+bool Client::sync_status_local()
+{
+    qDebug() << "logouting";
+    if (user_status_util::has_author_status(this->user_status)) {
+        qDebug() << "logout author";
+        if (!user_author->update_full_info_local()) {
+            _last_error = user_author->last_error();
+            qDebug() << "error occured" << _last_error;
+            return false;
+        }
+    }
+    if (user_status_util::has_consumer_status(this->user_status)) {
+        qDebug() << "logout consumer" << user_consumer->tango_count;
+        if (!user_consumer->update_full_info_local()) {
+            _last_error = user_consumer->last_error();
+            qDebug() << "error occured" << _last_error;
+            return false;
+        }
+    }
+
+    return true;
+}
+
 bool Client::author_sign_in_remote(QString account, QString password)
 {
     _last_error = "TODO";
@@ -467,6 +510,7 @@ bool Client::submit_tango_items_local(const std::vector<TangoPair> &tango_list)
         "               values (:key,  :value,  :ls)";
 
     qDebug() << "tango list" << tango_list;
+
     QSqlQuery query(this->local_handler);
     if (!query.exec("start transaction")) {
         qDebug() << "start transaction error" << query.lastError().text();
@@ -868,6 +912,43 @@ bool Client::query_consumers_brief_info_local(std::vector<UserBriefInfo> &info_l
 }
 
 
+bool Client::query_users_local(int &query_count)
+{
+    static const char *query_command_aut = "select count(*) from `authors`";
+    static const char *query_command_con = "select count(*) from `consumers`";
+    query_count = 0;
+    QSqlQuery query(this->local_handler);
+    if (!query.exec(query_command_aut)) {
+        _last_error = query.lastError().text();
+        qDebug() << "error occured: " << _last_error;
+        return false;
+    }
+    if (!query.first()) {
+        _last_error = "first fetch error";
+        qDebug() << "error occured: " << _last_error;
+        return false;
+    }
+
+    query_count += query.value(0).toInt();
+    qDebug() << "tot_length " << query.value(0).toInt();
+
+    if (!query.exec(query_command_con)) {
+        _last_error = query.lastError().text();
+        qDebug() << "error occured: " << _last_error;
+        return false;
+    }
+    if (!query.first()) {
+        _last_error = "first fetch error";
+        qDebug() << "error occured: " << _last_error;
+        return false;
+    }
+
+    query_count += query.value(0).toInt();
+    qDebug() << "tot_length " << query.value(0).toInt();
+    return true;
+}
+
+
 std::function<void()> Client::switch_remote_mode_slottor()
 {
     return [this]() mutable {
@@ -936,6 +1017,91 @@ bool Client::is_connected()
 void Client::switch_local_mode()
 {
     this->switch_local_mode_slottor()();
+}
+
+bool Client::init_default_tangos()
+{
+    static const char *tangos_commands[] = {
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('appraisal', '估计', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('appraise', '评价', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('allot', '分配', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('alloy', '合金', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('apt', '适当的;恰当的', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('apprentice', '学徒;学弟', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('approach', '走进;方法', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('archieve', '档案', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('arctic', '北极', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('ardent', '热心的;热情的', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('banana', '香蕉', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('strawberry', '草莓', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('pineapple', '菠萝', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('onion', '洋葱', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('garlic', '大蒜', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('cabbage', '包菜', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('peach', '桃子', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('orange', '橘子', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('tomato', '西红柿', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('potato', '土豆', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('apple', '苹果', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('altitude', '高度', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('ambassador', '大使', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('ambiguity', '含糊不清', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('ambiguous', '含糊不清的', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('ambition', '雄心', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('ambitious', '有抱负的', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('ambush', '埋伏', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('amount', '数量', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('ample', '充足的', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('amplify', '放大', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('amuse', '逗乐', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('analogy', '相似', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('analyst', '分析者', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('analytic', '分析的', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('analytical', '分析的', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('anew', '又;再一', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('ancestry', '血统,门第', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('anguish', '极度痛苦;剧痛', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('animate', '活的', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('annex', '附加;添加', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('announce', '宣布', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('annoyance', '烦恼;困扰', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('annual', '每年的', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('anonymity', '匿名', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('anonymous', '匿名的', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('antagonism', '敌对;对抗', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('antagonist', '对抗者', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('anticipate', '预料', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('antique', '古代的;古式的', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('antibiotic', '抗生素', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('antiquity', '古代,古老', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('antonym', '反义词', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('apparatus', '仪器', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('appease', '平息;抚慰', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('appendix', '附件', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('applicable', '适当的;合适的', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('apply', '申请;请求', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('appoint', '任命', 'admin');",
+        "insert into `tangos` (`key`, `value`, `last_submit`) values ('apprehend', '逮捕;拘押', 'admin');"
+    };
+
+    QSqlQuery query(this->local_handler);
+    query.exec("set names 'utf8'");
+    for (auto tango_command: tangos_commands) {
+        if (!query.exec(tango_command)) {
+            _last_error = query.lastError().text();
+            if (_last_error[0] == 'D' && _last_error[1] == 'u' && _last_error[2] == 'p') {
+                continue;
+            }
+            qDebug() << "init consumers table failed" << query.lastError().text();
+            return false;
+        }
+    }
+    return true;
+}
+
+bool Client::init_default_tangosf()
+{
+    return this->init_default_tangos();
 }
 
 

@@ -16,7 +16,7 @@ void decreasing_fade_functor(int &x);
 void decreasing_ans_functor(int &x);
 
 /* 返回一个第一次调用返回false, 以后都返回true的函数. */
-std::function<void()> second_chance_functor_gen(int &x);
+std::function<bool()> second_chance_functor_gen();
 
 void default_exp_functor(int &x, TangoPair tango, int level_step);
 bool default_failed_functor();
@@ -83,6 +83,7 @@ const GameConfig DECREASE_TIMECONFIG = GameConfig(
     decreasing_fade_functor,
     decreasing_ans_functor
 );
+
 
 
 #endif // GAMECONFIG_H

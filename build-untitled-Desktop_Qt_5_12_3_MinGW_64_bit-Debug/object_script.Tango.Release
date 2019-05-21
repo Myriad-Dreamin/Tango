@@ -19,6 +19,7 @@ release/RegisterScene.o
 release/Scene.o
 release/SelectingScene.o
 release/Logger.o
+release/MessageBox.o
 release/PairTableItem.o
 release/RetriveMode.o
 release/TangoPair.o

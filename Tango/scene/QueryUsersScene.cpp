@@ -92,11 +92,18 @@ QueryUsersScene::QueryUsersScene(QWidget *parent): Scene(parent)
             return;
         }
 
+        this->tango_count_key->setText("提交单词数:");
+        this->misson_count_key->setText("提交单词表数:");
+
         this->query_author_by_id(id);
     });
 
     author_by_name_button = new QPushButton("根据昵称查找作者");
     connect(author_by_name_button, &QPushButton::clicked, [this]() mutable {
+
+        this->tango_count_key->setText("提交单词数:");
+        this->misson_count_key->setText("提交单词表数:");
+
         this->query_author_by_name(this->query_edit->text());
     });
 
@@ -116,11 +123,18 @@ QueryUsersScene::QueryUsersScene(QWidget *parent): Scene(parent)
             return;
         }
 
+        this->tango_count_key->setText("通过单词数:");
+        this->misson_count_key->setText("闯关数:");
+
         this->query_consumer_by_id(id);
     });
 
     consumer_by_name_button = new QPushButton("根据昵称查找读者");
     connect(consumer_by_name_button, &QPushButton::clicked, [this]() mutable {
+
+        this->tango_count_key->setText("通过单词数:");
+        this->misson_count_key->setText("闯关数:");
+
         this->query_consumer_by_name(this->query_edit->text());
     });
 

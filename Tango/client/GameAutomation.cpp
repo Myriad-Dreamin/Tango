@@ -155,6 +155,7 @@ std::function<void()> GameAutomation::make_answer_success_slotter()
 {
     return [this]() mutable {
         this->success_count++;
+        qDebug() << "expfunction..." << reinterpret_cast<unsigned long long>(&this->config->exp_functor);
         this->config->exp_functor(this->exp, (*this->tango_pool)[this->select_ptr - 1], static_cast<int>(this->select_ptr));
         select_new_tango();
     };
