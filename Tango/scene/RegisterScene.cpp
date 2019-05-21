@@ -26,6 +26,9 @@ RegisterScene::RegisterScene(QWidget *parent): Scene(parent)
     remote_button = new QRadioButton("远程连接");
     network_edit = new QLineEdit;
     port_edit = new QLineEdit;
+    remote_button->setEnabled(false);
+    network_edit->setEnabled(false);
+    port_edit->setEnabled(false);
     network_lay->addWidget(remote_button);
     network_lay->addWidget(network_host_lab);
     network_lay->addWidget(network_edit, 1);
@@ -45,12 +48,14 @@ RegisterScene::RegisterScene(QWidget *parent): Scene(parent)
     auto password_lay = new QHBoxLayout;
     auto password_lab = new QLabel("密码: ");
     password_edit = new QLineEdit;
+    password_edit->setEchoMode(QLineEdit::Password);
     password_lay->addWidget(password_lab);
     password_lay->addWidget(password_edit, 1);
 
     auto confirm_lay = new QHBoxLayout;
     auto confirm_lab = new QLabel("确认: ");
     confirm_edit = new QLineEdit;
+    confirm_edit->setEchoMode(QLineEdit::Password);
     confirm_lay->addWidget(confirm_lab);
     confirm_lay->addWidget(confirm_edit, 1);
 

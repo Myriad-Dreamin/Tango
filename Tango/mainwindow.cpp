@@ -122,13 +122,6 @@ inline bool MainWindow::init_client()
 
 inline bool MainWindow::init_menubar()
 {
-    auto main_menubar = menuBar();
-    auto menu_item = main_menubar->addMenu("File(&F)");
-
-    menu_item->addAction("&Open", this, SLOT(close()), QKeySequence::Open);
-    menu_item->setGeometry(0, 0, this->width(), 30);
-    main_menubar->addMenu(menu_item);
-
     return true;
 }
 
