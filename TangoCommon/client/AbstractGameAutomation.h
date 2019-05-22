@@ -19,14 +19,12 @@ class AbstractGameAutomation : public QObject
 public:
     explicit AbstractGameAutomation(QObject *parent = nullptr);
     virtual ~AbstractGameAutomation() = 0;
-    virtual const QString last_error() = 0;
-    virtual bool set_config(const GameConfig *game_config) = 0;
+    const QString last_error();
     virtual bool start() = 0;
-    virtual bool prepare_start(const std::vector<TangoPair> &tango_list, unsigned int n) = 0;
+    virtual bool stop() = 0;
 public:
 // c++ style public slots:
-    virtual std::function<void ()> make_answer_success_slotter() = 0;
-    virtual std::function<void ()> make_stop_slotter() = 0;
+    virtual void answer_tango(QString) = 0;
 signals:
     void start_game();
     void elasped();

@@ -64,7 +64,7 @@ void TangoThread::run(void)
         QJsonArray params;
         int id;
         if (!client_rpc::decode_json_params_object(data, params, id, err)) {
-            m_socket->write_package(client_rpc::err_invalid_request_result(err));
+            qDebug() << err;
             return;
         }
         switch(id) {
@@ -150,12 +150,14 @@ void TangoThread::run(void)
             return;
         }
         case client_rpc::code::sync_status: {
+            qDebug() << "sync..." << params;
             if (params.size() != 0) {
                 m_socket->write_package(client_rpc::err_invalid_params());
                 return;
             }
 
             m_socket->write_package(this->sync_status());
+            qDebug() << "sync_status ready";
             return;
         }
         case client_rpc::code::submit_tango_items: {
@@ -180,14 +182,16 @@ void TangoThread::run(void)
                 m_socket->write_package(client_rpc::err_invalid_params());
                 return ;
             }
-            if (params.size() != 2) {
+            if (params.size() != 1) {
                 m_socket->write_package(client_rpc::err_invalid_params());
                 return;
             }
+            QString user_ret = params[0].toString();
 
-            TangoPair user_ret = TangoPair::from_json_array(params);
-            if (user_ret.first == current_key) {
-                automate->make_answer_success_slotter()();
+            qDebug() << user_ret << current_key;
+
+            if (user_ret == current_key) {
+                automate->answer_tango(current_key);
             }
             return;
         }
@@ -196,7 +200,7 @@ void TangoThread::run(void)
                 m_socket->write_package(client_rpc::err_invalid_params());
                 return ;
             }
-            this->automate->make_stop_slotter()();
+            this->automate->stop();
             return;
         }
         case client_rpc::signal_start_game: {
@@ -204,12 +208,41 @@ void TangoThread::run(void)
                 m_socket->write_package(client_rpc::err_invalid_params());
                 return ;
             }
-            if (!automate_started) {
+            if (automate_started) {
                 m_socket->write_package(client_rpc::err_invalid_params());
                 return;
             }
             automate_started = true;
             automate->start();
+            return;
+        }
+        case client_rpc::start_game_event: {
+            qDebug() << "start game event";
+            if (automate_started) {
+                m_socket->write_package(client_rpc::err_invalid_params());
+                return;
+            }
+            if (params.size() != 2) {
+                m_socket->write_package(client_rpc::err_invalid_params());
+                return;
+            }
+
+            int n = params[0].toInt(2133333333), v = params[1].toInt(2133333333);
+            if (n == 2133333333 || v == 2133333333) {
+                m_socket->write_package(client_rpc::err_invalid_params());
+                return;
+            }
+            m_socket->write_package(this->start_game_event(n, RetriveMode(v)));
+            return;
+        }
+        case client_rpc::settle_game_event: {
+            if (!game_event_enable) {
+                m_socket->write_package(client_rpc::err_invalid_params());
+                return;
+            }
+            this->game_event_enable = false;
+            m_socket->write_package(this->settle_game_event());
+            qDebug() << "writed";
             return;
         }
         default: {
@@ -292,6 +325,7 @@ QByteArray TangoThread::logout()
 QByteArray TangoThread::sync_status()
 {
     if (!this->client->sync_status()) {
+        qDebug() << "sync err" << this->client->last_error();
         return client_rpc::err_exec_error(client_rpc::code::sync_status, this->client->last_error());
     }
     qDebug() << "good" << this->client->consumer_logining();
@@ -350,7 +384,6 @@ QByteArray TangoThread::start_game_event(int n, RetriveMode mode)
     if (automate == nullptr) {
         return client_rpc::err_exec_error(client_rpc::start_game_event, this->client->last_error());
     }
-    automate->setParent(this);
 
     connect(automate, &AbstractGameAutomation::start_game, [this]() mutable {
         qDebug() << "start game";
@@ -358,9 +391,11 @@ QByteArray TangoThread::start_game_event(int n, RetriveMode mode)
     });
     connect(automate, &AbstractGameAutomation::new_tango, [this](TangoPair tango, int fade_time) mutable {
         qDebug() << "retreving" << tango;
+        current_key = tango.first;
         this->m_socket->write_package(client_rpc::signal_new_tango_request(tango, fade_time));
     });
     connect(automate, &AbstractGameAutomation::tango_faded, [this](int answer_time) mutable {
+        qDebug() << "tango faded event";
         this->m_socket->write_package(client_rpc::signal_tango_faded_request(answer_time));
     });
     connect(automate, &AbstractGameAutomation::answer_failed, []() mutable {
@@ -370,12 +405,12 @@ QByteArray TangoThread::start_game_event(int n, RetriveMode mode)
     connect(automate, &AbstractGameAutomation::success, [this]() mutable {
         qDebug() << "success";
         this->m_socket->write_package(client_rpc::signal_game_success_request());
-        this->game_event_enable = false;
+        automate_started = false;
     });
     connect(automate, &AbstractGameAutomation::failed, [this]() mutable {
         qDebug() << "failed";
         this->m_socket->write_package(client_rpc::signal_game_failed_request());
-        this->game_event_enable = false;
+        this->automate_started = false;
     });
 
     game_event_enable = true;
@@ -384,7 +419,14 @@ QByteArray TangoThread::start_game_event(int n, RetriveMode mode)
 }
 // QByteArray start_game_event_returns(const AbstractGameAutomation *automate);
 
-QByteArray settle_game_event(const UserFullInfo *info);
+QByteArray TangoThread::settle_game_event()
+{
+    if (!this->client->settle_game_event(automate)) {
+        return client_rpc::err_exec_error(client_rpc::settle_game_event, this->client->last_error());
+    }
+    qDebug() << "sending syncing info" << this->client->consumer_info().user_id << this->client->consumer_info().exp;
+    return client_rpc::settle_game_event_returns(this->client->consumer_info());
+}
 // QByteArray settle_game_event_returns();
 
 QByteArray query_authors_brief_info(int l, int r);

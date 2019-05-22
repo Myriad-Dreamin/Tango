@@ -151,7 +151,7 @@ namespace client_rpc {
         QJsonArray params;
 
         request.insert("params", params);
-
+        qDebug() << "req" << QJsonDocument(request);
         return QJsonDocument(request).toJson();
     }
 
@@ -167,7 +167,7 @@ namespace client_rpc {
         result.push_back(UserFullInfo::to_json_array(consumer_info));
 
         request.insert("result", result);
-
+        qDebug() << "ret" << status << author_info.user_id << consumer_info.user_id;
         return QJsonDocument(request).toJson();
     }
 
@@ -221,7 +221,7 @@ namespace client_rpc {
 
     // QByteArray start_game_event_returns() {}
 
-    QByteArray settle_game_event_request(const UserFullInfo &info)
+    QByteArray settle_game_event_request()
     {
         QJsonObject request;
         request.insert("id", code::settle_game_event);
@@ -229,9 +229,22 @@ namespace client_rpc {
         request.insert("method", "settle_game_event");
 
         QJsonArray params;
-        params.push_back(UserFullInfo::to_json_array(info));
 
         request.insert("params", params);
+
+        return QJsonDocument(request).toJson();
+    }
+
+    QByteArray settle_game_event_returns(const UserFullInfo &info)
+    {
+        QJsonObject request;
+        request.insert("id", code::settle_game_event);
+        request.insert("jsonrpc", "2.0");
+
+        QJsonArray result;
+        result.push_back(UserFullInfo::to_json_array(info));
+
+        request.insert("result", result);
 
         return QJsonDocument(request).toJson();
     }
@@ -406,33 +419,30 @@ namespace client_rpc {
             return false;
         }
         qDebug() << "decoding" << json_decoder;
-        if (json_decoder.isObject()) {
-            QJsonObject ret = json_decoder.object();
-
-            if (ret.length() == 4) {
-                if (!ret.contains("id") || !ret.contains("method") || !ret.contains("jsonrpc") || !ret.contains("params")) {
-                    err = "missing body";
-                    return false;
-                }
-                if (!ret["params"].isArray()) {
-                    err = "invalid params";
-                    return false;
-                }
-                if (ret["jsonrpc"].toString() != "2.0") {
-                    err = "unsupported jsonrpc";
-                    return false;
-                }
-
-                params = ret["params"].toArray();
-                id = ret["id"].toInt();
-                return true;
-            } else {
-                err = "mismatch body count";
-                return false;
-            }
+        if (!json_decoder.isObject()) {
+            err = "not obj";
+            return false;
         }
-        err = "not obj";
-        return false;
+        QJsonObject ret = json_decoder.object();
+
+        if (!ret.contains("jsonrpc") || ret["jsonrpc"].toString() != "2.0") {
+            err = "unsupported jsonrpc";
+            return false;
+        }
+
+        if (!ret.contains("params") || !ret["params"].isArray()) {
+            err = "invalid params";
+            return false;
+        }
+
+        if (ret.length() != 4 || !ret.contains("id") || !ret.contains("method")) {
+            err = "mismatch body count";
+            return false;
+        }
+
+        params = ret["params"].toArray();
+        id = ret["id"].toInt();
+        return true;
     }
 
     bool decode_json_rets_object(QByteArray bytes_json, QJsonValue &rets, int &id, QString &err)
@@ -445,35 +455,30 @@ namespace client_rpc {
             return false;
         }
         qDebug() << "decoding" << json_decoder;
-        if (json_decoder.isObject()) {
-            QJsonObject ret = json_decoder.object();
+        if (!json_decoder.isObject()) {
+            err = "not obj";
+            return false;
+        }
 
-            if (ret.length() == 3 || ret.length() == 4) {
-                if (!(ret.contains("id") || !(ret.contains("result")) || (ret.contains("error") && ret.contains("code"))) || !ret.contains("jsonrpc")) {
-                    err = "missing body";
-                    return false;
-                }
-                if (ret["jsonrpc"].toString() != "2.0") {
-                    err = "unsupported jsonrpc";
-                    return false;
-                }
+        QJsonObject ret = json_decoder.object();
 
-                if (ret.contains("error")) {
-                    qDebug() << "error occurs" << ret["code"].toInt() << ret["error"].toString();
-                    err = ret["error"].toString();
-                    return false;
-                }
+        if (!ret.contains("jsonrpc") || ret["jsonrpc"].toString() != "2.0") {
+            err = "unsupported jsonrpc";
+            return false;
+        }
 
-                rets = ret["result"];
-                id = ret["id"].toInt();
-            } else {
-                err = "mismatch return json";
-                return false;
-            }
-
+        if (ret.size() == 3 && ret.contains("id") && ret.contains("result")) {
+            rets = ret["result"];
+            id = ret["id"].toInt();
             return true;
         }
-        err = "not obj";
+
+        if (ret.size() == 4 && ret.contains("id") && ret.contains("error") && ret.contains("code")) {
+            err = ret["error"].toString();
+            return false;
+        }
+
+        err = "mismatch return json";
         return false;
     }
 
@@ -619,9 +624,9 @@ namespace client_rpc {
     QByteArray signal_tango_faded_request(int answer_time)
     {
         QJsonObject request;
-        request.insert("id", code::signal_start_game);
+        request.insert("id", code::signal_tango_faded);
         request.insert("jsonrpc", "2.0");
-        request.insert("method", "signal_start_game");
+        request.insert("method", "signal_tango_faded");
 
         QJsonArray params;
         params.push_back(answer_time);
@@ -648,14 +653,16 @@ namespace client_rpc {
         return ret;
     }
 
-    QByteArray signal_game_answer_request(const TangoPair &tango)
+    QByteArray signal_game_answer_request(QString tango)
     {
         QJsonObject request;
 
         request.insert("id", code::signal_game_answer);
         request.insert("jsonrpc", "2.0");
         request.insert("method", "signal_game_answer");
-        request.insert("params", TangoPair::to_json_array(tango));
+        QJsonArray params;
+        params.push_back(tango);
+        request.insert("params", params);
 
         return QJsonDocument(request).toJson();
     }

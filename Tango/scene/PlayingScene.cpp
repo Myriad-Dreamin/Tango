@@ -129,11 +129,11 @@ std::function<void()> PlayingScene::single_round(const std::function<AbstractGam
 
         automate->setParent(this);
 
-        connect(automate, &GameAutomation::start_game, [this]() mutable {
+        connect(automate, &AbstractGameAutomation::start_game, [this]() mutable {
             qDebug() << "start game";
             this->parent->switch_scene(this->parent->playsub_scene);
         });
-        connect(automate, &GameAutomation::new_tango, [this](TangoPair tango) mutable {
+        connect(automate, &AbstractGameAutomation::new_tango, [this](TangoPair tango, int fade_time) mutable {
             qDebug() << "retreving" << tango;
             this->parent->playsub_scene->key_label->setText(tango.first);
             this->parent->playsub_scene->value_label->setText(tango.second);
@@ -144,9 +144,9 @@ std::function<void()> PlayingScene::single_round(const std::function<AbstractGam
             this->parent->playsub_scene->user_ret->hide();
             this->parent->playsub_scene->answer_button->hide();
 
-            this->parent->timer->set_timer(5000);
+            this->parent->timer->set_timer(fade_time);
         });
-        connect(automate, &GameAutomation::tango_faded, [this]() mutable {
+        connect(automate, &GameAutomation::tango_faded, [this](int ans_time) mutable {
             qDebug() << "tango faded";
             this->parent->playsub_scene->key_label->hide();
             this->parent->playsub_scene->value_label->hide();
@@ -154,29 +154,30 @@ std::function<void()> PlayingScene::single_round(const std::function<AbstractGam
             this->parent->playsub_scene->user_ret->show();
             this->parent->playsub_scene->answer_button->show();
 
-            this->parent->timer->set_timer(10000);
+            this->parent->timer->set_timer(ans_time);
         });
-        connect(automate, &GameAutomation::answer_failed, []() mutable {
+        connect(automate, &AbstractGameAutomation::answer_failed, []() mutable {
             qDebug() << "answer failed";
         });
-        connect(automate, &GameAutomation::success, [this, automate]() mutable {
+        connect(automate, &AbstractGameAutomation::success, [this, automate]() mutable {
             qDebug() << "success";
             this->settle_game(automate);
         });
-        connect(automate, &GameAutomation::failed, [this, automate]() mutable {
+        connect(automate, &AbstractGameAutomation::failed, [this, automate]() mutable {
             qDebug() << "failed";
             this->settle_game(automate);
         });
         connect(this->parent->playsub_scene->answer_button, &QPushButton::clicked, [this, automate]() mutable {
 
             if (this->parent->playsub_scene->user_ret->text() == this->parent->playsub_scene->key_label->text()) {
-                automate->make_answer_success_slotter()();
+                automate->answer_tango(this->parent->playsub_scene->user_ret->text());
                 this->parent->playsub_scene->user_ret->setText("");
             }
 
         });
         connect(this->parent->playsub_scene->stop_button, &QPushButton::clicked, [this, automate]() mutable {
-            this->settle_game(automate);
+            automate->stop();
+            this->parent->switch_scene(this->parent->playset_scene);
         });
 
         automate->start();
@@ -196,11 +197,11 @@ std::function<void()> PlayingScene::single_round_must_done(const std::function<A
 
         automate->setParent(this);
 
-        connect(automate, &GameAutomation::start_game, [this]() mutable {
+        connect(automate, &AbstractGameAutomation::start_game, [this]() mutable {
             qDebug() << "start game";
             this->parent->switch_scene(this->parent->playsub_scene);
         });
-        connect(automate, &GameAutomation::new_tango, [this](TangoPair tango) mutable {
+        connect(automate, &AbstractGameAutomation::new_tango, [this](TangoPair tango, int fade_time) mutable {
             qDebug() << "retreving" << tango;
             this->parent->playsub_scene->key_label->setText(tango.first);
             this->parent->playsub_scene->value_label->setText(tango.second);
@@ -211,9 +212,9 @@ std::function<void()> PlayingScene::single_round_must_done(const std::function<A
             this->parent->playsub_scene->user_ret->hide();
             this->parent->playsub_scene->answer_button->hide();
 
-            this->parent->timer->set_timer(5000);
+            this->parent->timer->set_timer(fade_time);
         });
-        connect(automate, &GameAutomation::tango_faded, [this]() mutable {
+        connect(automate, &AbstractGameAutomation::tango_faded, [this](int ans_time) mutable {
             qDebug() << "tango faded";
             this->parent->playsub_scene->key_label->hide();
             this->parent->playsub_scene->value_label->hide();
@@ -221,29 +222,29 @@ std::function<void()> PlayingScene::single_round_must_done(const std::function<A
             this->parent->playsub_scene->user_ret->show();
             this->parent->playsub_scene->answer_button->show();
 
-            this->parent->timer->set_timer(10000);
+            this->parent->timer->set_timer(ans_time);
         });
-        connect(automate, &GameAutomation::answer_failed, []() mutable {
+        connect(automate, &AbstractGameAutomation::answer_failed, []() mutable {
             qDebug() << "answer failed";
         });
-        connect(automate, &GameAutomation::success, [this, automate]() mutable {
+        connect(automate, &AbstractGameAutomation::success, [this, automate]() mutable {
             qDebug() << "success";
             this->settle_game(automate);
         });
-        connect(automate, &GameAutomation::failed, [this, automate]() mutable {
+        connect(automate, &AbstractGameAutomation::failed, [this, automate]() mutable {
             qDebug() << "failed";
             this->abort_game(automate);
         });
         connect(this->parent->playsub_scene->answer_button, &QPushButton::clicked, [this, automate]() mutable {
 
             if (this->parent->playsub_scene->user_ret->text() == this->parent->playsub_scene->key_label->text()) {
-                automate->make_answer_success_slotter()();
+                automate->answer_tango(this->parent->playsub_scene->user_ret->text());
                 this->parent->playsub_scene->user_ret->setText("");
             }
 
         });
-        connect(this->parent->playsub_scene->stop_button, &QPushButton::clicked, [this, automate]() mutable {
-            this->abort_game(automate);
+        connect(this->parent->playsub_scene->stop_button, &QPushButton::clicked, [automate]() mutable {
+            automate->stop();
         });
 
         automate->start();
@@ -275,17 +276,25 @@ PlayingScene::PlayingScene(QWidget *parent): Scene (parent)
     center_lay->addWidget(hard_button);
 
     connect(trial_button, &QPushButton::clicked, [this]() mutable {
+        this->parent->playset_scene->from_exp->setNum(this->parent->client->consumer_exp());
+        this->parent->playset_scene->from_level->setNum(this->parent->client->consumer_level());
         this->single_round(this->default_automate())();
     });
 
     connect(easy_button, &QPushButton::clicked, [this]() mutable {
+        this->parent->playset_scene->from_exp->setNum(this->parent->client->consumer_exp());
+        this->parent->playset_scene->from_level->setNum(this->parent->client->consumer_level());
         this->single_round_must_done(this->easy_increment_automate())();
     });
 
     connect(normal_button, &QPushButton::clicked, [this]() mutable {
+        this->parent->playset_scene->from_exp->setNum(this->parent->client->consumer_exp());
+        this->parent->playset_scene->from_level->setNum(this->parent->client->consumer_level());
         this->single_round_must_done(this->normal_increment_automate())();
     });
     connect(hard_button, &QPushButton::clicked, [this]() mutable {
+        this->parent->playset_scene->from_exp->setNum(this->parent->client->consumer_exp());
+        this->parent->playset_scene->from_level->setNum(this->parent->client->consumer_level());
         this->single_round_must_done(this->hard_increment_automate())();
     });
 
@@ -314,11 +323,10 @@ void PlayingScene::settle_game(AbstractGameAutomation *automate)
     disconnect(this->parent->playsub_scene->stop_button, nullptr, nullptr, nullptr);
     this->parent->timer->stop_timer();
 
-    int origin_level = this->parent->client->consumer_level();
-    this->parent->playset_scene->from_exp->setNum(this->parent->client->consumer_exp());
-    this->parent->playset_scene->from_level->setNum(this->parent->client->consumer_level());
+    int origin_level = this->parent->playset_scene->from_exp->text().toInt();
 
     this->parent->client->settle_game_event(automate);
+
     this->parent->playset_scene->to_exp->setNum(this->parent->client->consumer_exp());
     this->parent->playset_scene->to_level->setNum(this->parent->client->consumer_level());
 
@@ -339,14 +347,12 @@ void PlayingScene::settle_game(AbstractGameAutomation *automate)
 
 void PlayingScene::abort_game(AbstractGameAutomation *automate)
 {
-    qDebug() << "setting...";
+    qDebug() << "abort setting...";
     disconnect(this->parent->playsub_scene->answer_button, nullptr, nullptr, nullptr);
     disconnect(this->parent->playsub_scene->stop_button, nullptr, nullptr, nullptr);
     this->parent->timer->stop_timer();
 
-    int origin_level = this->parent->client->consumer_level();
-    this->parent->playset_scene->from_exp->setNum(this->parent->client->consumer_exp());
-    this->parent->playset_scene->from_level->setNum(this->parent->client->consumer_level());
+    int origin_level = this->parent->playset_scene->from_exp->text().toInt();
 
     this->parent->playset_scene->to_exp->setNum(this->parent->client->consumer_exp());
     this->parent->playset_scene->to_level->setNum(this->parent->client->consumer_level());

@@ -30,11 +30,6 @@ GameAutomation::~GameAutomation()
     delete this->elasped_timer;
 }
 
-const QString GameAutomation::last_error()
-{
-    return _last_error;
-}
-
 
 bool GameAutomation::prepare_tango_pool(const std::vector<TangoPair> &tango_list, unsigned int n)
 {
@@ -82,6 +77,12 @@ bool GameAutomation::start()
     return true;
 }
 
+bool GameAutomation::stop()
+{
+    emit AbstractGameAutomation::failed();
+    return true;
+}
+
 bool GameAutomation::prepare_start(const std::vector<TangoPair> &tango_list, unsigned int n)
 {
     this->clear_state();
@@ -108,7 +109,6 @@ inline bool GameAutomation::setup_automation()
         this->stop_automation();
     });
     connect(this, &GameAutomation::failed, [this]() mutable {
-
         this->stop_automation();
     });
 
@@ -153,21 +153,15 @@ void GameAutomation::make_faded_event()
     this->config->ans_functor(this->ans_time);
 }
 
-std::function<void()> GameAutomation::make_answer_success_slotter()
+
+void GameAutomation::answer_tango(QString t)
 {
-    return [this]() mutable {
+    if ((*tango_pool)[static_cast<unsigned int>(this->success_count)].first == t) {
         this->success_count++;
         qDebug() << "expfunction..." << reinterpret_cast<unsigned long long>(&this->config->exp_functor);
         this->config->exp_functor(this->exp, (*this->tango_pool)[this->select_ptr - 1], static_cast<int>(this->select_ptr));
         select_new_tango();
-    };
-}
-
-std::function<void()> GameAutomation::make_stop_slotter()
-{
-    return [this]() mutable {
-        emit AbstractGameAutomation::failed();
-    };
+    }
 }
 
 //std::function<void()> GameAutomation::make_pause_slotter()

@@ -13,7 +13,7 @@
 #include "../types/UserBriefInfo.h"
 #include "../types/UserFullInfo.h"
 #include "../types/UserStatus.h"
-#include "GameAutomation.h"
+#include "GameAutomationRelayer.h"
 #include "GameConfig.h"
 #include "../network/SocketX.h"
 
@@ -25,6 +25,8 @@ RemoteClient::RemoteClient(QObject *parent) : QObject(parent)
 
     this->handler = new SocketX(qintptr(1LL), this);
     this->ready = false;
+
+    connect(handler, &SocketX::package_ready, this, &RemoteClient::receive_packages);
 
 
     this->make_server_on_connected();
@@ -39,6 +41,73 @@ bool RemoteClient::is_connected()
 {
     return this->ready;
 }
+
+
+void RemoteClient::receive_packages(const QString &ip, const quint16 &port, const QByteArray &data)
+{
+    qDebug() << "package received" << ip << port << data;
+
+    QString err;
+    QJsonArray params;
+    int id;
+    if (!client_rpc::decode_json_params_object(data, params, id, err)) {
+        qDebug() << "errobj" << err;
+        return;
+    }
+    switch(id) {
+    case client_rpc::signal_start_game: {
+        emit game_signal_start_game();
+        return;
+    }
+    case client_rpc::signal_new_tango: {
+        qDebug() << "new tango" << params;
+        if (params.size() != 2) {
+            // ignore
+            qDebug() << "err signal new tango" << params;
+            return;
+        }
+        if (!params[0].isArray() || (params[1].toInt(2133333333) == 2133333333)) {
+            // ignore
+            qDebug() << "err signal new tango" << params;
+            return;
+        }
+        TangoPair tango = TangoPair::from_json_array(params[0].toArray());
+        current_key = tango.first;
+        emit game_signal_new_tango(tango, params[1].toInt());
+        return;
+    }
+    case client_rpc::signal_tango_faded: {
+        if (params.size() != 1) {
+            // ignore
+            qDebug() << "err signal tango faded" << params;
+            return;
+        }
+        int answer_time = params[0].toInt(-1);
+        if (answer_time < 0) {
+            // ignore
+            qDebug() << "err signal tango faded" << params;
+            return;
+        }
+        emit game_signal_tango_faded(answer_time);
+        return;
+    }
+    case client_rpc::signal_game_success: {
+        qDebug() << "game success received";
+        emit game_signal_success();
+        return;
+    }
+    case client_rpc::signal_game_failed: {
+        qDebug() << "game success failed";
+        emit game_signal_failed();
+        return;
+    }
+    default:
+        // ignore
+        qDebug() << "err signal tango faded" << params;
+        return;
+    }
+}
+
 
 const UserFullInfo &RemoteClient::consumer_info()
 {
@@ -237,10 +306,10 @@ bool RemoteClient::sync_status()
     }
     QJsonArray arr = ret.toArray();
     this->user_status = UserStatus(static_cast<uint8_t>(arr[0].toInt()));
-    this->user_author->user_info = UserFullInfo::from_json_array(arr, 1);
-    this->user_consumer->user_info = UserFullInfo::from_json_array(arr, 8);
+    this->user_author->user_info = UserFullInfo::from_json_array(arr[1].toArray());
+    this->user_consumer->user_info = UserFullInfo::from_json_array(arr[2].toArray());
 
-    return false;
+    return true;
 }
 
 int RemoteClient::consumer_exp()
@@ -282,16 +351,61 @@ bool RemoteClient::submit_tango_items(const std::vector<TangoPair> &tango_list)
     return success;
 }
 
-AbstractGameAutomation *RemoteClient::start_game_event(const GameConfig *game_config, int n, RetriveMode mode)
+AbstractGameAutomation *RemoteClient::start_game_event(const GameConfig *, int n, RetriveMode mode)
 {
-    _last_error = "TODO";
-    return nullptr;
+    this->handler->write_package(client_rpc::start_game_event_request(n, mode));
+    _last_error = "timeout";
+    bool success = false;
+    QJsonValue ret;
+    int id;
+    this->handler->wait_for_new_package([&](QByteArray bytes_json) mutable {
+        qDebug() << "ret" << bytes_json;
+        success = client_rpc::decode_json_rets_object(bytes_json, ret, id, _last_error);
+    }, 3000);
+    qDebug() << ret;
+    if (success == false) {
+        return nullptr;
+    }
+    qDebug() << "start game event";
+    return new GameAutomationRelayer(this);
 }
 
-bool RemoteClient::settle_game_event(const AbstractGameAutomation *automate)
+void RemoteClient::game_start()
 {
-    _last_error = "TODO";
-    return false;
+    this->handler->write_package(client_rpc::signal_start_game_request());
+}
+
+
+void RemoteClient::game_stop()
+{
+    this->handler->write_package(client_rpc::signal_game_stop_request());
+}
+
+void RemoteClient::game_answer(QString tango)
+{
+    this->handler->write_package(client_rpc::signal_game_answer_request(tango));
+}
+
+bool RemoteClient::settle_game_event(const AbstractGameAutomation *)
+{
+    qDebug() << "settling";
+    this->handler->write_package(client_rpc::settle_game_event_request());
+    _last_error = "timeout";
+    bool success = false;
+    QJsonValue ret;
+    int id;
+    qDebug() << "settling";
+    this->handler->wait_for_new_package([&](QByteArray bytes_json) mutable {
+        qDebug() << "ret" << bytes_json;
+        success = client_rpc::decode_json_rets_object(bytes_json, ret, id, _last_error);
+    }, 3000);
+    qDebug() << ret;
+    if (success == false) {
+        return false;
+    }
+    qDebug() << "settling";
+    this->user_consumer->user_info = UserFullInfo::from_json_array(ret.toArray());
+    return success;
 }
 
 bool RemoteClient::query_authors_brief_info(std::vector<UserBriefInfo> &info_list, int l, int r)

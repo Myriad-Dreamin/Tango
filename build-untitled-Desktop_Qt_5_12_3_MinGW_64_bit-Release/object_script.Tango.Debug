@@ -2,6 +2,7 @@ debug/AbstractClient.o
 debug/AbstractGameAutomation.o
 debug/Client.o
 debug/GameAutomation.o
+debug/GameAutomationRelayer.o
 debug/GameClient.o
 debug/GameConfig.o
 debug/LocalClient.o
@@ -38,6 +39,7 @@ debug/qrc_main.o
 debug/moc_AbstractGameAutomation.o
 debug/moc_Client.o
 debug/moc_GameAutomation.o
+debug/moc_GameAutomationRelayer.o
 debug/moc_LocalClient.o
 debug/moc_RemoteClient.o
 debug/moc_SocketX.o

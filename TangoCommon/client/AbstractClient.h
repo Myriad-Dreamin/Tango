@@ -6,11 +6,11 @@
 
 #include "../types/UserStatus.h"
 #include "../types/RetriveMode.h"
+#include "../types/TangoPair.h"
 
 class QTcpSocket;
 class QSqlDatabase;
 
-class TangoPair;
 class UserBriefInfo;
 class UserFullInfo;
 

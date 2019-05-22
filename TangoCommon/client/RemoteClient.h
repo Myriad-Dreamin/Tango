@@ -5,10 +5,12 @@
 #include <QObject>
 #include <QSqlDatabase>
 class SocketX;
+class GameAutomationRelayer;
 
 class RemoteClient : public QObject, public AbstractClient
 {
     Q_OBJECT
+    friend class GameAutomationRelayer;
 public:
     explicit RemoteClient(QObject *parent = nullptr);
     virtual ~RemoteClient() override;
@@ -17,6 +19,14 @@ signals:
     void connected();
     /* 断开信号 */
     void disconnected();
+
+    void game_signal_start_game();
+    void game_signal_elasped();
+    void game_signal_new_tango(TangoPair,int);
+    void game_signal_tango_faded(int);
+    void game_signal_answer_failed();
+    void game_signal_success();
+    void game_signal_failed();
 
     // AbstractClient interface
 public:
@@ -76,9 +86,15 @@ private:
     quint16 remote_port;
     /* 远程连接handler */
     SocketX *handler;
+
+    QString current_key;
     QString _last_error;
     void make_server_on_connected();
     void make_server_on_disconnected();
+    void game_stop();
+    void game_answer(QString tango);
+    void game_start();
+    void receive_packages(const QString &ip, const quint16 &port, const QByteArray &data);
 };
 
 #endif // REMOTECLIENT_H

@@ -45,6 +45,7 @@ private:
     QByteArray sync_status();
     QByteArray submit_tango_items(std::vector<TangoPair> &tango_list);
     QByteArray start_game_event(int n, RetriveMode mode);
+    QByteArray settle_game_event();
 };
 
 #endif // CLIENTSLAVE_H

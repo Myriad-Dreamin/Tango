@@ -208,9 +208,9 @@ bool LocalClient::logout()
 
 bool LocalClient::sync_status()
 {
-    qDebug() << "logouting";
+    qDebug() << "syncing";
     if (user_status_util::has_author_status(this->user_status)) {
-        qDebug() << "logout author";
+        qDebug() << "syncing author";
         if (!user_author->update_full_info_local()) {
             _last_error = user_author->last_error();
             qDebug() << "error occured" << _last_error;
@@ -218,7 +218,7 @@ bool LocalClient::sync_status()
         }
     }
     if (user_status_util::has_consumer_status(this->user_status)) {
-        qDebug() << "logout consumer" << this->user_consumer->user_info.tango_count;
+        qDebug() << "syncing consumer" << this->user_consumer->user_info.tango_count;
         if (!user_consumer->update_full_info_local()) {
             _last_error = user_consumer->last_error();
             qDebug() << "error occured" << _last_error;
@@ -384,7 +384,7 @@ bool LocalClient::query_authors_by_id(UserFullInfo &query_container, int id)
         return false;
     }
     if (!query.first()) {
-        _last_error = query.lastError().text();
+        _last_error = "该用户不存在";
         qDebug() << "fetch first element error occured: " << _last_error;
 
         return false;
@@ -415,7 +415,7 @@ bool LocalClient::query_consumers_by_id(UserFullInfo &query_container, int id)
         return false;
     }
     if (!query.first()) {
-        _last_error = query.lastError().text();
+        _last_error = "该用户不存在";
         qDebug() << "fetch first element error occured: " << _last_error;
 
         return false;
@@ -446,7 +446,7 @@ bool LocalClient::query_authors_by_name(UserFullInfo &query_container, QString n
         return false;
     }
     if (!query.first()) {
-        _last_error = query.lastError().text();
+        _last_error = "该用户不存在";
         qDebug() << "fetch first element error occured: " << _last_error;
 
         return false;
@@ -477,7 +477,7 @@ bool LocalClient::query_consumers_by_name(UserFullInfo &query_container, QString
         return false;
     }
     if (!query.first()) {
-        _last_error = query.lastError().text();
+        _last_error = "该用户不存在";
         qDebug() << "fetch first element error occured: " << _last_error;
 
         return false;
@@ -895,7 +895,7 @@ bool LocalClient::retrive_tango_items(std::vector<TangoPair> &tango_list, int &n
         }
         to_fetch = mtrand() % static_cast<unsigned int>(tot_length - n + 1);
         _last_error = "";
-        if (!this->retrive_since_kth_tango_item(tango_list, to_fetch, tot_length)) {
+        if (!this->retrive_since_kth_tango_item(tango_list, to_fetch, n)) {
             if (_last_error != "") {
                 _last_error = "fetch error";
             }
@@ -910,7 +910,7 @@ bool LocalClient::retrive_tango_items(std::vector<TangoPair> &tango_list, int &n
         }
         to_fetch = mtrand() % static_cast<unsigned int>(tot_length - n + 1);
         _last_error = "";
-        if (!this->retrive_since_kth_tango_item(tango_list, to_fetch, tot_length)) {
+        if (!this->retrive_since_kth_tango_item(tango_list, to_fetch, n)) {
             if (_last_error != "") {
                 _last_error = "fetch error";
             }
@@ -924,7 +924,7 @@ bool LocalClient::retrive_tango_items(std::vector<TangoPair> &tango_list, int &n
         }
         to_fetch = mtrand() % static_cast<unsigned int>(tot_length - n + 1);
         _last_error = "";
-        if (!this->retrive_since_kth_tango_item(tango_list, to_fetch, tot_length)) {
+        if (!this->retrive_since_kth_tango_item(tango_list, to_fetch, n)) {
             if (_last_error != "") {
                 _last_error = "fetch error";
             }

@@ -75,11 +75,11 @@ namespace client_rpc {
     QByteArray submit_tango_items_request(const std::vector<TangoPair> &tango_list);
     QByteArray submit_tango_items_returns(const UserFullInfo &info);
 
-    QByteArray start_game_event_request(const int game_config_id, int n, RetriveMode mode);
+    QByteArray start_game_event_request(int n, RetriveMode mode);
     // QByteArray start_game_event_returns(const AbstractGameAutomation *automate);
 
-    QByteArray settle_game_event_request(const UserFullInfo *info);
-    // QByteArray settle_game_event_returns();
+    QByteArray settle_game_event_request();
+    QByteArray settle_game_event_returns(const UserFullInfo &info);
 
     QByteArray query_authors_brief_info_request(int l, int r);
     QByteArray query_authors_brief_info_returns(std::vector<UserBriefInfo> &info_list);
@@ -111,8 +111,9 @@ namespace client_rpc {
     QByteArray signal_tango_faded_request(int answer_time);
     QByteArray signal_game_success_request();
     QByteArray signal_game_failed_request();
+
     QByteArray signal_game_stop_request();
-    QByteArray signal_game_answer_request(const TangoPair &tango);
+    QByteArray signal_game_answer_request(QString tango);
 }
 
 

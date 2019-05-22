@@ -26,7 +26,7 @@ public:
     bool wait_for_new_package(const std::function<void (QByteArray)> &callback, int timeout=1000);
 signals:
     void package_ready(const QString &ip, const quint16 &port, const QByteArray &data);
-
+    void package_isready();
 private:
     long long sock_id;
     QByteArray buffer;

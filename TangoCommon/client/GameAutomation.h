@@ -22,14 +22,13 @@ class GameAutomation :public AbstractGameAutomation
 public:
     explicit GameAutomation(const GameConfig *game_config=&GameConfigMode::DEFAULT_CONFIG, QObject *parent = nullptr);
     ~GameAutomation();
-    const QString last_error();
     bool set_config(const GameConfig *game_config);
     bool start();
+    bool stop();
     bool prepare_start(const std::vector<TangoPair> &tango_list, unsigned int n);
 public:
 // c++ style public slots:
-    std::function<void ()> make_answer_success_slotter();
-    std::function<void ()> make_stop_slotter();
+    void answer_tango(QString);
 private:
     GameClient *client;
 //    std::function<void()> elasped_event;

@@ -30,7 +30,7 @@ bool SocketX::wait_for_new_package(const std::function<void (QByteArray)> &callb
     QEventLoop loop;
     connect(&loop_timeout, &QTimer::timeout, &loop, &QEventLoop::quit);
 
-    auto xx =  [&](const QString& ip,const quint16& port,QByteArray bytes_json) mutable {
+    auto xx =  [&](const QString &ip, const quint16 &port, const QByteArray &bytes_json) mutable {
         qDebug() << ip << port << bytes_json;
         loop_timeout.stop();
         callback(bytes_json);
@@ -40,6 +40,7 @@ bool SocketX::wait_for_new_package(const std::function<void (QByteArray)> &callb
     connect(this, &SocketX::package_ready, xx);
     loop_timeout.start(timeout);
     loop.exec();
+    qDebug() << "exec...";
     disconnect(this, &SocketX::package_ready, this, nullptr);
     return success;
 }
@@ -53,23 +54,20 @@ bool SocketX::write_package(QByteArray to_send)
 void SocketX::make_ready_read_slot(void)
 {
     connect(this, &QIODevice::readyRead, [this]() mutable {
-        qDebug() << "new Socket X Data from " << this->peerName() << " " << this->peerAddress() << " " << this->peerPort();
+        // qDebug() << "new Socket X Data from " << this->peerName() << " " << this->peerAddress() << " " << this->peerPort();
         QByteArray data = readAll();
-        qDebug() << "retriving data" << data;
+        // qDebug() << "retriving data" << data;
 
         auto package_list = data.split(package_delimit);
         buffer.append(package_list[0]);
-        qDebug() << "retriving size" << package_list.length();
         int packages_count = package_list.length() - 1;
-        qDebug() << "retriving size" << package_list;
-        qDebug() << "retrived size" << packages_count;
         if (package_list.length() > 1) {
-            qDebug() << "retriving size" << QByteArray::fromBase64(buffer);
+            qDebug() << "receving" << QByteArray::fromBase64(buffer);
             emit this->package_ready(peerAddress().toString(), this->peerPort(), QByteArray::fromBase64(buffer));
             buffer = package_list[packages_count];
         }
-        qDebug() << "retriving size" << buffer;
         for (int i = 1; i < packages_count; i++) {
+            qDebug() << "receving" << QByteArray::fromBase64(package_list[i]);
             emit this->package_ready(peerAddress().toString(), this->peerPort(), QByteArray::fromBase64(package_list[i]));
         }
     });
