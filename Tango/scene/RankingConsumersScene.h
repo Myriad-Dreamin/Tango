@@ -20,6 +20,7 @@ class RankingConsumersScene : public Scene
 public:
     RankingConsumersScene(QWidget *parent=nullptr);
     ~RankingConsumersScene();
+    void set_page_contain(const std::vector<UserBriefInfo> &info_query);
 private:
     int page_limit = DEFAULT_CONSUMER_PAGE_LIMIT;
     int ranking_table_row;

@@ -70,7 +70,7 @@ void TangoThread::run(void)
         switch(id) {
         case client_rpc::code::author_sign_in: {
             if (params.size() != 2) {
-                m_socket->write_package(client_rpc::err_invalid_params());
+                m_socket->write_package(client_rpc::err_invalid_params(client_rpc::code::author_sign_in));
                 return;
             }
             QString account;
@@ -79,7 +79,7 @@ void TangoThread::run(void)
             password = params[1].toString("");
 
             if (account == "" || password == "") {
-                m_socket->write_package(client_rpc::err_invalid_params());
+                m_socket->write_package(client_rpc::err_invalid_params(client_rpc::code::author_sign_in));
                 return;
             }
 
@@ -88,7 +88,7 @@ void TangoThread::run(void)
         }
         case client_rpc::code::author_sign_up: {
             if (params.size() != 2) {
-                m_socket->write_package(client_rpc::err_invalid_params());
+                m_socket->write_package(client_rpc::err_invalid_params(client_rpc::code::author_sign_up));
                 return;
             }
             QString account;
@@ -97,7 +97,7 @@ void TangoThread::run(void)
             password = params[1].toString("");
 
             if (account == "" || password == "") {
-                m_socket->write_package(client_rpc::err_invalid_params());
+                m_socket->write_package(client_rpc::err_invalid_params(client_rpc::code::author_sign_up));
                 return;
             }
 
@@ -106,7 +106,7 @@ void TangoThread::run(void)
         }
         case client_rpc::code::consumer_sign_in: {
             if (params.size() != 2) {
-                m_socket->write_package(client_rpc::err_invalid_params());
+                m_socket->write_package(client_rpc::err_invalid_params(client_rpc::code::consumer_sign_in));
                 return;
             }
             QString account;
@@ -115,7 +115,7 @@ void TangoThread::run(void)
             password = params[1].toString("");
 
             if (account == "" || password == "") {
-                m_socket->write_package(client_rpc::err_invalid_params());
+                m_socket->write_package(client_rpc::err_invalid_params(client_rpc::code::consumer_sign_in));
                 return;
             }
 
@@ -124,7 +124,7 @@ void TangoThread::run(void)
         }
         case client_rpc::code::consumer_sign_up: {
             if (params.size() != 2) {
-                m_socket->write_package(client_rpc::err_invalid_params());
+                m_socket->write_package(client_rpc::err_invalid_params(client_rpc::code::consumer_sign_up));
                 return;
             }
             QString account;
@@ -133,7 +133,7 @@ void TangoThread::run(void)
             password = params[1].toString("");
 
             if (account == "" || password == "") {
-                m_socket->write_package(client_rpc::err_invalid_params());
+                m_socket->write_package(client_rpc::err_invalid_params(client_rpc::code::consumer_sign_up));
                 return;
             }
 
@@ -142,7 +142,7 @@ void TangoThread::run(void)
         }
         case client_rpc::code::logout: {
             if (params.size() != 0) {
-                m_socket->write_package(client_rpc::err_invalid_params());
+                m_socket->write_package(client_rpc::err_invalid_params(client_rpc::code::logout));
                 return;
             }
 
@@ -152,7 +152,7 @@ void TangoThread::run(void)
         case client_rpc::code::sync_status: {
             qDebug() << "sync..." << params;
             if (params.size() != 0) {
-                m_socket->write_package(client_rpc::err_invalid_params());
+                m_socket->write_package(client_rpc::err_invalid_params(client_rpc::code::sync_status));
                 return;
             }
 
@@ -164,7 +164,7 @@ void TangoThread::run(void)
 
             for (int i = 0; i < params.size(); i++) {
                 if (params[i].toArray().size() != 2) {
-                    m_socket->write_package(client_rpc::err_invalid_params());
+                    m_socket->write_package(client_rpc::err_invalid_params(client_rpc::code::submit_tango_items));
                     return;
                 }
             }
@@ -179,11 +179,11 @@ void TangoThread::run(void)
         }
         case client_rpc::signal_game_answer: {
             if (!game_event_enable) {
-                m_socket->write_package(client_rpc::err_invalid_params());
+                m_socket->write_package(client_rpc::err_invalid_params(client_rpc::signal_game_answer));
                 return ;
             }
             if (params.size() != 1) {
-                m_socket->write_package(client_rpc::err_invalid_params());
+                m_socket->write_package(client_rpc::err_invalid_params(client_rpc::signal_game_answer));
                 return;
             }
             QString user_ret = params[0].toString();
@@ -197,7 +197,7 @@ void TangoThread::run(void)
         }
         case client_rpc::signal_game_stop: {
             if (!game_event_enable) {
-                m_socket->write_package(client_rpc::err_invalid_params());
+                m_socket->write_package(client_rpc::err_invalid_params(client_rpc::signal_game_stop));
                 return ;
             }
             this->automate->stop();
@@ -205,11 +205,11 @@ void TangoThread::run(void)
         }
         case client_rpc::signal_start_game: {
             if (!game_event_enable) {
-                m_socket->write_package(client_rpc::err_invalid_params());
+                m_socket->write_package(client_rpc::err_invalid_params(client_rpc::signal_start_game));
                 return ;
             }
             if (automate_started) {
-                m_socket->write_package(client_rpc::err_invalid_params());
+                m_socket->write_package(client_rpc::err_invalid_params(client_rpc::signal_start_game));
                 return;
             }
             automate_started = true;
@@ -219,17 +219,17 @@ void TangoThread::run(void)
         case client_rpc::start_game_event: {
             qDebug() << "start game event";
             if (automate_started) {
-                m_socket->write_package(client_rpc::err_invalid_params());
+                m_socket->write_package(client_rpc::err_invalid_params(client_rpc::start_game_event));
                 return;
             }
             if (params.size() != 2) {
-                m_socket->write_package(client_rpc::err_invalid_params());
+                m_socket->write_package(client_rpc::err_invalid_params(client_rpc::start_game_event));
                 return;
             }
 
             int n = params[0].toInt(2133333333), v = params[1].toInt(2133333333);
             if (n == 2133333333 || v == 2133333333) {
-                m_socket->write_package(client_rpc::err_invalid_params());
+                m_socket->write_package(client_rpc::err_invalid_params(client_rpc::start_game_event));
                 return;
             }
             m_socket->write_package(this->start_game_event(n, RetriveMode(v)));
@@ -237,11 +237,39 @@ void TangoThread::run(void)
         }
         case client_rpc::settle_game_event: {
             if (!game_event_enable) {
-                m_socket->write_package(client_rpc::err_invalid_params());
+                m_socket->write_package(client_rpc::err_invalid_params(client_rpc::settle_game_event));
                 return;
             }
             this->game_event_enable = false;
             m_socket->write_package(this->settle_game_event());
+            qDebug() << "writed";
+            return;
+        }
+        case client_rpc::query_authors_brief_info: {
+            if (params.size() != 2) {
+                m_socket->write_package(client_rpc::err_invalid_params(client_rpc::query_authors_brief_info));
+                return;
+            }
+            int l = params[0].toInt(2133333333), r = params[1].toInt(2133333333);
+            if (l == 2133333333 || r == 2133333333) {
+                m_socket->write_package(client_rpc::err_invalid_params(client_rpc::query_authors_brief_info));
+                return;
+            }
+            m_socket->write_package(this->query_authors_brief_info(l, r));
+            qDebug() << "writed";
+            return;
+        }
+        case client_rpc::query_consumers_brief_info: {
+            if (params.size() != 2) {
+                m_socket->write_package(client_rpc::err_invalid_params(client_rpc::query_consumers_brief_info));
+                return;
+            }
+            int l = params[0].toInt(2133333333), r = params[1].toInt(2133333333);
+            if (l == 2133333333 || r == 2133333333) {
+                m_socket->write_package(client_rpc::err_invalid_params(client_rpc::query_authors_brief_info));
+                return;
+            }
+            m_socket->write_package(this->query_consumers_brief_info(l, r));
             qDebug() << "writed";
             return;
         }
@@ -374,7 +402,7 @@ QByteArray TangoThread::start_game_event(int n, RetriveMode mode)
         break;
     }
     default:
-        return client_rpc::err_invalid_params();
+        return client_rpc::err_invalid_params(client_rpc::start_game_event);
     }
     if (automate != nullptr) {
         automate->deleteLater();
@@ -424,14 +452,29 @@ QByteArray TangoThread::settle_game_event()
     if (!this->client->settle_game_event(automate)) {
         return client_rpc::err_exec_error(client_rpc::settle_game_event, this->client->last_error());
     }
-    qDebug() << "sending syncing info" << this->client->consumer_info().user_id << this->client->consumer_info().exp;
+    qDebug() << "sending syncing info" <<  client_rpc::settle_game_event_returns(this->client->consumer_info());
     return client_rpc::settle_game_event_returns(this->client->consumer_info());
 }
 // QByteArray settle_game_event_returns();
+QByteArray TangoThread::query_authors_brief_info(int l, int r)
+{
+    std::vector<UserBriefInfo> info_list;
+    if (!this->client->query_authors_brief_info(info_list, l, r)) {
+        return client_rpc::err_exec_error(client_rpc::settle_game_event, this->client->last_error());
+    }
 
-QByteArray query_authors_brief_info(int l, int r);
+    return client_rpc::query_authors_brief_info_returns(info_list);
+}
 
-QByteArray query_consumers_brief_info(int l, int r);
+QByteArray TangoThread::query_consumers_brief_info(int l, int r)
+{
+    std::vector<UserBriefInfo> info_list;
+    if (!this->client->query_consumers_brief_info(info_list, l, r)) {
+        return client_rpc::err_exec_error(client_rpc::settle_game_event, this->client->last_error());
+    }
+
+    return client_rpc::query_authors_brief_info_returns(info_list);
+}
 
 QByteArray query_authors_by_id(int id);
 QByteArray query_authors_by_name(QString name);

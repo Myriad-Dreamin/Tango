@@ -8,6 +8,7 @@ class QGridLayout;
 class QPushButton;
 class QLineEdit;
 class QLabel;
+class UserFullInfo;
 
 class QueryUsersScene: Scene
 {
@@ -16,6 +17,7 @@ class QueryUsersScene: Scene
 public:
     QueryUsersScene(QWidget *parent);
     ~QueryUsersScene();
+    void fill_info(const UserFullInfo &query_container);
 private:
     MainWindow *parent;
     QGridLayout *lay;

@@ -15,7 +15,7 @@ class PlaySettleScene : public Scene
 public:
     PlaySettleScene(QWidget *parent=nullptr);
     ~PlaySettleScene();
-private:
+public:
     MainWindow* parent;
     QLabel *from_exp, *to_exp;
     QLabel *from_level, *to_level;

@@ -238,6 +238,18 @@ bool QueryUsersScene::query_consumer_by_name(QString name)
     return true;
 }
 
+void QueryUsersScene::fill_info(const UserFullInfo &query_container)
+{
+    this->user_id->setNum(query_container.user_id);
+    this->tango_count->setNum(query_container.tango_count);
+    this->misson_count->setNum(query_container.misson_count);
+    this->level->setNum(query_container.level);
+    this->exp->setNum(query_container.exp);
+    this->name->setText(query_container.name);
+    this->motto->setText(query_container.motto);
+}
+
+
 
 QueryUsersScene::~QueryUsersScene()
 {

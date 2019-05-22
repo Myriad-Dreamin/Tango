@@ -99,12 +99,13 @@ namespace client_rpc {
 
     bool decode_json_params_object(QByteArray bytes_json, QJsonArray &params, int &id, QString &err);
     bool decode_json_rets_object(QByteArray bytes_json, QJsonValue &ret, int &id, QString &err);
-
+    bool decode_json_object(QByteArray bytes_json, QJsonValue &params, bool &para, int &id, QString &err);
+    bool try_rets(QJsonObject &ret, QJsonValue &params, bool &para, int &id, QString &err);
     QByteArray err_invalid_request_result(QString err);
     QByteArray err_exec_error(int id, QString err);
     QByteArray err_method_not_found();
-    QByteArray err_invalid_params();
-    QByteArray success(int16_t id);
+    QByteArray err_invalid_params(int id);
+    QByteArray success(int id);
 
     QByteArray signal_start_game_request();
     QByteArray signal_new_tango_request(const TangoPair &tango, int fade_time);

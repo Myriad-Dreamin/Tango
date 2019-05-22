@@ -4,8 +4,10 @@
 #include "AbstractClient.h"
 #include <QObject>
 #include <QSqlDatabase>
+#include "../Tango/mainwindow.h"
 class SocketX;
 class GameAutomationRelayer;
+class MainWindow;
 
 class RemoteClient : public QObject, public AbstractClient
 {
@@ -71,6 +73,7 @@ public:
 
     bool create_tables();
 private:
+    MainWindow *parent;
     /* 用户状态 */
     UserStatus user_status;
 
@@ -95,6 +98,8 @@ private:
     void game_answer(QString tango);
     void game_start();
     void receive_packages(const QString &ip, const quint16 &port, const QByteArray &data);
+    void params_packages(int id, QJsonArray params);
+    void returns_packages(int id, QJsonValue rets, QString err);
 };
 
 #endif // REMOTECLIENT_H

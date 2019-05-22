@@ -47,7 +47,8 @@ bool SocketX::wait_for_new_package(const std::function<void (QByteArray)> &callb
 
 bool SocketX::write_package(QByteArray to_send)
 {
-    this->write(to_send.toBase64().append(package_delimit));
+    qDebug() << "writed bytes" << this->write(to_send.toBase64().append(package_delimit));
+    this->waitForBytesWritten();
     return true;
 }
 

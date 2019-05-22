@@ -28,6 +28,7 @@ class MainWindow : public QMainWindow
 {
 // property:
     Q_OBJECT
+    friend class RemoteClient;
     friend class MainScene;
     friend class PlayingScene;
     friend class PlaySubScene;

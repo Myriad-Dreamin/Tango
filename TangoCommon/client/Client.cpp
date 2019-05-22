@@ -32,7 +32,7 @@ Client::Client(QObject *parent) : QObject(parent)
 {
     this->handler = nullptr;
     this->local_handler = new LocalClient(this);
-    this->remote_handler = new RemoteClient(this);
+    this->remote_handler = new RemoteClient(parent);
 }
 
 Client::~Client()

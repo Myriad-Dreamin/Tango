@@ -159,6 +159,51 @@ void RankingConsumersScene::switch_page(int page_count)
 }
 
 
+void RankingConsumersScene::set_page_contain(const std::vector<UserBriefInfo> &info_query)
+{
+    this->clear_table();
+
+    for (unsigned int i = 0; i < info_query.size(); i++) {
+        auto item = new QWidget;
+        auto item_lay = new QHBoxLayout;
+        QLabel * ranking_text = new QLabel, *id_text = new QLabel, *name_text = new QLabel, *level_text = new QLabel;
+        ranking_text->setNum(static_cast<int>(i) + this->cur_page->text().toInt() * 10 - 9);
+        id_text->setNum(info_query[i].id);
+        name_text->setText(info_query[i].name);
+        level_text->setNum(info_query[i].level);
+        item_lay->addStretch(1);
+        item_lay->addWidget(ranking_text, 8, Qt::AlignmentFlag::AlignCenter);
+        item_lay->addStretch(1);
+        item_lay->addWidget(id_text, 8, Qt::AlignmentFlag::AlignCenter);
+        item_lay->addStretch(1);
+        item_lay->addWidget(name_text, 8, Qt::AlignmentFlag::AlignCenter);
+        item_lay->addStretch(1);
+        item_lay->addWidget(level_text, 8, Qt::AlignmentFlag::AlignCenter);
+        item_lay->addStretch(1);
+        item->setLayout(item_lay);
+        this->ranking->insertWidget(static_cast<int>(i + 1), item, 1);
+        this->ranking_table_row++;
+    }
+    for (int i = static_cast<int>(info_query.size()); i < page_limit; i++) {
+        auto item = new QWidget;
+        auto item_lay = new QHBoxLayout;
+        QLabel * ranking_text = new QLabel, *id_text = new QLabel, *name_text = new QLabel, *level_text = new QLabel;
+        ranking_text->setNum(i + this->cur_page->text().toInt() * 10 - 9);
+        item_lay->addStretch(1);
+        item_lay->addWidget(ranking_text, 8, Qt::AlignmentFlag::AlignCenter);
+        item_lay->addStretch(1);
+        item_lay->addWidget(id_text, 8, Qt::AlignmentFlag::AlignCenter);
+        item_lay->addStretch(1);
+        item_lay->addWidget(name_text, 8, Qt::AlignmentFlag::AlignCenter);
+        item_lay->addStretch(1);
+        item_lay->addWidget(level_text, 8, Qt::AlignmentFlag::AlignCenter);
+        item_lay->addStretch(1);
+        item->setLayout(item_lay);
+        this->ranking->insertWidget(i + 1, item, 1);
+        this->ranking_table_row++;
+    }
+}
+
 RankingConsumersScene::~RankingConsumersScene()
 {
 

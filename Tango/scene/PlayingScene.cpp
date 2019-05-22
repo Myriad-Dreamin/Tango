@@ -13,7 +13,6 @@
 #include <QMessageBox>
 #include <QLabel>
 #include <QLineEdit>
-
 #include "PlaySubScene.h"
 #include "PlaySettleScene.h"
 #include "../mainwindow.h"
@@ -326,6 +325,7 @@ void PlayingScene::settle_game(AbstractGameAutomation *automate)
     int origin_level = this->parent->playset_scene->from_exp->text().toInt();
 
     this->parent->client->settle_game_event(automate);
+
 
     this->parent->playset_scene->to_exp->setNum(this->parent->client->consumer_exp());
     this->parent->playset_scene->to_level->setNum(this->parent->client->consumer_level());

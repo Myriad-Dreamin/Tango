@@ -241,10 +241,7 @@ namespace client_rpc {
         request.insert("id", code::settle_game_event);
         request.insert("jsonrpc", "2.0");
 
-        QJsonArray result;
-        result.push_back(UserFullInfo::to_json_array(info));
-
-        request.insert("result", result);
+        request.insert("result", UserFullInfo::to_json_array(info));
 
         return QJsonDocument(request).toJson();
     }
@@ -268,7 +265,7 @@ namespace client_rpc {
     QByteArray query_authors_brief_info_returns(std::vector<UserBriefInfo> &info_list)
     {
         QJsonObject request;
-        request.insert("id", code::submit_tango_items);
+        request.insert("id", code::query_authors_brief_info);
         request.insert("jsonrpc", "2.0");
 
         QJsonArray result;
@@ -483,6 +480,63 @@ namespace client_rpc {
     }
 
 
+    bool decode_json_object(QByteArray bytes_json, QJsonValue &params, bool &para, int &id, QString &err)
+    {
+        QJsonParseError decode_err;
+        QJsonDocument json_decoder = QJsonDocument::fromJson(bytes_json, &decode_err);;
+        qDebug() << "decoding" << bytes_json;
+        if (decode_err.error != QJsonParseError::NoError) {
+            err = decode_err.errorString();
+            return false;
+        }
+        qDebug() << "decoding" << json_decoder;
+        if (!json_decoder.isObject()) {
+            err = "not obj";
+            return false;
+        }
+        QJsonObject ret = json_decoder.object();
+
+
+        if (!ret.contains("id") || !ret.contains("jsonrpc") || ret["jsonrpc"].toString() != "2.0") {
+            err = "unsupported jsonrpc";
+            return false;
+        }
+
+        if (!ret.contains("params") || !ret["params"].isArray()) {
+            return try_rets(ret, params, para, id, err);
+        }
+
+        if (ret.length() != 4 || !ret.contains("method")) {
+            return try_rets(ret, params, para, id, err);
+        }
+
+        params = ret["params"].toArray();
+        id = ret["id"].toInt();
+        para = true;
+
+        return true;
+    }
+
+    bool try_rets(QJsonObject &ret, QJsonValue &params, bool &para, int &id, QString &err)
+    {
+        err = nullptr;
+        if (ret.size() == 3 && ret.contains("id") && ret.contains("result")) {
+            params = ret["result"];
+            para = false;
+            id = ret["id"].toInt();
+            return true;
+        }
+
+        if (ret.size() == 4 && ret.contains("id") && ret.contains("error") && ret.contains("code")) {
+            para = false;
+            err = ret["error"].toString();
+            id = ret["id"].toInt();
+            return true;
+        }
+        err = "missing obj";
+        return false;
+    }
+
     namespace _maker {
         inline QByteArray _method_not_found()
         {
@@ -491,16 +545,6 @@ namespace client_rpc {
             result.insert("jsonrpc", "2.0");
             result.insert("error", "method not found");
             result.insert("code", RPCBaseError::MethodNotFound);
-            return QJsonDocument(result).toJson();
-        }
-
-        inline QByteArray _invalid_params()
-        {
-            QJsonObject result;
-            result.insert("id", 0);
-            result.insert("jsonrpc", "2.0");
-            result.insert("error", "invalid params");
-            result.insert("code", RPCBaseError::InvalidParams);
             return QJsonDocument(result).toJson();
         }
 
@@ -583,13 +627,17 @@ namespace client_rpc {
         return ret;
     }
 
-    QByteArray err_invalid_params()
+    QByteArray err_invalid_params(int id)
     {
-        static QByteArray ret = _maker::_invalid_params();
-        return ret;
+        QJsonObject result;
+        result.insert("id", id);
+        result.insert("jsonrpc", "2.0");
+        result.insert("error", "invalid params");
+        result.insert("code", RPCBaseError::InvalidParams);
+        return QJsonDocument(result).toJson();
     }
 
-    QByteArray success(int16_t id)
+    QByteArray success(int id)
     {
         QJsonObject result;
         result.insert("id", id);

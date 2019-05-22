@@ -20,6 +20,7 @@ class RankingAuthorsScene : public Scene
 public:
     RankingAuthorsScene(QWidget *parent=nullptr);
     ~RankingAuthorsScene();
+    void set_page_contain(const std::vector<UserBriefInfo> &info_query);
 private:
     int page_limit = DEFAULT_AUTHOR_PAGE_LIMIT;
     int ranking_table_row;
