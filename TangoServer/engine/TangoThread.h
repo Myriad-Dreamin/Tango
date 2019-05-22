@@ -8,6 +8,7 @@
 class SocketX;
 class LocalClient;
 class TangoPair;
+class RetriveMode;
 
 class TangoThread: public QThread
 {
@@ -35,6 +36,7 @@ private:
     QByteArray logout();
     QByteArray sync_status();
     QByteArray submit_tango_items(std::vector<TangoPair> &tango_list);
+    QByteArray start_game_event(const int game_config_id, int n, RetriveMode mode);
 };
 
 #endif // CLIENTSLAVE_H

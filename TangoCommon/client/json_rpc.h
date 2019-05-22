@@ -34,7 +34,16 @@ namespace client_rpc {
         consumer_sign_up = 0x0004,
         logout = 0x0005,
         sync_status = 0x0006,
-        submit_tango_items = 0x0007
+        submit_tango_items = 0x0007,
+        start_game_event = 0x0008,
+        settle_game_event = 0x0009,
+        query_authors_brief_info = 0x000a,
+        query_consumers_brief_info = 0x000b,
+        query_authors_by_id = 0x000c,
+        query_authors_by_name = 0x000d,
+        query_consumers_by_id = 0x000e,
+        query_consumers_by_name = 0x000f,
+        query_users = 0x0010
     };
 
     QByteArray author_sign_in_request(QString account, QString password);
@@ -58,16 +67,16 @@ namespace client_rpc {
     QByteArray submit_tango_items_request(const std::vector<TangoPair> &tango_list);
     QByteArray submit_tango_items_returns(const UserFullInfo &info);
 
-    QByteArray start_game_event_request(const GameConfig *game_config, int n, RetriveMode mode);
-    QByteArray start_game_event_returns(const AbstractGameAutomation *automate);
+    QByteArray start_game_event_request(const int game_config_id, int n, RetriveMode mode);
+    // QByteArray start_game_event_returns(const AbstractGameAutomation *automate);
 
     QByteArray settle_game_event_request(const UserFullInfo *info);
     // QByteArray settle_game_event_returns();
 
-    QByteArray query_authors_brief_info_requset(int l, int r);
+    QByteArray query_authors_brief_info_request(int l, int r);
     QByteArray query_authors_brief_info_returns(std::vector<UserBriefInfo> &info_list);
 
-    QByteArray query_consumers_brief_info_requset(int l, int r);
+    QByteArray query_consumers_brief_info_request(int l, int r);
     QByteArray query_consumers_brief_info_returns(std::vector<UserBriefInfo> &info_list);
 
     QByteArray query_authors_by_id_request(int id);
@@ -77,10 +86,11 @@ namespace client_rpc {
 
     QByteArray query_users_info_returns(int id, UserFullInfo &query_container);
 
-    QByteArray query_users(int &query_count);
+    QByteArray query_users_request();
+    QByteArray query_users_returns(int query_count);
 
-    QByteArray decode_json_params_object(QByteArray bytes_json, QJsonArray &params, int &id, QString &err);
-    QByteArray decode_json_rets_object(QByteArray bytes_json, QJsonValue &ret, int &id, QString &err);
+    bool decode_json_params_object(QByteArray bytes_json, QJsonArray &params, int &id, QString &err);
+    bool decode_json_rets_object(QByteArray bytes_json, QJsonValue &ret, int &id, QString &err);
 
     QByteArray err_invalid_request_result(QString err);
     QByteArray err_exec_error(int id, QString err);

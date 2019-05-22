@@ -7,6 +7,7 @@
 #include "../../TangoCommon/client/json_rpc.h"
 #include "../../TangoCommon/client/LocalClient.h"
 #include "../../TangoCommon/types/RetriveMode.h"
+#include "../../TangoCommon/client/GameConfig.h"
 
 TangoThread::TangoThread(long long sock_desc, QObject *parent) :
     QThread(parent),

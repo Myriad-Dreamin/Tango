@@ -132,10 +132,10 @@ namespace client_rpc {
         request.insert("id", code::logout);
         request.insert("jsonrpc", "2.0");
 
-        QJsonArray params;
-        params.push_back(info);
+        QJsonArray result;
+        result.push_back(info);
 
-        request.insert("result", params);
+        request.insert("result", result);
 
         return QJsonDocument(request).toJson();
     }
@@ -161,12 +161,12 @@ namespace client_rpc {
         request.insert("id", code::logout);
         request.insert("jsonrpc", "2.0");
 
-        QJsonArray params;
-        params.push_back(status);
-        params.push_back(UserFullInfo::to_json_array(author_info));
-        params.push_back(UserFullInfo::to_json_array(consumer_info));
+        QJsonArray result;
+        result.push_back(status);
+        result.push_back(UserFullInfo::to_json_array(author_info));
+        result.push_back(UserFullInfo::to_json_array(consumer_info));
 
-        request.insert("result", params);
+        request.insert("result", result);
 
         return QJsonDocument(request).toJson();
     }
@@ -194,10 +194,205 @@ namespace client_rpc {
         request.insert("id", code::submit_tango_items);
         request.insert("jsonrpc", "2.0");
 
+        QJsonArray result;
+        result.push_back(UserFullInfo::to_json_array(info));
+
+        request.insert("result", result);
+
+        return QJsonDocument(request).toJson();
+    }
+
+
+    QByteArray start_game_event_request(const int game_config_id, int n, RetriveMode mode)
+    {
+        QJsonObject request;
+        request.insert("id", code::start_game_event);
+        request.insert("jsonrpc", "2.0");
+        request.insert("method", "start_game_event");
+
+        QJsonArray params;
+        params.push_back(game_config_id);
+        params.push_back(n);
+        params.push_back(mode);
+
+        request.insert("params", params);
+
+        return QJsonDocument(request).toJson();
+    }
+
+    // QByteArray start_game_event_returns() {}
+
+    QByteArray settle_game_event_request(const UserFullInfo &info)
+    {
+        QJsonObject request;
+        request.insert("id", code::settle_game_event);
+        request.insert("jsonrpc", "2.0");
+        request.insert("method", "settle_game_event");
+
         QJsonArray params;
         params.push_back(UserFullInfo::to_json_array(info));
 
         request.insert("params", params);
+
+        return QJsonDocument(request).toJson();
+    }
+
+    QByteArray query_authors_brief_info_request(int l, int r)
+    {
+        QJsonObject request;
+        request.insert("id", code::query_authors_brief_info);
+        request.insert("jsonrpc", "2.0");
+        request.insert("method", "query_authors_brief_info");
+
+        QJsonArray params;
+        params.push_back(l);
+        params.push_back(r);
+
+        request.insert("params", params);
+
+        return QJsonDocument(request).toJson();
+    }
+
+    QByteArray query_authors_brief_info_returns(std::vector<UserBriefInfo> &info_list)
+    {
+        QJsonObject request;
+        request.insert("id", code::submit_tango_items);
+        request.insert("jsonrpc", "2.0");
+
+        QJsonArray result;
+        for (unsigned int i = 0; i < info_list.size(); i++) {
+            result.push_back(UserBriefInfo::to_json_array(info_list[i]));
+        }
+
+        request.insert("result", result);
+
+        return QJsonDocument(request).toJson();
+    }
+
+    QByteArray query_consumers_brief_info_request(int l, int r)
+    {
+        QJsonObject request;
+        request.insert("id", code::query_consumers_brief_info);
+        request.insert("jsonrpc", "2.0");
+        request.insert("method", "query_consumers_brief_info");
+
+        QJsonArray params;
+        params.push_back(l);
+        params.push_back(r);
+
+        request.insert("params", params);
+
+        return QJsonDocument(request).toJson();
+    }
+
+    QByteArray query_consumers_brief_info_returns(std::vector<UserBriefInfo> &info_list)
+    {
+        QJsonObject request;
+        request.insert("id", code::query_consumers_brief_info);
+        request.insert("jsonrpc", "2.0");
+
+        QJsonArray result;
+        for (unsigned int i = 0; i < info_list.size(); i++) {
+            result.push_back(UserBriefInfo::to_json_array(info_list[i]));
+        }
+
+        request.insert("result", result);
+
+        return QJsonDocument(request).toJson();
+    }
+
+    QByteArray query_authors_by_id_request(int id)
+    {
+        QJsonObject request;
+        request.insert("id", code::query_authors_by_id);
+        request.insert("jsonrpc", "2.0");
+        request.insert("method", "query_authors_by_id");
+
+        QJsonArray params;
+        params.push_back(id);
+
+        request.insert("params", params);
+
+        return QJsonDocument(request).toJson();
+    }
+    QByteArray query_authors_by_name_request(QString name)
+    {
+        QJsonObject request;
+        request.insert("id", code::query_authors_by_name);
+        request.insert("jsonrpc", "2.0");
+        request.insert("method", "query_authors_by_name");
+
+        QJsonArray params;
+        params.push_back(name);
+
+        request.insert("params", params);
+
+        return QJsonDocument(request).toJson();
+    }
+    QByteArray query_consumers_by_id_request(int id)
+    {
+        QJsonObject request;
+        request.insert("id", code::query_consumers_by_id);
+        request.insert("jsonrpc", "2.0");
+        request.insert("method", "query_consumers_by_id");
+
+        QJsonArray params;
+        params.push_back(id);
+
+        request.insert("params", params);
+
+        return QJsonDocument(request).toJson();
+    }
+    QByteArray query_consumers_by_name_request(QString name)
+    {
+        QJsonObject request;
+        request.insert("id", code::query_consumers_by_name);
+        request.insert("jsonrpc", "2.0");
+        request.insert("method", "query_consumers_by_name");
+
+        QJsonArray params;
+        params.push_back(name);
+
+        request.insert("params", params);
+
+        return QJsonDocument(request).toJson();
+    }
+
+    QByteArray query_users_info_returns(int id, UserFullInfo &query_container)
+    {
+        QJsonObject request;
+        request.insert("id", id);
+        request.insert("jsonrpc", "2.0");
+
+        request.insert("result", UserFullInfo::to_json_array(query_container));
+
+        return QJsonDocument(request).toJson();
+    }
+
+    QByteArray query_users_request()
+    {
+        QJsonObject request;
+        request.insert("id", code::query_users);
+        request.insert("jsonrpc", "2.0");
+        request.insert("method", "query_consumers_by_name");
+
+        QJsonArray params;
+
+        request.insert("params", params);
+
+        return QJsonDocument(request).toJson();
+    }
+    QByteArray query_users_returns(int query_count)
+    {
+        QJsonObject request;
+        request.insert("id", code::query_users);
+        request.insert("jsonrpc", "2.0");
+
+        QJsonArray returns;
+
+        returns.push_back(query_count);
+
+        request.insert("result", returns);
 
         return QJsonDocument(request).toJson();
     }
