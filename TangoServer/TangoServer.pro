@@ -28,6 +28,7 @@ SOURCES += \
     ../TangoCommon/client/AbstractClient.cpp \
     ../TangoCommon/client/AbstractGameAutomation.cpp \
     ../TangoCommon/client/GameAutomation.cpp \
+    ../TangoCommon/client/GameAutomationRelayer.cpp \
     ../TangoCommon/client/GameClient.cpp \
     ../TangoCommon/client/GameConfig.cpp \
     ../TangoCommon/client/LocalClient.cpp \
@@ -54,6 +55,7 @@ HEADERS += \
     ../TangoCommon/client/AbstractClient.h \
     ../TangoCommon/client/AbstractGameAutomation.h \
     ../TangoCommon/client/GameAutomation.h \
+    ../TangoCommon/client/GameAutomationRelayer.h \
     ../TangoCommon/client/GameClient.h \
     ../TangoCommon/client/GameConfig.h \
     ../TangoCommon/client/LocalClient.h \
