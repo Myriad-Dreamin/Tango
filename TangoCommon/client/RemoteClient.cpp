@@ -585,43 +585,58 @@ bool RemoteClient::settle_game_event(const AbstractGameAutomation *)
 bool RemoteClient::query_authors_brief_info(std::vector<UserBriefInfo>&, int l, int r)
 {
     this->handler->write_package(client_rpc::query_authors_brief_info_request(l, r));
-    return false;
+    return true;
 }
 
 bool RemoteClient::query_consumers_brief_info(std::vector<UserBriefInfo>&, int l, int r)
 {
     this->handler->write_package(client_rpc::query_consumers_brief_info_request(l, r));
-    return false;
+    return true;
 }
 
-bool RemoteClient::query_authors_by_id(UserFullInfo &query_container, int id)
+bool RemoteClient::query_authors_by_id(UserFullInfo &, int id)
 {
-    _last_error = "TODO";
-    return false;
+    this->handler->write_package(client_rpc::query_authors_by_id_request(id));
+    return true;
 }
 
-bool RemoteClient::query_consumers_by_id(UserFullInfo &query_container, int id)
+bool RemoteClient::query_consumers_by_id(UserFullInfo &, int id)
 {
+    this->handler->write_package(client_rpc::query_consumers_by_id_request(id));
     _last_error = "TODO";
-    return false;
+    return true;
 }
 
-bool RemoteClient::query_consumers_by_name(UserFullInfo &query_container, QString name)
+bool RemoteClient::query_consumers_by_name(UserFullInfo &, QString name)
 {
+    this->handler->write_package(client_rpc::query_consumers_by_name_request(name));
     _last_error = "TODO";
-    return false;
+    return true;
 }
 
 bool RemoteClient::query_users(int &query_count)
 {
-    _last_error = "TODO";
-    return false;
+    this->handler->write_package(client_rpc::query_users_request());
+    _last_error = "timeout";
+    bool success = false;
+    QJsonValue ret;
+    int id;
+    this->handler->wait_for_new_package([&](QByteArray bytes_json) mutable {
+        qDebug() << "ret" << bytes_json;
+        success = client_rpc::decode_json_rets_object(bytes_json, ret, id, _last_error);
+    }, 3000);
+    qDebug() << ret;
+    if (success == false) {
+        return false;
+    }
+    query_count = ret.toInt();
+    return true;
 }
 
-bool RemoteClient::query_authors_by_name(UserFullInfo &query_container, QString name)
+bool RemoteClient::query_authors_by_name(UserFullInfo &, QString name)
 {
-    _last_error = "TODO";
-    return false;
+    this->handler->write_package(client_rpc::query_authors_by_name_request(name));
+    return true;
 }
 
 const QString RemoteClient::last_error()

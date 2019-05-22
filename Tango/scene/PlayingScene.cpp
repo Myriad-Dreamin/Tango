@@ -242,8 +242,9 @@ std::function<void()> PlayingScene::single_round_must_done(const std::function<A
             }
 
         });
-        connect(this->parent->playsub_scene->stop_button, &QPushButton::clicked, [automate]() mutable {
+        connect(this->parent->playsub_scene->stop_button, &QPushButton::clicked, [this, automate]() mutable {
             automate->stop();
+            this->parent->switch_scene(this->parent->playset_scene);
         });
 
         automate->start();

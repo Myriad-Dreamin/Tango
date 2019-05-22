@@ -48,6 +48,11 @@ private:
     QByteArray settle_game_event();
     QByteArray query_authors_brief_info(int l, int r);
     QByteArray query_consumers_brief_info(int l, int r);
+    QByteArray query_authors_by_id(int id);
+    QByteArray query_consumers_by_id(int id);
+    QByteArray query_authors_by_name(QString name);
+    QByteArray query_consumers_by_name(QString name);
+    QByteArray query_users();
 };
 
 #endif // CLIENTSLAVE_H

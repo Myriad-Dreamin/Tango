@@ -310,7 +310,7 @@ namespace client_rpc {
         return QJsonDocument(request).toJson();
     }
 
-    QByteArray query_authors_by_id_request(int id)
+    QByteArray  query_authors_by_id_request(int id)
     {
         QJsonObject request;
         request.insert("id", code::query_authors_by_id);

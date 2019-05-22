@@ -273,6 +273,13 @@ void TangoThread::run(void)
             qDebug() << "writed";
             return;
         }
+        case client_rpc::query_consumers_by_name: {
+            if (params.size() != 2) {
+                m_socket->write_package(client_rpc::err_invalid_params(client_rpc::query_consumers_by_name));
+                return;
+            }
+            m_socket->write_package(client_rpc::query_)
+        }
         default: {
             m_socket->write_package(client_rpc::err_method_not_found());
             return;
@@ -460,7 +467,7 @@ QByteArray TangoThread::query_authors_brief_info(int l, int r)
 {
     std::vector<UserBriefInfo> info_list;
     if (!this->client->query_authors_brief_info(info_list, l, r)) {
-        return client_rpc::err_exec_error(client_rpc::settle_game_event, this->client->last_error());
+        return client_rpc::err_exec_error(client_rpc::query_authors_brief_info, this->client->last_error());
     }
 
     return client_rpc::query_authors_brief_info_returns(info_list);
@@ -470,22 +477,58 @@ QByteArray TangoThread::query_consumers_brief_info(int l, int r)
 {
     std::vector<UserBriefInfo> info_list;
     if (!this->client->query_consumers_brief_info(info_list, l, r)) {
-        return client_rpc::err_exec_error(client_rpc::settle_game_event, this->client->last_error());
+        return client_rpc::err_exec_error(client_rpc::query_consumers_brief_info, this->client->last_error());
     }
 
     return client_rpc::query_authors_brief_info_returns(info_list);
 }
 
-QByteArray query_authors_by_id(int id);
-QByteArray query_authors_by_name(QString name);
-QByteArray query_consumers_by_id(int id);
-QByteArray query_consumers_by_name(QString name);
+QByteArray TangoThread::query_authors_by_id(int id)
+{
+    UserFullInfo query_container;
+    if (!this->client->query_authors_by_id(query_container, id)) {
+        return client_rpc::err_exec_error(client_rpc::query_authors_by_id, this->client->last_error());
+    }
+
+    return client_rpc::query_users_info_returns(client_rpc::query_authors_by_id, query_container);
+}
+
+QByteArray TangoThread::query_authors_by_name(QString name)
+{
+    UserFullInfo query_container;
+    if (!this->client->query_authors_by_name(query_container, name)) {
+        return client_rpc::err_exec_error(client_rpc::query_authors_by_name, this->client->last_error());
+    }
+
+    return client_rpc::query_users_info_returns(client_rpc::query_authors_by_name, query_container);
+}
+
+QByteArray TangoThread::query_consumers_by_id(int id)
+{
+    UserFullInfo query_container;
+    if (!this->client->query_consumers_by_id(query_container, id)) {
+        return client_rpc::err_exec_error(client_rpc::query_authors_by_id, this->client->last_error());
+    }
+
+    return client_rpc::query_users_info_returns(client_rpc::query_authors_by_id, query_container);
+}
+
+QByteArray TangoThread::query_consumers_by_name(QString name)
+{
+    UserFullInfo query_container;
+    if (!this->client->query_consumers_by_name(query_container, name)) {
+        return client_rpc::err_exec_error(client_rpc::query_authors_by_name, this->client->last_error());
+    }
+
+    return client_rpc::query_users_info_returns(client_rpc::query_authors_by_name, query_container);
+}
 
 
-QByteArray query_users();
-
-
-QByteArray query_authors_brief_info_returns(std::vector<UserBriefInfo> &info_list);
-QByteArray query_consumers_brief_info_returns(std::vector<UserBriefInfo> &info_list);
-QByteArray query_users_info_returns(int id, UserFullInfo &query_container);
-QByteArray query_users_returns(int query_count);
+QByteArray TangoThread::query_users()
+{
+    int query_count;
+    if (!this->client->query_users(query_count)) {
+        return client_rpc::err_exec_error(client_rpc::query_users, this->client->last_error());
+    }
+    return client_rpc::query_users_returns(query_count);
+}
