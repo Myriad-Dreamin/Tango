@@ -30,8 +30,8 @@ public:
 signals:
     void start_game();
     void elasped();
-    void new_tango(TangoPair);
-    void tango_faded();
+    void new_tango(TangoPair,int);
+    void tango_faded(int);
     void answer_failed();
     void success();
     void failed();

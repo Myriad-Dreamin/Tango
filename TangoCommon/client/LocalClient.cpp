@@ -887,7 +887,7 @@ bool LocalClient::retrive_tango_items(std::vector<TangoPair> &tango_list, int &n
     }
 
     unsigned int to_fetch;
-    switch (mode) {
+    switch (RetriveRange::get_mode(mode)) {
     case RetriveMode::Easy:
         tot_length = static_cast<int>(0.3 * tot_length);
         if (tot_length < n) {
@@ -931,7 +931,8 @@ bool LocalClient::retrive_tango_items(std::vector<TangoPair> &tango_list, int &n
             return false;
         }
         return true;
+    default:
+        _last_error = "unknown retrive mode";
+        return false;
     }
-
-    return true;
 }

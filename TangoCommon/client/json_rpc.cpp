@@ -203,7 +203,7 @@ namespace client_rpc {
     }
 
 
-    QByteArray start_game_event_request(const int game_config_id, int n, RetriveMode mode)
+    QByteArray start_game_event_request(int n, RetriveMode mode)
     {
         QJsonObject request;
         request.insert("id", code::start_game_event);
@@ -211,9 +211,8 @@ namespace client_rpc {
         request.insert("method", "start_game_event");
 
         QJsonArray params;
-        params.push_back(game_config_id);
         params.push_back(n);
-        params.push_back(mode);
+        params.push_back(static_cast<int>(mode));
 
         request.insert("params", params);
 
@@ -499,6 +498,57 @@ namespace client_rpc {
             result.insert("code", RPCBaseError::InvalidParams);
             return QJsonDocument(result).toJson();
         }
+
+        inline QByteArray _signal_start_game()
+        {
+            QJsonObject request;
+            request.insert("id", code::signal_start_game);
+            request.insert("jsonrpc", "2.0");
+            request.insert("method", "signal_start_game");
+
+            QJsonArray params;
+            request.insert("params", params);
+
+            return QJsonDocument(request).toJson();
+        }
+
+        inline QByteArray _signal_game_success()
+        {
+            QJsonObject request;
+
+            request.insert("id", code::signal_game_success);
+            request.insert("jsonrpc", "2.0");
+            request.insert("method", "signal_game_success");
+            QJsonArray params;
+            request.insert("params", params);
+            return QJsonDocument(request).toJson();
+        }
+
+        inline QByteArray _signal_game_failed()
+        {
+            QJsonObject request;
+            request.insert("id", code::signal_game_failed);
+            request.insert("jsonrpc", "2.0");
+            request.insert("method", "signal_game_failed");
+
+            QJsonArray params;
+            request.insert("params", params);
+
+            return QJsonDocument(request).toJson();
+        }
+
+        inline QByteArray _signal_game_stop()
+        {
+            QJsonObject request;
+            request.insert("id", code::signal_game_stop);
+            request.insert("jsonrpc", "2.0");
+            request.insert("method", "signal_game_stop");
+
+            QJsonArray params;
+            request.insert("params", params);
+
+            return QJsonDocument(request).toJson();
+        }
     }
 
     QByteArray err_invalid_request_result(QString err)
@@ -518,6 +568,7 @@ namespace client_rpc {
         result.insert("id", id);
         result.insert("jsonrpc", "2.0");
         result.insert("error", err);
+        result.insert("code", RPCBaseError::InternalError);
         return QJsonDocument(result).toJson();
     }
 
@@ -542,4 +593,70 @@ namespace client_rpc {
         return QJsonDocument(result).toJson();
     }
 
+    QByteArray signal_start_game_request()
+    {
+        static QByteArray ret = _maker::_signal_start_game();
+        return ret;
+    }
+
+    QByteArray signal_new_tango_request(const TangoPair &tango, int fade_time)
+    {
+        QJsonObject request;
+
+        request.insert("id", code::signal_new_tango);
+        request.insert("jsonrpc", "2.0");
+        request.insert("method", "signal_new_tango");
+
+        QJsonArray params;
+        params.push_back(TangoPair::to_json_array(tango));
+        params.push_back(fade_time);
+
+        request.insert("params", params);
+
+        return QJsonDocument(request).toJson();
+    }
+
+    QByteArray signal_tango_faded_request(int answer_time)
+    {
+        QJsonObject request;
+        request.insert("id", code::signal_start_game);
+        request.insert("jsonrpc", "2.0");
+        request.insert("method", "signal_start_game");
+
+        QJsonArray params;
+        params.push_back(answer_time);
+        request.insert("params", params);
+
+        return QJsonDocument(request).toJson();
+    }
+
+    QByteArray signal_game_success_request()
+    {
+        static QByteArray ret = _maker::_signal_game_success();
+        return ret;
+    }
+
+    QByteArray signal_game_failed_request()
+    {
+        static QByteArray ret = _maker::_signal_game_failed();
+        return ret;
+    }
+
+    QByteArray signal_game_stop_request()
+    {
+        static QByteArray ret = _maker::_signal_game_stop();
+        return ret;
+    }
+
+    QByteArray signal_game_answer_request(const TangoPair &tango)
+    {
+        QJsonObject request;
+
+        request.insert("id", code::signal_game_answer);
+        request.insert("jsonrpc", "2.0");
+        request.insert("method", "signal_game_answer");
+        request.insert("params", TangoPair::to_json_array(tango));
+
+        return QJsonDocument(request).toJson();
+    }
 };

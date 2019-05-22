@@ -19,6 +19,11 @@ void decreasing_ans_functor(int &x);
 std::function<bool()> second_chance_functor_gen();
 
 void default_exp_functor(int &x, TangoPair tango, int level_step);
+void easy_exp_increment(int &exp, TangoPair tango, int success_count);
+void normal_exp_increment(int &exp, TangoPair tango, int success_count);
+void hard_exp_increment(int &exp, TangoPair tango, int success_count);
+
+
 bool default_failed_functor();
 
 /* 游戏参数设定类 */
@@ -74,15 +79,44 @@ private:
     std::function<bool()> if_failed_functor;
 };
 
-/* 默认设定 */
-const GameConfig DEFAULT_CONFIG = GameConfig();
+namespace GameConfigMode {
+    /* 默认设定 */
+    const GameConfig DEFAULT_CONFIG = GameConfig();
 
-/* 每轮时间递减 */
-const GameConfig DECREASE_TIMECONFIG = GameConfig(
-    false,
-    decreasing_fade_functor,
-    decreasing_ans_functor
-);
+    /* 每轮时间递减 */
+    const GameConfig DECREASE_TIME_CONFIG = GameConfig(
+        false,
+        decreasing_fade_functor,
+        decreasing_ans_functor
+    );
+
+    const GameConfig HARD_EASYMODE_CONFIG = GameConfig(
+        false,
+        decreasing_fade_functor,
+        decreasing_ans_functor,
+        second_chance_functor_gen(),
+        easy_exp_increment
+    );
+
+    const GameConfig HARD_NORMALMODE_CONFIG = GameConfig(
+        false,
+        decreasing_fade_functor,
+        decreasing_ans_functor,
+        second_chance_functor_gen(),
+        easy_exp_increment
+    );
+
+    const GameConfig HARD_HARDMODE_CONFIG = GameConfig(
+        false,
+        decreasing_fade_functor,
+        decreasing_ans_functor,
+        second_chance_functor_gen(),
+        easy_exp_increment
+    );
+
+}
+
+
 
 
 

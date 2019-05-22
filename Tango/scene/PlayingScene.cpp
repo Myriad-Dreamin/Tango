@@ -26,9 +26,6 @@
 
 #include "../../TangoCommon/types/MessageBox.h"
 
-void easy_increment(int &exp, TangoPair tango, int success_count) {
-    exp = exp + static_cast<int>(tango.first.length() * (1 + success_count * 0.01) + 0.99);
-}
 
 std::function<AbstractGameAutomation *()> PlayingScene::default_automate()
 {
@@ -37,13 +34,8 @@ std::function<AbstractGameAutomation *()> PlayingScene::default_automate()
     }
     game_config = new GameConfig();
     return [this]() mutable -> AbstractGameAutomation * {
-        return this->parent->client->start_game_event(game_config, 5, RetriveMode::Hard);
+        return this->parent->client->start_game_event(game_config, 5, RetriveMode::DefaultMode);
     };
-}
-
-void normal_increment(int &exp, TangoPair tango, int success_count)
-{
-    exp = exp + static_cast<int>(tango.first.length() * (1.2 + success_count * 0.02) + 0.99);
 }
 
 std::function<AbstractGameAutomation *()> PlayingScene::easy_increment_automate()
@@ -57,19 +49,13 @@ std::function<AbstractGameAutomation *()> PlayingScene::easy_increment_automate(
     if (game_config != nullptr) {
         delete game_config;
     }
-    game_config = new GameConfig(
-        false,
-        decreasing_fade_functor,
-        decreasing_ans_functor,
-        second_chance_functor_gen(),
-        easy_increment
-    );
+    game_config = new GameConfig(GameConfigMode::HARD_EASYMODE_CONFIG);
 
     return [this, uni_rand]() mutable -> AbstractGameAutomation * {
         return this->parent->client->start_game_event(
             this->game_config,
             std::max(1, static_cast<int>(uni_rand())) ,
-            RetriveMode::Hard
+            RetriveMode::EasyMode
         );
     };
 }
@@ -90,51 +76,35 @@ std::function<AbstractGameAutomation *()> PlayingScene::normal_increment_automat
     if (game_config != nullptr) {
         delete game_config;
     }
-    game_config = new GameConfig(
-        false,
-        decreasing_fade_functor,
-        decreasing_ans_functor,
-        second_chance_functor_gen(),
-        easy_increment
-    );
+    game_config = new GameConfig(GameConfigMode::HARD_NORMALMODE_CONFIG);
 
     return [this, uni_rand]() mutable -> AbstractGameAutomation * {
         return this->parent->client->start_game_event(
             this->game_config,
             std::max(1, static_cast<int>(uni_rand())) ,
-            RetriveMode::Hard
+            RetriveMode::NormalMode
         );
     };
-}
-void hard_increment(int &exp, TangoPair tango, int success_count)
-{
-    exp = exp + static_cast<int>(tango.first.length() * (1.4 + success_count * 0.03) + 0.99);
 }
 
 std::function<AbstractGameAutomation *()> PlayingScene::hard_increment_automate()
 {
-     std::uniform_int_distribution<int> uni_gen(
-         51 - (50 + this->parent->client->consumer_level())/(this->parent->client->consumer_level() + 1),
-         101 - (100 + this->parent->client->consumer_level())/(this->parent->client->consumer_level() + 1)
+    std::uniform_int_distribution<int> uni_gen(
+        51 - (50 + this->parent->client->consumer_level())/(this->parent->client->consumer_level() + 1),
+        101 - (100 + this->parent->client->consumer_level())/(this->parent->client->consumer_level() + 1)
     );
-     auto uni_rand = std::bind(uni_gen, std::mt19937(static_cast<unsigned int>(time(nullptr)) * 23333U + 3U));
+    auto uni_rand = std::bind(uni_gen, std::mt19937(static_cast<unsigned int>(time(nullptr)) * 23333U + 3U));
 
-     if (game_config != nullptr) {
-         delete game_config;
-     }
-     game_config = new GameConfig(
-         false,
-         decreasing_fade_functor,
-         decreasing_ans_functor,
-         second_chance_functor_gen(),
-         easy_increment
-     );
+    if (game_config != nullptr) {
+        delete game_config;
+    }
+    game_config = new GameConfig(GameConfigMode::HARD_HARDMODE_CONFIG);
 
     return [this, uni_rand]() mutable -> AbstractGameAutomation * {
         return this->parent->client->start_game_event(
             game_config,
             std::max(1, static_cast<int>(uni_rand())) ,
-            RetriveMode::Hard
+            RetriveMode::HardMode
         );
     };
 }

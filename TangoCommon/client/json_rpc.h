@@ -43,7 +43,15 @@ namespace client_rpc {
         query_authors_by_name = 0x000d,
         query_consumers_by_id = 0x000e,
         query_consumers_by_name = 0x000f,
-        query_users = 0x0010
+        query_users = 0x0010,
+
+        signal_start_game = -0x0001,
+        signal_new_tango = -0x0002,
+        signal_tango_faded = -0x0003,
+        signal_game_success = -0x0004,
+        signal_game_failed = -0x0005,
+        signal_game_stop = -0x0006,
+        signal_game_answer = -0x0007,
     };
 
     QByteArray author_sign_in_request(QString account, QString password);
@@ -98,6 +106,13 @@ namespace client_rpc {
     QByteArray err_invalid_params();
     QByteArray success(int16_t id);
 
+    QByteArray signal_start_game_request();
+    QByteArray signal_new_tango_request(const TangoPair &tango, int fade_time);
+    QByteArray signal_tango_faded_request(int answer_time);
+    QByteArray signal_game_success_request();
+    QByteArray signal_game_failed_request();
+    QByteArray signal_game_stop_request();
+    QByteArray signal_game_answer_request(const TangoPair &tango);
 }
 
 

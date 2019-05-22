@@ -6,7 +6,7 @@
 #include <QJsonDocument>
 #include "../../TangoCommon/client/json_rpc.h"
 #include "../../TangoCommon/client/LocalClient.h"
-#include "../../TangoCommon/types/RetriveMode.h"
+#include "../../TangoCommon/client/GameConfig.h"
 
 TangoThread::TangoThread(long long sock_desc, QObject *parent) :
     QThread(parent),
@@ -14,7 +14,12 @@ TangoThread::TangoThread(long long sock_desc, QObject *parent) :
 {
     this->client = new LocalClient(this);
     m_socket = new SocketX(client_id);
+    automate_started = false;
+    game_event_enable = false;
+    this->game_config = nullptr;
+    this->automate = nullptr;
     connect(this, SIGNAL(finished()), this, SLOT(deleteLater()));
+    connect(this, &QThread::finished, this->client, &LocalClient::logout);
 }
 
 
@@ -24,12 +29,23 @@ TangoThread::TangoThread(long long sock_desc, QSqlDatabase &tango_sql, QObject *
 {
     this->client = new LocalClient(tango_sql, this);
     m_socket = new SocketX(client_id);
+    automate_started = false;
+    game_event_enable = false;
+    this->game_config = nullptr;
+    this->automate = nullptr;
     connect(this, SIGNAL(finished()), this, SLOT(deleteLater()));
     connect(this, &QThread::finished, this->client, &LocalClient::logout);
 }
 
 TangoThread::~TangoThread()
 {
+    if (this->game_config != nullptr) {
+        delete this->game_config;
+    }
+    if (automate != nullptr) {
+        automate->deleteLater();
+    }
+
     this->client->deleteLater();
     m_socket->close();
 }
@@ -159,6 +175,43 @@ void TangoThread::run(void)
             m_socket->write_package(this->submit_tango_items(tango_list));
             return;
         }
+        case client_rpc::signal_game_answer: {
+            if (!game_event_enable) {
+                m_socket->write_package(client_rpc::err_invalid_params());
+                return ;
+            }
+            if (params.size() != 2) {
+                m_socket->write_package(client_rpc::err_invalid_params());
+                return;
+            }
+
+            TangoPair user_ret = TangoPair::from_json_array(params);
+            if (user_ret.first == current_key) {
+                automate->make_answer_success_slotter()();
+            }
+            return;
+        }
+        case client_rpc::signal_game_stop: {
+            if (!game_event_enable) {
+                m_socket->write_package(client_rpc::err_invalid_params());
+                return ;
+            }
+            this->automate->make_stop_slotter()();
+            return;
+        }
+        case client_rpc::signal_start_game: {
+            if (!game_event_enable) {
+                m_socket->write_package(client_rpc::err_invalid_params());
+                return ;
+            }
+            if (!automate_started) {
+                m_socket->write_package(client_rpc::err_invalid_params());
+                return;
+            }
+            automate_started = true;
+            automate->start();
+            return;
+        }
         default: {
             m_socket->write_package(client_rpc::err_method_not_found());
             return;
@@ -263,9 +316,71 @@ QByteArray TangoThread::submit_tango_items(std::vector<TangoPair> &tango_list)
 
 
 
-QByteArray TangoThread::start_game_event(const int game_config_id, int n, RetriveMode mode)
+QByteArray TangoThread::start_game_event(int n, RetriveMode mode)
 {
-    this->client->start_game_event()
+    if (game_config != nullptr) {
+        delete game_config;
+    }
+
+    switch (mode) {
+    case RetriveMode::DefaultMode:{
+        game_config = new GameConfig(GameConfigMode::DEFAULT_CONFIG);
+        break;
+    }
+    case RetriveMode::EasyMode:{
+        game_config = new GameConfig(GameConfigMode::HARD_EASYMODE_CONFIG);
+        break;
+    }
+    case RetriveMode::NormalMode:{
+        game_config = new GameConfig(GameConfigMode::HARD_NORMALMODE_CONFIG);
+        break;
+    }
+    case RetriveMode::HardMode:{
+        game_config = new GameConfig(GameConfigMode::HARD_HARDMODE_CONFIG);
+        break;
+    }
+    default:
+        return client_rpc::err_invalid_params();
+    }
+    if (automate != nullptr) {
+        automate->deleteLater();
+    }
+    automate = this->client->start_game_event(game_config, n, RetriveRange::get_mode(mode));
+
+    if (automate == nullptr) {
+        return client_rpc::err_exec_error(client_rpc::start_game_event, this->client->last_error());
+    }
+    automate->setParent(this);
+
+    connect(automate, &AbstractGameAutomation::start_game, [this]() mutable {
+        qDebug() << "start game";
+        this->m_socket->write_package(client_rpc::signal_start_game_request());
+    });
+    connect(automate, &AbstractGameAutomation::new_tango, [this](TangoPair tango, int fade_time) mutable {
+        qDebug() << "retreving" << tango;
+        this->m_socket->write_package(client_rpc::signal_new_tango_request(tango, fade_time));
+    });
+    connect(automate, &AbstractGameAutomation::tango_faded, [this](int answer_time) mutable {
+        this->m_socket->write_package(client_rpc::signal_tango_faded_request(answer_time));
+    });
+    connect(automate, &AbstractGameAutomation::answer_failed, []() mutable {
+        qDebug() << "answer failed";
+    });
+
+    connect(automate, &AbstractGameAutomation::success, [this]() mutable {
+        qDebug() << "success";
+        this->m_socket->write_package(client_rpc::signal_game_success_request());
+        this->game_event_enable = false;
+    });
+    connect(automate, &AbstractGameAutomation::failed, [this]() mutable {
+        qDebug() << "failed";
+        this->m_socket->write_package(client_rpc::signal_game_failed_request());
+        this->game_event_enable = false;
+    });
+
+    game_event_enable = true;
+    automate_started = false;
+    return client_rpc::success(client_rpc::start_game_event);
 }
 // QByteArray start_game_event_returns(const AbstractGameAutomation *automate);
 

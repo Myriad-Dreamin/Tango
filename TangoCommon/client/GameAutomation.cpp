@@ -122,7 +122,7 @@ void GameAutomation::select_new_tango()
         emit AbstractGameAutomation::success();
     } else {
         qDebug() << "selecting " << (*this->tango_pool)[this->select_ptr];
-        emit AbstractGameAutomation::new_tango((*this->tango_pool)[this->select_ptr++]);
+        emit AbstractGameAutomation::new_tango((*this->tango_pool)[this->select_ptr++], this->fade_time);
 
         disconnect(this->timer, nullptr, nullptr, nullptr);
         connect(this->timer, &QTimer::timeout, [this]() mutable {
@@ -137,7 +137,7 @@ void GameAutomation::select_new_tango()
 
 void GameAutomation::make_faded_event()
 {
-    emit AbstractGameAutomation::tango_faded();
+    emit AbstractGameAutomation::tango_faded(this->ans_time);
     disconnect(this->timer, nullptr, nullptr, nullptr);
     connect(this->timer, &QTimer::timeout, [this]() mutable {
         emit AbstractGameAutomation::answer_failed();
@@ -149,6 +149,8 @@ void GameAutomation::make_faded_event()
         }
     });
     this->timer->start(this->ans_time);
+
+    this->config->ans_functor(this->ans_time);
 }
 
 std::function<void()> GameAutomation::make_answer_success_slotter()

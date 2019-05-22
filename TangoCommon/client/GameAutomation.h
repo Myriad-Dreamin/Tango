@@ -20,7 +20,7 @@ class GameAutomation :public AbstractGameAutomation
     friend class AbstractClient;
     friend class LocalClient;
 public:
-    explicit GameAutomation(const GameConfig *game_config=&DEFAULT_CONFIG, QObject *parent = nullptr);
+    explicit GameAutomation(const GameConfig *game_config=&GameConfigMode::DEFAULT_CONFIG, QObject *parent = nullptr);
     ~GameAutomation();
     const QString last_error();
     bool set_config(const GameConfig *game_config);

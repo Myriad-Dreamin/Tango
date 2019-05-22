@@ -151,3 +151,17 @@ void default_exp_functor(int &x, TangoPair tango, int)
     x += tango.first.length();
     return;
 }
+
+void easy_exp_increment(int &exp, TangoPair tango, int success_count) {
+    exp = exp + static_cast<int>(tango.first.length() * (1 + success_count * 0.01) + 0.99);
+}
+
+void normal_exp_increment(int &exp, TangoPair tango, int success_count)
+{
+    exp = exp + static_cast<int>(tango.first.length() * (1.2 + success_count * 0.02) + 0.99);
+}
+
+void hard_exp_increment(int &exp, TangoPair tango, int success_count)
+{
+    exp = exp + static_cast<int>(tango.first.length() * (1.4 + success_count * 0.03) + 0.99);
+}

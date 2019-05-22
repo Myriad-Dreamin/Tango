@@ -5,28 +5,32 @@
 
 
 namespace RetriveRange {
-    enum Bit: std::uint32_t
+    enum Bit: std::int32_t
     {
-        // 30%
-        Easy   = 0x0 << 2,
+        // 100%
+        Hard   = 0x0 << 2,
         // 60%
         Normal = 0x1 << 2,
-        // 100%
-        Hard   = 0x2 << 2
+        // 30%
+        Easy   = 0x2 << 2,
+
+        Filter = 0x3 << 2,
     };
 }
 
 namespace RetriveLevel {
-    enum Bit: std::uint32_t
+    enum Bit: std::int32_t
     {
         DefaultMode = 0x0,
         EasyMode    = 0x1,
         NormalMode  = 0x2,
-        HardMode    = 0x3
+        HardMode    = 0x3,
+
+        Filter = 0x3,
     };
 }
 
-enum RetriveMode: std::uint32_t
+enum RetriveMode: std::int32_t
 {
     Easy_DefaultMode = RetriveRange::Easy | RetriveLevel::DefaultMode,
     Easy_EasyMode    = RetriveRange::Easy | RetriveLevel::EasyMode,
@@ -54,5 +58,15 @@ enum RetriveMode: std::uint32_t
     HardMode    = Hard_HardMode,
     Default     = DefaultMode
 };
+
+
+namespace RetriveRange {
+    RetriveMode get_mode(RetriveMode mode);
+}
+
+namespace RetriveLevel {
+    RetriveMode get_mode(RetriveMode mode);
+    bool is_default(RetriveMode mode);
+}
 
 #endif // RETRIVEMODE_H
