@@ -12,6 +12,9 @@
 #include "../types/UserFullInfo.h"
 #include "../types/UserStatus.h"
 #include "../types/TangoPair.h"
+#include "AbstractGameAutomation.h"
+#include "../types/UserBriefInfo.h"
+#include "../types/RetriveMode.h"
 
 namespace client_rpc {
     enum RPCBaseError: int16_t {
@@ -55,8 +58,30 @@ namespace client_rpc {
     QByteArray submit_tango_items_request(const std::vector<TangoPair> &tango_list);
     QByteArray submit_tango_items_returns(const UserFullInfo &info);
 
-    bool decode_json_params_object(QByteArray bytes_json, QJsonArray &params, int &id, QString &err);
-    bool decode_json_rets_object(QByteArray bytes_json, QJsonValue &ret, int &id, QString &err);
+    QByteArray start_game_event_request(const GameConfig *game_config, int n, RetriveMode mode);
+    QByteArray start_game_event_returns(const AbstractGameAutomation *automate);
+
+    QByteArray settle_game_event_request(const UserFullInfo *info);
+    // QByteArray settle_game_event_returns();
+
+    QByteArray query_authors_brief_info_requset(int l, int r);
+    QByteArray query_authors_brief_info_returns(std::vector<UserBriefInfo> &info_list);
+
+    QByteArray query_consumers_brief_info_requset(int l, int r);
+    QByteArray query_consumers_brief_info_returns(std::vector<UserBriefInfo> &info_list);
+
+    QByteArray query_authors_by_id_request(int id);
+    QByteArray query_authors_by_name_request(QString name);
+    QByteArray query_consumers_by_id_request(int id);
+    QByteArray query_consumers_by_name_request(QString name);
+
+    QByteArray query_users_info_returns(int id, UserFullInfo &query_container);
+
+    QByteArray query_users(int &query_count);
+
+    QByteArray decode_json_params_object(QByteArray bytes_json, QJsonArray &params, int &id, QString &err);
+    QByteArray decode_json_rets_object(QByteArray bytes_json, QJsonValue &ret, int &id, QString &err);
+
     QByteArray err_invalid_request_result(QString err);
     QByteArray err_exec_error(int id, QString err);
     QByteArray err_method_not_found();

@@ -348,5 +348,3 @@ namespace client_rpc {
     }
 
 };
-
-
