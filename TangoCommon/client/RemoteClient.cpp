@@ -138,7 +138,10 @@ void RemoteClient::returns_packages(int id, QJsonValue rets, QString err)
 {
     qDebug() << id << rets << err;
     switch (id) {
-
+    case client_rpc::start_game_event: {
+        automate->start();
+        return;
+    }
     case client_rpc::author_sign_in: {
         if (err != nullptr) {
             this->parent->switch_scene(this->parent->main_scene);
@@ -567,20 +570,21 @@ bool RemoteClient::submit_tango_items(const std::vector<TangoPair> &tango_list)
 AbstractGameAutomation *RemoteClient::start_game_event(const GameConfig *, int n, RetriveMode mode)
 {
     this->handler->write_package(client_rpc::start_game_event_request(n, mode));
-    _last_error = "timeout";
-    bool success = false;
-    QJsonValue ret;
-    int id;
-    this->handler->wait_for_new_package([&](QByteArray bytes_json) mutable {
-        qDebug() << "ret" << bytes_json;
-        success = client_rpc::decode_json_rets_object(bytes_json, ret, id, _last_error);
-    }, 3000);
-    qDebug() << ret;
-    if (success == false) {
-        return nullptr;
-    }
-    qDebug() << "start game event";
-    return new GameAutomationRelayer(this);
+//    _last_error = "timeout";
+//    bool success = false;
+//    QJsonValue ret;
+//    int id;
+//    this->handler->wait_for_new_package([&](QByteArray bytes_json) mutable {
+//        qDebug() << "ret" << bytes_json;
+//        success = client_rpc::decode_json_rets_object(bytes_json, ret, id, _last_error);
+//    }, 3000);
+//    qDebug() << ret;
+//    if (success == false) {
+//        return nullptr;
+//    }
+//    qDebug() << "start game event";
+    automate = new GameAutomationRelayer(this);
+    return automate;
 }
 
 void RemoteClient::game_start()

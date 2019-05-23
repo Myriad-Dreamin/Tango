@@ -89,6 +89,7 @@ private:
     quint16 remote_port;
     /* 远程连接handler */
     SocketX *handler;
+    GameAutomationRelayer *automate;
 
     QString current_key;
     QString _last_error;

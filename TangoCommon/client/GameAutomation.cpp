@@ -24,7 +24,7 @@ GameAutomation::GameAutomation(const GameConfig *game_config, QObject *parent): 
 
 GameAutomation::~GameAutomation()
 {
-    qDebug() << "deleted automation";
+    qDebug() << "deleted automation" << this;
     this->stop_automation();
     delete this->timer;
     delete this->elasped_timer;
