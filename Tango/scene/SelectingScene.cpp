@@ -64,11 +64,16 @@ bool SelectingScene::set_visble_buttons()
 {
     if (this->parent->client->consumer_logining()) {
         this->play_button->show();
-        this->multi_play_button->show();
     } else {
         this->play_button->hide();
+    }
+
+    if (this->parent->client->is_remote_server_connected()) {
+        this->multi_play_button->show();
+    } else {
         this->multi_play_button->hide();
     }
+
     if (this->parent->client->author_logining()) {
         this->creation_button->show();
     } else {

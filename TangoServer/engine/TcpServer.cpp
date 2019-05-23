@@ -4,10 +4,12 @@
 #include "../mainwindow.h"
 #include "../TangoCommon/network/SocketX.h"
 #include "../TangoCommon/client/LocalClient.h"
+#include "../TangoCommon/types/UserFullInfo.h"
 
 TcpServer::TcpServer(QObject *parent): QTcpServer (parent)
 {
     main_window = dynamic_cast<MainWindow*>(parent);
+    active_threads.clear();
     // connect()
 }
 
@@ -15,19 +17,21 @@ TcpServer::TcpServer(QSqlDatabase &out_link, QObject *parent): QTcpServer (paren
 {
     main_window = dynamic_cast<MainWindow*>(parent);
     tango_sql = out_link;
+    active_threads.clear();
     // connect()
 }
 
 TcpServer::~TcpServer() {}
 
-void TcpServer::incomingConnection(qintptr sockDesc)
+void TcpServer::incomingConnection(qintptr sock_desc)
 {
-    qDebug() << "incoming connection" << sockDesc;
+    qDebug() << "incoming connection" << sock_desc;
 
-    TangoThread *thread = new TangoThread(sockDesc, tango_sql);
+    TangoThread *thread = new TangoThread(sock_desc, tango_sql, this);
 
     this->make_on_client_disconnected(thread);
 
+    active_threads[sock_desc] = thread;
     qDebug() << "moving" << "-----------";
     thread->m_socket->moveToThread(thread);
     qDebug() << "moving" << "-----------";
@@ -43,12 +47,25 @@ void TcpServer::incomingConnection(qintptr sockDesc)
     thread->start();
 }
 
+void TcpServer::query_online_threads(
+    std::vector<UserFullInfo> &authors_info,
+    std::vector<UserFullInfo> &consumers_info,
+    std::vector<long long> &socks
+) {
+    for (auto thread: active_threads) {
+        socks.push_back(thread.first);
+        authors_info.push_back(thread.second->author_info());
+        consumers_info.push_back(thread.second->consumer_info());
+    }
+}
+
 
 
 void TcpServer::make_on_client_disconnected(TangoThread *thread)
 {
     connect(thread, &TangoThread::disconnected_from_client, this, [this, thread](long long sock_desc) {
         qDebug() << "on client disconnected " << sock_desc;
+        active_threads.erase(sock_desc);
         thread->quit();
         thread->wait();
         thread->deleteLater();

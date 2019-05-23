@@ -12,6 +12,7 @@ TangoThread::TangoThread(long long sock_desc, QObject *parent) :
     QThread(parent),
     client_id(sock_desc)
 {
+    this->server = dynamic_cast<TcpServer*>(parent);
     this->client = new LocalClient;
     m_socket = new SocketX(client_id);
     automate_started = false;
@@ -27,6 +28,7 @@ TangoThread::TangoThread(long long sock_desc, QSqlDatabase &tango_sql, QObject *
     QThread(parent),
     client_id(sock_desc)
 {
+    this->server = dynamic_cast<TcpServer*>(parent);
     this->client = new LocalClient(tango_sql);
     m_socket = new SocketX(client_id);
     automate_started = false;
@@ -49,6 +51,16 @@ TangoThread::~TangoThread()
 
     this->client->deleteLater();
     m_socket->close();
+}
+
+UserFullInfo TangoThread::consumer_info()
+{
+    return this->client->consumer_info();
+}
+
+UserFullInfo TangoThread::author_info()
+{
+    return this->client->author_info();
 }
 
 void TangoThread::run(void)
@@ -315,6 +327,14 @@ void TangoThread::run(void)
             m_socket->write_package(this->query_authors_by_id(id));
             return;
         }
+        case client_rpc::query_online_users: {
+            if (params.size() != 0) {
+                m_socket->write_package(client_rpc::err_invalid_params(client_rpc::query_authors_by_id));
+                return;
+            }
+            m_socket->write_package(this->query_online_users());
+            return;
+        }
         default: {
             m_socket->write_package(client_rpc::err_method_not_found());
             return;
@@ -573,3 +593,12 @@ QByteArray TangoThread::query_users()
     }
     return client_rpc::query_users_returns(query_count);
 }
+
+QByteArray TangoThread::query_online_users()
+{
+    std::vector<UserFullInfo> authors_info, consumers_info;
+    std::vector<long long> socket_list;
+    this->server->query_online_threads(authors_info, consumers_info, socket_list);
+    return client_rpc::query_online_users_returns(authors_info, consumers_info, socket_list);
+}
+

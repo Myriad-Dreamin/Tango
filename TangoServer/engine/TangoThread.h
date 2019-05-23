@@ -5,21 +5,28 @@
 #include <QThread>
 #include <QSqlDatabase>
 #include "../../TangoCommon/types/RetriveMode.h"
+#include <map>
+#include "TcpServer.h"
+
 
 class SocketX;
 class LocalClient;
 class TangoPair;
 class GameConfig;
 class AbstractGameAutomation;
+class UserFullInfo;
 
 class TangoThread: public QThread
 {
     Q_OBJECT
     friend class TcpServer;
 public:
-    TangoThread(qintptr sockDesc, QObject *parent = nullptr);
-    TangoThread(qintptr sockDesc, QSqlDatabase &tango_sql, QObject *parent = nullptr);
+    TangoThread(qintptr sockDesc, QObject *server = nullptr);
+    TangoThread(qintptr sockDesc, QSqlDatabase &tango_sql, QObject *server = nullptr);
     ~TangoThread();
+
+    UserFullInfo consumer_info();
+    UserFullInfo author_info();
 
 private:
     void run(void);
@@ -28,7 +35,9 @@ signals:
     void disconnected_from_client(long long sockDesc);
 
 private:
+
     SocketX *m_socket;
+    TcpServer *server;
     LocalClient *client;
     GameConfig *game_config;
     bool game_event_enable;
@@ -54,6 +63,7 @@ private:
     QByteArray query_authors_by_name(QString name);
     QByteArray query_consumers_by_name(QString name);
     QByteArray query_users();
+    QByteArray query_online_users();
 };
 
 #endif // CLIENTSLAVE_H

@@ -44,6 +44,7 @@ namespace client_rpc {
         query_consumers_by_id = 0x000e,
         query_consumers_by_name = 0x000f,
         query_users = 0x0010,
+        query_online_users = 0x0011,
 
         signal_start_game = -0x0001,
         signal_new_tango = -0x0002,
@@ -96,6 +97,10 @@ namespace client_rpc {
 
     QByteArray query_users_request();
     QByteArray query_users_returns(int query_count);
+
+    QByteArray query_online_users_request();
+    QByteArray query_online_users_returns(const std::vector<UserFullInfo> &authors_list, const std::vector<UserFullInfo> &consumers_list, const std::vector<long long> socket);
+
 
     bool decode_json_params_object(QByteArray bytes_json, QJsonArray &params, int &id, QString &err);
     bool decode_json_rets_object(QByteArray bytes_json, QJsonValue &ret, int &id, QString &err);

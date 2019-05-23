@@ -406,6 +406,43 @@ namespace client_rpc {
         return QJsonDocument(request).toJson();
     }
 
+    QByteArray query_online_users_request()
+    {
+        QJsonObject request;
+        request.insert("id", code::query_online_users);
+        request.insert("jsonrpc", "2.0");
+        request.insert("method", "query_online_users");
+
+        QJsonArray params;
+
+        request.insert("params", params);
+
+        return QJsonDocument(request).toJson();
+    }
+    QByteArray query_online_users_returns(const std::vector<UserFullInfo> &authors_list, const std::vector<UserFullInfo> &consumers_list, const std::vector<long long> socket_list)
+    {
+        QJsonObject request;
+        request.insert("id", code::query_users);
+        request.insert("jsonrpc", "2.0");
+
+        QJsonArray result;
+
+        if (authors_list.size() != consumers_list.size() || authors_list.size() != socket_list.size()) {
+            qDebug() << "size does not equal" << authors_list.size() << consumers_list.size() << socket_list.size();
+        }
+        for (unsigned int i = 0; i < authors_list.size(); i++) {
+            QJsonArray ret;
+            ret.push_back(UserFullInfo::to_json_array(authors_list[i]));
+            ret.push_back(UserFullInfo::to_json_array(consumers_list[i]));
+            ret.push_back(socket_list[i]);
+            result.push_back(ret);
+        }
+
+        request.insert("result", result);
+
+        return QJsonDocument(request).toJson();
+    }
+
     bool decode_json_params_object(QByteArray bytes_json, QJsonArray &params, int &id, QString &err)
     {
         QJsonParseError decode_err;
@@ -714,4 +751,5 @@ namespace client_rpc {
 
         return QJsonDocument(request).toJson();
     }
+
 };
