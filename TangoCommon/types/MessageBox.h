@@ -9,6 +9,7 @@ public:
     MessageBox(QWidget *parent);
 
     static void critical(QWidget *parent, QString title, QString text);
+    static void info_text(QWidget *parent, QString title, QString text);
 };
 
 #endif // MESSAGEBOX_H

@@ -28,6 +28,7 @@
 /* 场景 */
 #include "scene/MainScene.h"
 #include "scene/PlayingScene.h"
+#include "scene/MultiPlayingScene.h"
 #include "scene/PlaySubScene.h"
 #include "scene/RegisterScene.h"
 #include "scene/CreationScene.h"
@@ -56,6 +57,7 @@ MainWindow::MainWindow(QWidget *parent):
     this->cur_scene = nullptr;
     this->main_scene = nullptr;
     this->playing_scene = nullptr;
+    this->multiplaying_scene = nullptr;
     this->playsub_scene = nullptr;
     this->playset_scene = nullptr;
     this->register_scene = nullptr;
@@ -70,6 +72,7 @@ MainWindow::MainWindow(QWidget *parent):
 
     this->init_main_scene();
     this->init_playing_scene();
+    this->init_multiplaying_scene();
     this->init_playsub_scene();
     this->init_register_scene();
     this->init_creation_scene();
@@ -149,6 +152,14 @@ inline bool MainWindow::init_playing_scene()
     playing_scene = new PlayingScene(this);
 
     this->playing_scene->hide();
+    return true;
+}
+
+bool MainWindow::init_multiplaying_scene()
+{
+    multiplaying_scene = new MultiPlayingScene(this);
+
+    this->multiplaying_scene->hide();
     return true;
 }
 
@@ -365,6 +376,11 @@ inline bool MainWindow::init_selecting_scene()
         this->switch_scene(this->playing_scene);
     });
 
+    this->selecting_scene->set_multi_play_button_event([this]() mutable {
+        qDebug() << "clicked play button";
+
+        this->switch_scene(this->multiplaying_scene);
+    });
 
     this->selecting_scene->set_ranking_authors_button_event([this]() mutable {
         qDebug() << "clicked ranking button";

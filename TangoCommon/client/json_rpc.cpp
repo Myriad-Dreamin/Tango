@@ -422,7 +422,7 @@ namespace client_rpc {
     QByteArray query_online_users_returns(const std::vector<UserFullInfo> &authors_list, const std::vector<UserFullInfo> &consumers_list, const std::vector<long long> socket_list)
     {
         QJsonObject request;
-        request.insert("id", code::query_users);
+        request.insert("id", code::query_online_users);
         request.insert("jsonrpc", "2.0");
 
         QJsonArray result;

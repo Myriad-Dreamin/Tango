@@ -11,6 +11,7 @@ class TimerWidget;
 
 class MainScene;
 class PlayingScene;
+class MultiPlayingScene;
 class PlaySubScene;
 class RegisterScene;
 class CreationScene;
@@ -31,6 +32,7 @@ class MainWindow : public QMainWindow
     friend class RemoteClient;
     friend class MainScene;
     friend class PlayingScene;
+    friend class MultiPlayingScene;
     friend class PlaySubScene;
     friend class RegisterScene;
     friend class CreationScene;
@@ -58,6 +60,7 @@ private:
 
     MainScene *main_scene;
     PlayingScene *playing_scene;
+    MultiPlayingScene *multiplaying_scene;
     RegisterScene *register_scene;
     CreationScene *creation_scene;
     PlaySubScene *playsub_scene;
@@ -73,6 +76,7 @@ private:
 
     inline bool init_main_scene();
     inline bool init_playing_scene();
+    inline bool init_multiplaying_scene();
     inline bool init_playsub_scene();
     inline bool init_creation_scene();
     inline bool init_register_scene();

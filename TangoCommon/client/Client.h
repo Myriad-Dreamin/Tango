@@ -128,6 +128,12 @@ public:
     bool query_users(int &query_count);
 
     /*
+     * 查询在线玩家
+     *
+     */
+    bool query_online_users();
+
+    /*
      * 返回最后错误
      */
     const QString last_error();

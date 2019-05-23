@@ -16,3 +16,14 @@ void MessageBox::critical(QWidget *parent, QString title, QString text)
     mbox->exec();
     mbox->deleteLater();
 }
+
+void MessageBox::info_text(QWidget *parent, QString title, QString text)
+{
+    MessageBox *mbox = new MessageBox(parent);
+    mbox->setWindowTitle(title);
+    mbox->setText(text);
+    mbox->addButton(tr("Yes"), QMessageBox::ActionRole);
+
+    mbox->exec();
+    mbox->deleteLater();
+}

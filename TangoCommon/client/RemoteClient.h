@@ -57,6 +57,7 @@ public:
     bool query_consumers_by_name(UserFullInfo &query_container, QString name) override;
 
     bool query_users(int &query_count) override;
+    bool query_online_users();
 
     const QString last_error() override;
 

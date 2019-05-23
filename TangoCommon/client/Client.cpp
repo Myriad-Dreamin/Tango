@@ -345,6 +345,16 @@ bool Client::query_users(int &query_count)
     return false;
 }
 
+bool Client::query_online_users()
+{
+    if (this->remote_handler == nullptr) {
+        _last_error = "remote handler is not inited";
+        return false;
+    }
+    this->remote_handler->query_online_users();
+    return true;
+}
+
 bool Client::query_authors_by_name(UserFullInfo &query_container, QString name)
 {
     if (this->handler == nullptr) {

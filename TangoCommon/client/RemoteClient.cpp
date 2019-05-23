@@ -18,6 +18,7 @@
 #include "GameConfig.h"
 #include "scene/MainScene.h"
 #include "scene/PlayingScene.h"
+#include "scene/MultiPlayingScene.h"
 #include "scene/PlaySubScene.h"
 #include "scene/RegisterScene.h"
 #include "scene/CreationScene.h"
@@ -316,6 +317,25 @@ void RemoteClient::returns_packages(int id, QJsonValue rets, QString err)
             MessageBox::critical(this->parent, tr("错误"), err);
             return ;
         }
+        return;
+    }
+    case client_rpc::code::query_online_users: {
+        qDebug() << "query_online_users!!!!!!";
+        if (err != nullptr) {
+            MessageBox::critical(this->parent, tr("错误"), err);
+            return ;
+        }
+        auto arr = rets.toArray();
+        std::vector<UserFullInfo> authors_list, consumers_list;
+        std::vector<long long> socket_list;
+        for (int i = 0; i < arr.size(); i++) {
+            auto item = arr.at(i).toArray();
+            authors_list.push_back(UserFullInfo::from_json_array(item.at(0).toArray()));
+            consumers_list.push_back(UserFullInfo::from_json_array(item.at(1).toArray()));
+            qDebug() << "resulting" << item.at(0) << item.at(1) << item.at(2);
+            socket_list.push_back(item.at(2).toInt());
+        }
+        this->parent->multiplaying_scene->set_page_contain(authors_list, consumers_list, socket_list);
         return;
     }
     default:
@@ -657,6 +677,12 @@ bool RemoteClient::query_users(int &query_count)
         return false;
     }
     query_count = ret.toInt();
+    return true;
+}
+
+bool RemoteClient::query_online_users()
+{
+    this->handler->write_package(client_rpc::query_online_users_request());
     return true;
 }
 

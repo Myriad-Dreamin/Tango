@@ -26,6 +26,7 @@ debug/mainwindow.o
 debug/CreationScene.o
 debug/CreationTableItem.o
 debug/MainScene.o
+debug/MultiPlayingScene.o
 debug/PlaySettleScene.o
 debug/PlaySubScene.o
 debug/PlayingScene.o
@@ -51,6 +52,7 @@ debug/moc_mainwindow.o
 debug/moc_CreationScene.o
 debug/moc_CreationTableItem.o
 debug/moc_MainScene.o
+debug/moc_MultiPlayingScene.o
 debug/moc_PlaySettleScene.o
 debug/moc_PlaySubScene.o
 debug/moc_PlayingScene.o

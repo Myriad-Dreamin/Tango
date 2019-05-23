@@ -57,6 +57,16 @@ void TcpServer::query_online_threads(
         authors_info.push_back(thread.second->author_info());
         consumers_info.push_back(thread.second->consumer_info());
     }
+
+    UserFullInfo info = UserFullInfo();
+    info.user_id = 1;
+    info.name = "假人";
+    info.level = 666;
+    for (int i = 0; i < 20; i++) {
+        socks.push_back(-1);
+        consumers_info.push_back(UserFullInfo());
+        authors_info.push_back(info);
+    }
 }
 
 

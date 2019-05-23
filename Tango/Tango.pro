@@ -54,6 +54,7 @@ SOURCES += \
         scene/CreationScene.cpp \
         scene/CreationTableItem.cpp \
         scene/MainScene.cpp \
+        scene/MultiPlayingScene.cpp \
         scene/PlaySettleScene.cpp \
         scene/PlaySubScene.cpp \
         scene/PlayingScene.cpp \
@@ -92,6 +93,7 @@ HEADERS += \
         scene/CreationScene.h \
         scene/CreationTableItem.h \
         scene/MainScene.h \
+        scene/MultiPlayingScene.h \
         scene/PlaySettleScene.h \
         scene/PlaySubScene.h \
         scene/PlayingScene.h \
