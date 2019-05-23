@@ -84,6 +84,7 @@ void RemoteClient::params_packages(int id, QJsonArray params)
         return;
     }
     case client_rpc::signal_new_tango: {
+        qDebug() << "signal_new_tango";
         qDebug() << "new tango" << params;
         if (params.size() != 2) {
             // ignore
@@ -101,6 +102,7 @@ void RemoteClient::params_packages(int id, QJsonArray params)
         return;
     }
     case client_rpc::signal_tango_faded: {
+        qDebug() << "signal_tango_faded";
         if (params.size() != 1) {
             // ignore
             qDebug() << "err signal tango faded" << params;
@@ -258,34 +260,55 @@ void RemoteClient::returns_packages(int id, QJsonValue rets, QString err)
         return;
     }
     case client_rpc::code::query_consumers_by_name: {
+        qDebug() << "query_consumers_by_name!!!!!!";
         if (err != nullptr) {
+            UserFullInfo result = UserFullInfo();
+            this->parent->query_users_scene->fill_info(result);
             MessageBox::critical(this->parent, tr("错误"), err);
             return ;
         }
+        UserFullInfo result = UserFullInfo::from_json_array(rets.toArray());
+        this->parent->query_users_scene->fill_info(result);
         return;
     }
     case client_rpc::code::query_consumers_by_id: {
+        qDebug() << "query_consumers_by_id!!!!!!";
         if (err != nullptr) {
+            UserFullInfo result = UserFullInfo();
+            this->parent->query_users_scene->fill_info(result);
             MessageBox::critical(this->parent, tr("错误"), err);
             return ;
         }
+        UserFullInfo result = UserFullInfo::from_json_array(rets.toArray());
+        this->parent->query_users_scene->fill_info(result);
         return;
     }
     case client_rpc::code::query_authors_by_name: {
+        qDebug() << "query_authors_by_name!!!!!!";
         if (err != nullptr) {
+            UserFullInfo result = UserFullInfo();
+            this->parent->query_users_scene->fill_info(result);
             MessageBox::critical(this->parent, tr("错误"), err);
             return ;
         }
+        UserFullInfo result = UserFullInfo::from_json_array(rets.toArray());
+        this->parent->query_users_scene->fill_info(result);
         return;
     }
     case client_rpc::code::query_authors_by_id: {
+        qDebug() << "query_authors_by_id!!!!!!";
         if (err != nullptr) {
+            UserFullInfo result = UserFullInfo();
+            this->parent->query_users_scene->fill_info(result);
             MessageBox::critical(this->parent, tr("错误"), err);
             return ;
         }
+        UserFullInfo result = UserFullInfo::from_json_array(rets.toArray());
+        this->parent->query_users_scene->fill_info(result);
         return;
     }
     case client_rpc::code::query_users: {
+        qDebug() << "query_users!!!!!!";
         if (err != nullptr) {
             MessageBox::critical(this->parent, tr("错误"), err);
             return ;

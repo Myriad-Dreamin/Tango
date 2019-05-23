@@ -15,6 +15,7 @@ class AbstractGameAutomation;
 class TangoThread: public QThread
 {
     Q_OBJECT
+    friend class TcpServer;
 public:
     TangoThread(qintptr sockDesc, QObject *parent = nullptr);
     TangoThread(qintptr sockDesc, QSqlDatabase &tango_sql, QObject *parent = nullptr);

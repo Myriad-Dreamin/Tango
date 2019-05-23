@@ -22,7 +22,7 @@ RankingConsumersScene::RankingConsumersScene(QWidget *parent): Scene(parent)
 
     auto center_lay = new QVBoxLayout;
 
-    title = new QLabel("作者排名");
+    title = new QLabel("读者排名");
 
     ranking = new QVBoxLayout;
 
@@ -114,7 +114,7 @@ void RankingConsumersScene::switch_page(int page_count)
     this->clear_table();
     this->info_query.clear();
     this->parent->client->query_consumers_brief_info(
-        info_query, (page_count - 1) * this->page_limit, page_count * this->page_limit
+        info_query, (page_count - 1) * this->page_limit, page_count * this->page_limit - 1
     );
 
     for (unsigned int i = 0; i < info_query.size(); i++) {
@@ -161,6 +161,7 @@ void RankingConsumersScene::switch_page(int page_count)
 
 void RankingConsumersScene::set_page_contain(const std::vector<UserBriefInfo> &info_query)
 {
+    qDebug() << "filling..";
     this->clear_table();
 
     for (unsigned int i = 0; i < info_query.size(); i++) {

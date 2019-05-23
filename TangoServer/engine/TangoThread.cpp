@@ -12,7 +12,7 @@ TangoThread::TangoThread(long long sock_desc, QObject *parent) :
     QThread(parent),
     client_id(sock_desc)
 {
-    this->client = new LocalClient(this);
+    this->client = new LocalClient;
     m_socket = new SocketX(client_id);
     automate_started = false;
     game_event_enable = false;
@@ -27,7 +27,7 @@ TangoThread::TangoThread(long long sock_desc, QSqlDatabase &tango_sql, QObject *
     QThread(parent),
     client_id(sock_desc)
 {
-    this->client = new LocalClient(tango_sql, this);
+    this->client = new LocalClient(tango_sql);
     m_socket = new SocketX(client_id);
     automate_started = false;
     game_event_enable = false;
@@ -44,6 +44,7 @@ TangoThread::~TangoThread()
     }
     if (automate != nullptr) {
         automate->deleteLater();
+        automate = nullptr;
     }
 
     this->client->deleteLater();
@@ -52,11 +53,9 @@ TangoThread::~TangoThread()
 
 void TangoThread::run(void)
 {
-
     if (!m_socket->setSocketDescriptor(client_id)) {
         return ;
     }
-
     connect(m_socket, &SocketX::package_ready, [this](const QString &ip, const quint16 &port, const QByteArray &data) mutable {
         qDebug() << "package received" << ip << port << data;
 
@@ -202,6 +201,7 @@ void TangoThread::run(void)
             }
             this->automate->stop();
             return;
+
         }
         case client_rpc::signal_start_game: {
             if (!game_event_enable) {
@@ -227,8 +227,8 @@ void TangoThread::run(void)
                 return;
             }
 
-            int n = params[0].toInt(2133333333), v = params[1].toInt(2133333333);
-            if (n == 2133333333 || v == 2133333333) {
+            int n = params[0].toInt(-1), v = params[1].toInt(-1);
+            if (n == -1 || v == -1) {
                 m_socket->write_package(client_rpc::err_invalid_params(client_rpc::start_game_event));
                 return;
             }
@@ -250,8 +250,8 @@ void TangoThread::run(void)
                 m_socket->write_package(client_rpc::err_invalid_params(client_rpc::query_authors_brief_info));
                 return;
             }
-            int l = params[0].toInt(2133333333), r = params[1].toInt(2133333333);
-            if (l == 2133333333 || r == 2133333333) {
+            int l = params[0].toInt(-1), r = params[1].toInt(-1);
+            if (l == -1 || r == -1) {
                 m_socket->write_package(client_rpc::err_invalid_params(client_rpc::query_authors_brief_info));
                 return;
             }
@@ -264,9 +264,9 @@ void TangoThread::run(void)
                 m_socket->write_package(client_rpc::err_invalid_params(client_rpc::query_consumers_brief_info));
                 return;
             }
-            int l = params[0].toInt(2133333333), r = params[1].toInt(2133333333);
-            if (l == 2133333333 || r == 2133333333) {
-                m_socket->write_package(client_rpc::err_invalid_params(client_rpc::query_authors_brief_info));
+            int l = params[0].toInt(-1), r = params[1].toInt(-1);
+            if (l == -1 || r == -1) {
+                m_socket->write_package(client_rpc::err_invalid_params(client_rpc::query_consumers_brief_info));
                 return;
             }
             m_socket->write_package(this->query_consumers_brief_info(l, r));
@@ -274,11 +274,46 @@ void TangoThread::run(void)
             return;
         }
         case client_rpc::query_consumers_by_name: {
-            if (params.size() != 2) {
+            if (params.size() != 1) {
                 m_socket->write_package(client_rpc::err_invalid_params(client_rpc::query_consumers_by_name));
                 return;
             }
-            m_socket->write_package(client_rpc::query_)
+            m_socket->write_package(this->query_consumers_by_name(params[0].toString()));
+            return;
+        }
+        case client_rpc::query_authors_by_name: {
+            if (params.size() != 1) {
+                m_socket->write_package(client_rpc::err_invalid_params(client_rpc::query_authors_by_name));
+                return;
+            }
+            m_socket->write_package(this->query_authors_by_name(params[0].toString()));
+            return;
+        }
+        case client_rpc::query_consumers_by_id: {
+            if (params.size() != 1) {
+                m_socket->write_package(client_rpc::err_invalid_params(client_rpc::query_consumers_by_id));
+                return;
+            }
+            int id = params[0].toInt(-1);
+            if (id == -1) {
+                m_socket->write_package(client_rpc::err_invalid_params(client_rpc::query_consumers_by_id));
+                return;
+            }
+            m_socket->write_package(this->query_consumers_by_id(id));
+            return;
+        }
+        case client_rpc::query_authors_by_id: {
+            if (params.size() != 1) {
+                m_socket->write_package(client_rpc::err_invalid_params(client_rpc::query_authors_by_id));
+                return;
+            }
+            int id = params[0].toInt(-1);
+            if (id == -1) {
+                m_socket->write_package(client_rpc::err_invalid_params(client_rpc::query_authors_by_id));
+                return;
+            }
+            m_socket->write_package(this->query_authors_by_id(id));
+            return;
         }
         default: {
             m_socket->write_package(client_rpc::err_method_not_found());
@@ -413,13 +448,19 @@ QByteArray TangoThread::start_game_event(int n, RetriveMode mode)
     }
     if (automate != nullptr) {
         automate->deleteLater();
+        automate = nullptr;
     }
+    qDebug() << "automate" << automate;
     automate = this->client->start_game_event(game_config, n, RetriveRange::get_mode(mode));
-
     if (automate == nullptr) {
         return client_rpc::err_exec_error(client_rpc::start_game_event, this->client->last_error());
     }
-
+    qDebug() << "good creation" << "----------------------------------";
+    qDebug() << "automate" << automate << game_event_enable << automate_started;
+    qDebug() << "this" << this->parent() << this->thread();
+    qDebug() << "client" << client->parent() << client->thread();
+    qDebug() << "automate" << automate->parent() << automate->thread() ;
+    automate->setParent(client);
     connect(automate, &AbstractGameAutomation::start_game, [this]() mutable {
         qDebug() << "start game";
         this->m_socket->write_package(client_rpc::signal_start_game_request());
@@ -480,7 +521,7 @@ QByteArray TangoThread::query_consumers_brief_info(int l, int r)
         return client_rpc::err_exec_error(client_rpc::query_consumers_brief_info, this->client->last_error());
     }
 
-    return client_rpc::query_authors_brief_info_returns(info_list);
+    return client_rpc::query_consumers_brief_info_returns(info_list);
 }
 
 QByteArray TangoThread::query_authors_by_id(int id)
@@ -507,20 +548,20 @@ QByteArray TangoThread::query_consumers_by_id(int id)
 {
     UserFullInfo query_container;
     if (!this->client->query_consumers_by_id(query_container, id)) {
-        return client_rpc::err_exec_error(client_rpc::query_authors_by_id, this->client->last_error());
+        return client_rpc::err_exec_error(client_rpc::query_consumers_by_id, this->client->last_error());
     }
 
-    return client_rpc::query_users_info_returns(client_rpc::query_authors_by_id, query_container);
+    return client_rpc::query_users_info_returns(client_rpc::query_consumers_by_id, query_container);
 }
 
 QByteArray TangoThread::query_consumers_by_name(QString name)
 {
     UserFullInfo query_container;
     if (!this->client->query_consumers_by_name(query_container, name)) {
-        return client_rpc::err_exec_error(client_rpc::query_authors_by_name, this->client->last_error());
+        return client_rpc::err_exec_error(client_rpc::query_consumers_by_name, this->client->last_error());
     }
 
-    return client_rpc::query_users_info_returns(client_rpc::query_authors_by_name, query_container);
+    return client_rpc::query_users_info_returns(client_rpc::query_consumers_by_name, query_container);
 }
 
 

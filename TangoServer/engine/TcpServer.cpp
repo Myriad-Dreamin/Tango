@@ -2,7 +2,8 @@
 #include "TcpServer.h"
 #include "TangoThread.h"
 #include "../mainwindow.h"
-
+#include "../TangoCommon/network/SocketX.h"
+#include "../TangoCommon/client/LocalClient.h"
 
 TcpServer::TcpServer(QObject *parent): QTcpServer (parent)
 {
@@ -27,6 +28,11 @@ void TcpServer::incomingConnection(qintptr sockDesc)
 
     this->make_on_client_disconnected(thread);
 
+    qDebug() << "moving" << "-----------";
+    thread->m_socket->moveToThread(thread);
+    qDebug() << "moving" << "-----------";
+    thread->client->moveToThread(thread);
+    qDebug() << "moving" << "-----------";
 
 //    connect(thread, SIGNAL(dataReady(const QString&, const QByteArray&)),
 //            m_dialog, SLOT(recvData(const QString&, const QByteArray&)));

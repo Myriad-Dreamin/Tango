@@ -114,7 +114,7 @@ void RankingAuthorsScene::switch_page(int page_count)
     this->clear_table();
     this->info_query.clear();
     this->parent->client->query_authors_brief_info(
-        info_query, (page_count - 1) * this->page_limit, page_count * this->page_limit
+        info_query, (page_count - 1) * this->page_limit, page_count * this->page_limit - 1
     );
 
     for (unsigned int i = 0; i < info_query.size(); i++) {
