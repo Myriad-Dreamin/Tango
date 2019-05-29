@@ -11,8 +11,11 @@
 class GameClient;
 class TangoPair;
 
-
-/* 游戏自动机 */
+/*
+ * 游戏自动机
+ * 
+ * 提供游戏运行逻辑
+ */
 class GameAutomation :public AbstractGameAutomation
 {
     Q_OBJECT

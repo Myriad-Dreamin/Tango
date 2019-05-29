@@ -11,6 +11,11 @@
 class TangoPair;
 class RemoteClient;
 
+/*
+ * 游戏自动机代理
+ * 
+ * 仅负责游戏自动机信号的转发
+ */
 class GameAutomationRelayer : public AbstractGameAutomation
 {
     Q_OBJECT
