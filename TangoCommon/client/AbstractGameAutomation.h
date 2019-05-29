@@ -10,12 +10,6 @@
 class GameClient;
 class TangoPair;
 
-/*
- * 抽象游戏自动机
- * 
- * 定义自动机接口供其他需要游戏自动机的服务使用
- * 
- */
 class AbstractGameAutomation : public QObject
 {
     Q_OBJECT
@@ -28,9 +22,8 @@ public:
     const QString last_error();
     virtual bool start() = 0;
     virtual bool stop() = 0;
-
 public:
-// c++11 style public slots:
+// c++ style public slots:
     virtual void answer_tango(QString) = 0;
 signals:
     void start_game();
