@@ -1,11 +1,6 @@
+
 #include "PlaySubScene.h"
 
-#include <QPushButton>
-#include <QGridLayout>
-#include <QVBoxLayout>
-#include <QLineEdit>
-#include <QMessageBox>
-#include <QLabel>
 
 PlaySubScene::PlaySubScene(QWidget *parent): Scene(parent)
 {
