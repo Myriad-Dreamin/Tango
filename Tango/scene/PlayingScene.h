@@ -14,9 +14,6 @@ class GameConfig;
 class AbstractGameAutomation;
 
 
-/*
- * 游玩场景
- */
 class PlayingScene : public Scene
 {
     Q_OBJECT

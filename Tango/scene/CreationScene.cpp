@@ -27,7 +27,7 @@
 
 /* 自定义类型 */
 #include "../../TangoCommon/types/TangoPair.h"
-// #include "CreationTableItem.h"
+#include "CreationTableItem.h"
 #include "../../TangoCommon/types/MessageBox.h"
 #include "../../TangoCommon/client/Client.h"
 
@@ -74,14 +74,21 @@ CreationScene::CreationScene(QWidget *parent): Scene(parent)
     setLayout(lay);
 }
 
-CreationScene::~CreationScene()
-{
-    qDebug() << "creation scene deleted";
-}
-
-
-/************************************** check *************************************/
-
+/*
+#undef isalnum
+#undef isalpha
+#undef iscntrl
+#undef isdigit
+#undef isgraph
+#undef islower
+#undef isprint
+#undef ispunct
+#undef isspace
+#undef isupper
+#undef isxdigit
+#undef tolower
+#undef toupper
+*/
 bool is_legal(QCharRef x) {
     return x.isLetter() || x.isSpace();
 }
@@ -110,10 +117,43 @@ bool tango_en_check(QString tango, QString &err_info) {
     return true;
 }
 
+CreationScene::~CreationScene()
+{
+    qDebug() << "creation scene deleted";
+}
 
-/************************************** table *************************************/
+CreationTableItem *CreationScene::make_creation_table_item()
+{
+    auto item = new CreationTableItem;
 
-/* 创建表格 */
+    item->set_delete_this_event([this, item](){
+        this->creation_table_row --;
+        qDebug() << "deleted";
+        item->hide();
+        item->deleteLater();
+    });
+
+    return item;
+}
+
+bool CreationScene::create_header()
+{
+    this->header_lay = new QHBoxLayout;
+
+    header_lay->addStretch(1);
+    auto header = new QLabel("Creation Space");
+    header_lay->addWidget(header, 1);
+
+    this->table_name_lay = new QHBoxLayout;
+
+    auto table_name_header = new QLabel("表名");
+    table_name_lay->addWidget(table_name_header);
+    table_name_edit = new QLineEdit;
+    table_name_lay->addWidget(table_name_edit, 1);
+
+    return true;
+}
+
 bool CreationScene::create_table()
 {
     creation_table = new QVBoxLayout;
@@ -136,41 +176,6 @@ bool CreationScene::create_table()
     return true;
 }
 
-/* 创建表头 */
-bool CreationScene::create_header()
-{
-    this->header_lay = new QHBoxLayout;
-
-    header_lay->addStretch(1);
-    auto header = new QLabel("Creation Space");
-    header_lay->addWidget(header, 1);
-
-    this->table_name_lay = new QHBoxLayout;
-
-    auto table_name_header = new QLabel("表名");
-    table_name_lay->addWidget(table_name_header);
-    table_name_edit = new QLineEdit;
-    table_name_lay->addWidget(table_name_edit, 1);
-
-    return true;
-}
-
-/* 创建表项 */
-CreationScene::CreationTableItem *CreationScene::make_creation_table_item()
-{
-    auto item = new CreationScene::CreationTableItem;
-
-    item->set_delete_this_event([this, item](){
-        this->creation_table_row --;
-        qDebug() << "deleted";
-        item->hide();
-        item->deleteLater();
-    });
-
-    return item;
-}
-
-/* 重置表格 */
 void CreationScene::reset_table()
 {
     if (creation_table_row > 1) {
@@ -186,7 +191,6 @@ void CreationScene::reset_table()
     }
 }
 
-/* 向creation table之后插入一项 */
 void CreationScene::insert_back_item(QWidget *row_widget)
 {
     qDebug() << "creating item" << row_widget;
@@ -194,11 +198,9 @@ void CreationScene::insert_back_item(QWidget *row_widget)
     creation_table_row++;
 }
 
-/* 提交单词 */
 void CreationScene::try_submit_tangos()
 {
     qDebug() << "try submitting";
-
     if (creation_table_row <= 1) {
         MessageBox::critical(this->parent, tr("错误"), "不能提交空的表格");
         return ;
@@ -211,14 +213,12 @@ void CreationScene::try_submit_tangos()
 
     for (int i = creation_table_row - 2; i >= 0; i--) {
         qDebug() << "try getting" << i;
-        auto item = dynamic_cast<CreationScene::CreationTableItem*>(this->creation_table->itemAt(i)->widget());
+        auto item = dynamic_cast<CreationTableItem*>(this->creation_table->itemAt(i)->widget());
         qDebug() << "getting" << item;
-
         if (item->first->text().isEmpty() || item->second->text().isEmpty()) {
             MessageBox::critical(this->parent, tr("错误"), "有空的单词格未填写");
             return ;
         }
-
         QString err;
         if (!tango_en_check(item->first->text(), err)) {
             MessageBox::critical(this->parent, tr("单词合法性检查未通过"), err);
@@ -230,20 +230,12 @@ void CreationScene::try_submit_tangos()
     tango_list.reserve(static_cast<size_t>(creation_table_row - 1));
     for (int i = creation_table_row - 2; i >= 0; i--) {
         qDebug() << "try getting" << i;
-        auto item = dynamic_cast<CreationScene::CreationTableItem*>(this->creation_table->itemAt(i)->widget());
+        auto item = dynamic_cast<CreationTableItem*>(this->creation_table->itemAt(i)->widget());
 
         tango_list.emplace_back(TangoPair(item->first->text(), item->second->text()));
     }
-
     if (this->parent->submit_creation_table(tango_list)) {
         this->parent->client->sync_status();
         this->reset_table();
     }
-}
-
-/* 内嵌类CrationTableItem构造函数 */
-CreationScene::CreationTableItem::CreationTableItem(QWidget *parent):
-    PairTableItem("单词", "注释", parent)
-{
-
 }

@@ -17,9 +17,6 @@ class QHBoxLayout;
 class QPushButton;
 class QRadioButton;
 
-/*
- * 注册场景
- */
 class RegisterScene : public Scene
 {
     Q_OBJECT
@@ -44,6 +41,5 @@ private:
     MainWindow *parent;
     QHBoxLayout *lay;
 };
-
 
 #endif // REGISTERSCENE_H

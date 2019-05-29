@@ -8,10 +8,6 @@ class QPushButton;
 class QGridLayout;
 class MainWindow;
 
-
-/*
- * 游玩结算场景
- */
 class PlaySettleScene : public Scene
 {
     Q_OBJECT

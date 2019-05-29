@@ -2,7 +2,6 @@
 #define CREATIONSCENE_H
 
 #include "Scene.h"
-#include "../TangoCommon/types/PairTableItem.h"
 
 const int DEFAULT_CREATION_TABLE_ITEMS_COUNT = 3;
 
@@ -23,29 +22,24 @@ class QGridLayout;
 class CreationTableItem;
 
 
-/*
- * 提交单词的创造场景
- */
 class CreationScene : public Scene
 {
     Q_OBJECT
-public:
-    class CreationTableItem;
+
 public:
     CreationScene(QWidget *parent=nullptr);
     ~CreationScene();
+
+    QLineEdit *table_name_edit;
 
 private:
     MainWindow *parent;
 
     QGridLayout *lay;
+    QHBoxLayout *header_lay, *table_name_lay;
 
-    /* 表格 */
-    int         creation_table_row;
-    QLineEdit   *table_name_edit;
+    int creation_table_row;
     QVBoxLayout *creation_table;
-    QHBoxLayout *header_lay;
-    QHBoxLayout *table_name_lay;
 
     CreationTableItem *make_creation_table_item();
     void insert_back_item(QWidget *row_widget);
@@ -53,12 +47,6 @@ private:
     void reset_table();
     bool create_header();
     void try_submit_tangos();
-public:
-    class CreationTableItem : public PairTableItem
-    {
-    public:
-        CreationTableItem(QWidget *parent = nullptr);
-    };
 };
 
 #endif // CREATIONSCENE_H
