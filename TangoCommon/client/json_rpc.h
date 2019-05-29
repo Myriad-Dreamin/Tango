@@ -16,6 +16,9 @@
 #include "../types/UserBriefInfo.h"
 #include "../types/RetriveMode.h"
 
+/*
+ * 提供协定于Remote Client与Tango Server之间的JSON-RPC服务
+ */
 namespace client_rpc {
     enum RPCBaseError: int16_t {
         ParseError = -32700,
@@ -55,6 +58,13 @@ namespace client_rpc {
         signal_game_answer = -0x0007,
     };
 
+    bool decode_json_object(QByteArray bytes_json, QJsonValue &params, bool &para, int &id, QString &err);
+    bool decode_json_rets_object(QByteArray bytes_json, QJsonValue &ret, int &id, QString &err);
+    bool decode_json_params_object(QByteArray bytes_json, QJsonArray &params, int &id, QString &err);
+    
+    bool try_rets(QJsonObject &ret, QJsonValue &params, bool &para, int &id, QString &err);
+    
+
     QByteArray author_sign_in_request(QString account, QString password);
     QByteArray author_sign_in_returns(const UserFullInfo &info);
 
@@ -92,7 +102,6 @@ namespace client_rpc {
     QByteArray query_authors_by_name_request(QString name);
     QByteArray query_consumers_by_id_request(int id);
     QByteArray query_consumers_by_name_request(QString name);
-
     QByteArray query_users_info_returns(int id, UserFullInfo &query_container);
 
     QByteArray query_users_request();
@@ -101,11 +110,6 @@ namespace client_rpc {
     QByteArray query_online_users_request();
     QByteArray query_online_users_returns(const std::vector<UserFullInfo> &authors_list, const std::vector<UserFullInfo> &consumers_list, const std::vector<long long> socket);
 
-
-    bool decode_json_params_object(QByteArray bytes_json, QJsonArray &params, int &id, QString &err);
-    bool decode_json_rets_object(QByteArray bytes_json, QJsonValue &ret, int &id, QString &err);
-    bool decode_json_object(QByteArray bytes_json, QJsonValue &params, bool &para, int &id, QString &err);
-    bool try_rets(QJsonObject &ret, QJsonValue &params, bool &para, int &id, QString &err);
     QByteArray err_invalid_request_result(QString err);
     QByteArray err_exec_error(int id, QString err);
     QByteArray err_method_not_found();
