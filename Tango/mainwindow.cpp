@@ -42,7 +42,6 @@
 #include "../TangoCommon/types/TangoPair.h"
 #include "../TangoCommon/types/UserStatus.h"
 #include "../TangoCommon/types/TimerWidget.h"
-#include "../TangoCommon/types/Logger.h"
 #include "../TangoCommon/types/MessageBox.h"
 
 /* 客户端代理 */
@@ -68,7 +67,7 @@ MainWindow::MainWindow(QWidget *parent):
 
     /* 初始化组件 */
     // logger
-    this->logger = new Logger(this);
+    // this->logger = Logger::get_logger("main");
     // client
     this->init_client();
     // menu bar
@@ -108,7 +107,6 @@ MainWindow::~MainWindow()
     qDebug() << "mainwindow delete";
     this->client->logout();
     this->client->deleteLater();
-    this->logger->deleteLater();
 
     this->main_scene->deleteLater();
     this->playing_scene->deleteLater();

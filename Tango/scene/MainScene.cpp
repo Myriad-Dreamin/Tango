@@ -1,5 +1,6 @@
 
 #include "MainScene.h"
+#include "../mainwindow.h"
 
 
 MainScene::MainScene(QWidget *parent): Scene(parent)

@@ -1,5 +1,7 @@
 
 #include "QueryUsersScene.h"
+#include "SelectingScene.h"
+#include "../mainwindow.h"
 
 
 QueryUsersScene::QueryUsersScene(QWidget *parent): Scene(parent)

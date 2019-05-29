@@ -1,5 +1,6 @@
 
 #include "SelectingScene.h"
+#include "../mainwindow.h"
 
 
 SelectingScene::SelectingScene(QWidget *parent): Scene(parent)

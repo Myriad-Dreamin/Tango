@@ -2,20 +2,11 @@
 #ifndef SCENE_COMMON_H
 #define SCENE_COMMON_H
 
+class MainWindow;
+
 
 /* 场景 */
 #include "Scene.h"
-#include "MainScene.h"
-#include "PlaySubScene.h"
-#include "RegisterScene.h"
-#include "SelectingScene.h"
-#include "PlaySettleScene.h"
-#include "QueryUsersScene.h"
-#include "RankingAuthorsScene.h"
-#include "RankingConsumersScene.h"
-#include "PlayingScene.h"
-#include "MultiPlayingScene.h"
-#include "CreationScene.h"
 
 /* 标准库 */
 #include <cctype>
@@ -41,9 +32,6 @@
 #include <QLabel>
 #include <QLayout>
 #include <QLineEdit>
-
-/* 主程序代理 */
-#include "../mainwindow.h"
 
 /* 自定义类型 */
 #include "../../TangoCommon/client/GameAutomation.h"

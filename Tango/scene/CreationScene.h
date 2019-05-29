@@ -10,6 +10,7 @@
 class CreationScene : public Scene
 {
     Q_OBJECT
+public:
     class CreationTableItem;
 public:
     CreationScene(QWidget *parent=nullptr);
@@ -36,8 +37,6 @@ private:
 public:
     class CreationTableItem : public PairTableItem
     {
-        Q_OBJECT
-
     public:
         CreationTableItem(QWidget *parent = nullptr);
     };
