@@ -52,7 +52,6 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
         scene/CreationScene.cpp \
-        scene/CreationTableItem.cpp \
         scene/MainScene.cpp \
         scene/MultiPlayingScene.cpp \
         scene/PlaySettleScene.cpp \
@@ -90,8 +89,8 @@ HEADERS += \
         ../TangoCommon/types/UserFullInfo.h \
         ../TangoCommon/types/UserStatus.h \
         mainwindow.h \
+        scene/scene_common.h \
         scene/CreationScene.h \
-        scene/CreationTableItem.h \
         scene/MainScene.h \
         scene/MultiPlayingScene.h \
         scene/PlaySettleScene.h \
