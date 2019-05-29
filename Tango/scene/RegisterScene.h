@@ -1,8 +1,7 @@
 #ifndef REGISTERSCENE_H
 #define REGISTERSCENE_H
 
-#include "Scene.h"
-#include "../../TangoCommon/types/UserStatus.h"
+#include "scene_common.h"
 
 namespace std
 {
@@ -17,6 +16,9 @@ class QHBoxLayout;
 class QPushButton;
 class QRadioButton;
 
+/*
+ * 注册场景
+ */
 class RegisterScene : public Scene
 {
     Q_OBJECT

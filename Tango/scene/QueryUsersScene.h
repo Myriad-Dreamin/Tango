@@ -1,15 +1,12 @@
 #ifndef QUERYUSERSSCENE_H
 #define QUERYUSERSSCENE_H
 
-#include "Scene.h"
+#include "scene_common.h"
 
-class MainWindow;
-class QGridLayout;
-class QPushButton;
-class QLineEdit;
-class QLabel;
-class UserFullInfo;
 
+/*
+ * 查询其他用户场景
+ */
 class QueryUsersScene: Scene
 {
     Q_OBJECT
@@ -21,14 +18,30 @@ public:
 private:
     MainWindow *parent;
     QGridLayout *lay;
-    QLabel *user_id_key, *name_key, *tango_count_key, *misson_count_key, *level_key, *exp_key, *motto_key;
-    QLabel *user_id, *name, *tango_count, *misson_count, *level, *exp, *motto;
 
-    QLineEdit *query_edit;
-    QPushButton *author_by_id_button, *author_by_name_button;
-    QPushButton *consumer_by_id_button, *consumer_by_name_button;
+    QPushButton *author_by_id_button;
+    QPushButton *author_by_name_button;
+    QPushButton *consumer_by_id_button;
+    QPushButton *consumer_by_name_button;
     QPushButton *return_button;
 
+    QLineEdit *query_edit;
+
+    QLabel *user_id_key;
+    QLabel *name_key;
+    QLabel *tango_count_key;
+    QLabel *misson_count_key;
+    QLabel *level_key;
+    QLabel *exp_key;
+    QLabel *motto_key;
+    
+    QLabel *user_id;
+    QLabel *name;
+    QLabel *tango_count;
+    QLabel *misson_count;
+    QLabel *level;
+    QLabel *exp;
+    QLabel *motto;
 
     inline bool query_author_by_id(int id);
     inline bool query_author_by_name(QString name);

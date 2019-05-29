@@ -1,9 +1,7 @@
+
 #include "MultiPlayingScene.h"
-#include <QPushButton>
-#include "SelectingScene.h"
-#include "../TangoCommon/client/Client.h"
-#include <QLabel>
-#include "../TangoCommon/types/MessageBox.h"
+
+
 MultiPlayingScene::MultiPlayingScene(QWidget *parent) : Scene (parent)
 {
     this->parent = dynamic_cast<MainWindow*>(parent);

@@ -1,19 +1,6 @@
 
 #include "RankingConsumersScene.h"
 
-#include <QLayout>
-#include <QStringList>
-#include <QHeaderView>
-#include <QScrollBar>
-#include <QLabel>
-#include <QTableWidget>
-#include <QLineEdit>
-#include <QPushButton>
-#include "../mainwindow.h"
-#include "../../TangoCommon/client/Client.h"
-#include "../../TangoCommon/types/UserBriefInfo.h"
-
-#include "SelectingScene.h"
 
 RankingConsumersScene::RankingConsumersScene(QWidget *parent): Scene(parent)
 {

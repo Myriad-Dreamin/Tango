@@ -1,18 +1,11 @@
 #ifndef RANKINGCONSUMERSSCENE_H
 #define RANKINGCONSUMERSSCENE_H
 
-#include "Scene.h"
+#include "scene_common.h"
 
-const int DEFAULT_CONSUMER_PAGE_LIMIT = 10;
-
-class MainWindow;
-class QVBoxLayout;
-class QLabel;
-class QPushButton;
-class QLineEdit;
-class QHBoxLayout;
-class UserBriefInfo;
-
+/*
+ * 读者排行榜场景
+ */
 class RankingConsumersScene : public Scene
 {
     Q_OBJECT

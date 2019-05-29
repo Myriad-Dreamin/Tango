@@ -1,13 +1,12 @@
 #ifndef PLAYSETTLESCENE_H
 #define PLAYSETTLESCENE_H
 
-#include "Scene.h"
+#include "scene_common.h"
 
-class QLabel;
-class QPushButton;
-class QGridLayout;
-class MainWindow;
 
+/*
+ * 游玩结算场景
+ */
 class PlaySettleScene : public Scene
 {
     Q_OBJECT

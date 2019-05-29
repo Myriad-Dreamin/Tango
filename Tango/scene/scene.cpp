@@ -10,3 +10,14 @@ Scene::~Scene()
 {
 
 }
+
+
+void Scene::on_incoming()
+{
+
+}
+
+void Scene::on_exiting()
+{
+
+}
