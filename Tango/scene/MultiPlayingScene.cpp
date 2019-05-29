@@ -4,6 +4,8 @@
 #include "../TangoCommon/client/Client.h"
 #include <QLabel>
 #include "../TangoCommon/types/MessageBox.h"
+
+
 MultiPlayingScene::MultiPlayingScene(QWidget *parent) : Scene (parent)
 {
     this->parent = dynamic_cast<MainWindow*>(parent);

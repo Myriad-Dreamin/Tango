@@ -13,6 +13,9 @@ class QLineEdit;
 class QHBoxLayout;
 class UserBriefInfo;
 
+/*
+ * 读者排行榜场景
+ */
 class RankingConsumersScene : public Scene
 {
     Q_OBJECT

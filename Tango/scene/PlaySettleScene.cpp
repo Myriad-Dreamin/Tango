@@ -8,6 +8,7 @@
 
 #include "../mainwindow.h"
 
+
 PlaySettleScene::PlaySettleScene(QWidget *parent): Scene(parent)
 {
     this->parent = dynamic_cast<MainWindow*>(parent);
