@@ -31,10 +31,15 @@
 
 #include <iostream>
 #include <QObject>
+#include <map>
 
 
+//template<typename adaptor>
 class Logger: public QObject
 {
+private:
+    static std::map<QString, Logger*> logger_instances;
+
 public:
 //    const static int AllFlag = 60;
 //    const static int CriticalFlag = 50;
@@ -44,8 +49,11 @@ public:
 //    const static int InfoFlag = 10;
 private:
     int log_flag;
-public:
     Logger(QObject *parent = nullptr);
+public:
+
+    static Logger *get_logger(QString logger_name, QObject)
+
 
     DEBUGRET debug();
     WARNINGRET warning();
