@@ -52,7 +52,6 @@
 MainWindow::MainWindow(QWidget *parent):
     QMainWindow(parent)
 {
-
     this->client = nullptr;
     this->cur_scene = nullptr;
     this->main_scene = nullptr;
@@ -67,9 +66,17 @@ MainWindow::MainWindow(QWidget *parent):
     this->ranking_consumers_scene = nullptr;
     this->query_users_scene = nullptr;
 
+    /* 初始化组件 */
+    // logger
     this->logger = new Logger(this);
+    // client
     this->init_client();
-
+    // menu bar
+    this->init_menubar();
+    // status bar
+    this->init_statusbar();
+    
+    /* 初始化场景 */
     this->init_main_scene();
     this->init_playing_scene();
     this->init_multiplaying_scene();
@@ -82,18 +89,15 @@ MainWindow::MainWindow(QWidget *parent):
     this->init_ranking_consumers_scene();
     this->init_query_users_scene();
 
-    this->init_menubar();
-    this->init_statusbar();
-
     this->switch_scene(main_scene);
 
     this->setMinimumSize(800, 600);
     this->setWindowTitle("Tango!");
 
+    // set qss style
     QFile qssf(":/qss/main.qss");
     qssf.open(QFile::ReadOnly);
     QString reading = qssf.readAll();
-    // qDebug() << reading;
     this->setStyleSheet(reading);
     qssf.close();
 }
@@ -104,16 +108,46 @@ MainWindow::~MainWindow()
     qDebug() << "mainwindow delete";
     this->client->logout();
     this->client->deleteLater();
+    this->logger->deleteLater();
+
     this->main_scene->deleteLater();
     this->playing_scene->deleteLater();
     this->register_scene->deleteLater();
+    this->multiplaying_scene->deleteLater();
+    this->playsub_scene->deleteLater();
+    this->playset_scene->deleteLater();
     this->creation_scene->deleteLater();
     this->selecting_scene->deleteLater();
     this->ranking_authors_scene->deleteLater();
     this->ranking_consumers_scene->deleteLater();
     this->query_users_scene->deleteLater();
-    this->logger->deleteLater();
 }
+
+
+
+/*
+ * 切换场景事件
+ * @param to_set: 目标场景
+ * 
+ */
+void MainWindow::switch_scene(QWidget *to_set)
+{
+    qDebug() << this->cur_scene << to_set;
+
+    /* 如果有已进入的场景 */
+    if (this->cur_scene) {
+        this->cur_scene->hide();
+    }
+
+    /* 切换主场景 */
+    this->takeCentralWidget();
+    this->setCentralWidget(to_set);
+    this->cur_scene = to_set;
+    this->cur_scene->show();
+
+    return;
+}
+
 
 /*********************************** Initialize ***********************************/
 
@@ -175,9 +209,7 @@ inline bool MainWindow::init_main_scene()
         QString account_text = this->main_scene->account_edit->text();
         QString password_text = this->main_scene->password_edit->text();
 
-        qDebug() << "clicked confirm button" << account_text;
-        qDebug() << "clicked confirm button" << password_text;
-
+        qDebug() << "clicked confirm button" << account_text << password_text;
 
         if (account_text == "") {
             MessageBox::critical(this, tr("错误"), tr("用户名不能为空"));
@@ -224,6 +256,7 @@ inline bool MainWindow::init_main_scene()
     });
 
     /* 角色变换 */
+    // TODO
     main_scene->set_role_button_event([this]() mutable {
         if (this->main_scene->user_selecting_status == UserStatus::Author) {
             this->main_scene->role_button->setText("consumer!");
@@ -261,9 +294,7 @@ inline bool MainWindow::init_register_scene()
         QString password_text = this->register_scene->password_edit->text();
         QString confirm_password_text = this->register_scene->confirm_edit->text();
 
-        qDebug() << "clicked confirm button" << account_text;
-        qDebug() << "clicked confirm button" << password_text;
-        qDebug() << "clicked confirm button" << confirm_password_text;
+        qDebug() << "clicked confirm button" << account_text << password_text << confirm_password_text;
 
         if (account_text == "") {
             MessageBox::critical(this, tr("错误"), tr("用户名不能为空"));
@@ -277,6 +308,7 @@ inline bool MainWindow::init_register_scene()
 
         if (password_text != confirm_password_text) {
             qDebug() << "not equal";
+            
             MessageBox::critical(this, tr("错误"), tr("两次输入密码不一致"));
             return;
         }
@@ -314,14 +346,14 @@ inline bool MainWindow::init_register_scene()
                 int query_count;
                 if (!this->client->query_users(query_count)) {
                     MessageBox::critical(this, tr("查询用户总量失败"), this->client->last_error());
+                    this->client->logout();
                     return;
                 }
                 qDebug() << "querying" << query_count;
-                if (query_count > 0) {
-                    if (!this->client->init_default_tangos()) {
-                        MessageBox::critical(this, tr("初始化词库失败"), this->client->last_error());
-                        return;
-                    }
+                if (query_count > 0 && !this->client->init_default_tangos()) {
+                    MessageBox::critical(this, tr("初始化词库失败"), this->client->last_error());
+                    this->client->logout();
+                    return;
                 }
             }
 
@@ -331,6 +363,7 @@ inline bool MainWindow::init_register_scene()
     });
 
     /* 角色变换 */
+    // TODO
     register_scene->set_role_button_event([this]() mutable {
         if (this->register_scene->user_selecting_status == UserStatus::Author) {
             this->register_scene->role_button->setText("consumer!");
@@ -344,12 +377,14 @@ inline bool MainWindow::init_register_scene()
     /* 退出事件 */
     register_scene->set_cancel_button_event([this]() mutable {
         qDebug() << "clicked cancel button";
+        
         this->close();
     });
 
     /* 返回登录界面事件 */
     register_scene->set_return_button_event([this]() mutable {
         qDebug() << "clicked return button" << this->main_scene;
+        
         this->client->logout();
         this->switch_scene(this->main_scene);
     });
@@ -376,12 +411,14 @@ inline bool MainWindow::init_selecting_scene()
         this->switch_scene(this->playing_scene);
     });
 
+    /* 前往多人对战界面事件 */
     this->selecting_scene->set_multi_play_button_event([this]() mutable {
         qDebug() << "clicked play button";
 
         this->switch_scene(this->multiplaying_scene);
     });
 
+    /* 前往作者排行榜界面事件 */
     this->selecting_scene->set_ranking_authors_button_event([this]() mutable {
         qDebug() << "clicked ranking button";
 
@@ -389,6 +426,7 @@ inline bool MainWindow::init_selecting_scene()
         this->switch_scene(this->ranking_authors_scene);
     });
 
+    /* 前往读者排行榜事件 */
     this->selecting_scene->set_ranking_consumers_button_event([this]() mutable {
         qDebug() << "clicked ranking button";
 
@@ -396,12 +434,14 @@ inline bool MainWindow::init_selecting_scene()
         this->switch_scene(this->ranking_consumers_scene);
     });
 
+    /* 前往查询其他玩家界面事件 */
     this->selecting_scene->set_player_list_button_event([this]() mutable {
         qDebug() << "clicked player list button";
 
         this->switch_scene(this->query_users_scene);
     });
 
+    /* 前往主界面事件 */
     this->selecting_scene->set_return_button_event([this]() mutable {
         qDebug() << "clicked return button";
 
@@ -461,26 +501,10 @@ inline bool MainWindow::init_playsub_scene()
     return true;
 }
 
-void MainWindow::switch_scene(QWidget *to_set)
-{
-    qDebug() << this->cur_scene << to_set;
-
-    if (this->cur_scene) {
-        this->cur_scene->hide();
-    }
-
-    this->takeCentralWidget();
-    this->setCentralWidget(to_set);
-    this->cur_scene = to_set;
-    this->cur_scene->show();
-
-    return;
-}
-
 
 /************************************* Player *************************************/
 
-bool MainWindow::author_sign_in(QString account, QString password)
+inline bool MainWindow::author_sign_in(QString account, QString password)
 {
     if (!this->client->author_sign_in(account, password)) {
         MessageBox::critical(this, tr("错误"), "登录失败：" + this->client->last_error());
@@ -490,7 +514,7 @@ bool MainWindow::author_sign_in(QString account, QString password)
     return true;
 }
 
-bool MainWindow::author_sign_up(QString account, QString password)
+inline bool MainWindow::author_sign_up(QString account, QString password)
 {
     if (!this->client->author_sign_up(account, password)) {
         MessageBox::critical(this, tr("错误"), "注册失败：" + this->client->last_error());
@@ -500,7 +524,7 @@ bool MainWindow::author_sign_up(QString account, QString password)
     return true;
 }
 
-bool MainWindow::consumer_sign_in(QString account, QString password)
+inline bool MainWindow::consumer_sign_in(QString account, QString password)
 {
     if (!this->client->consumer_sign_in(account, password)) {
         MessageBox::critical(this, tr("错误"), "登录失败：" + this->client->last_error());
@@ -510,7 +534,7 @@ bool MainWindow::consumer_sign_in(QString account, QString password)
     return true;
 }
 
-bool MainWindow::consumer_sign_up(QString account, QString password)
+inline bool MainWindow::consumer_sign_up(QString account, QString password)
 {
     if (!this->client->consumer_sign_up(account, password)) {
         MessageBox::critical(this, tr("错误"), "注册失败：" + this->client->last_error());
@@ -520,7 +544,7 @@ bool MainWindow::consumer_sign_up(QString account, QString password)
     return true;
 }
 
-bool MainWindow::submit_creation_table(const std::vector<TangoPair> &tango_pairs)
+inline bool MainWindow::submit_creation_table(const std::vector<TangoPair> &tango_pairs)
 {
     if (!this->client->submit_tango_items(tango_pairs)) {
         MessageBox::critical(this, tr("错误"), "添加单词失败：" + this->client->last_error());
