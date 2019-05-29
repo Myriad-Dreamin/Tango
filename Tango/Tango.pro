@@ -35,7 +35,7 @@ SOURCES += \
         ../TangoCommon/client/GameClient.cpp \
         ../TangoCommon/client/LocalClient.cpp \
         ../TangoCommon/client/RemoteClient.cpp \
-        ../TangoCommon/client/json_rpc.cpp \
+        ../TangoCommon/network/json_rpc.cpp \
         ../TangoCommon/network/SocketX.cpp \
         ../TangoCommon/players/Author.cpp \
         ../TangoCommon/players/Consumer.cpp \
@@ -74,7 +74,7 @@ HEADERS += \
         ../TangoCommon/client/GameClient.h \
         ../TangoCommon/client/LocalClient.h \
         ../TangoCommon/client/RemoteClient.h \
-        ../TangoCommon/client/json_rpc.h \
+        ../TangoCommon/network/json_rpc.h \
         ../TangoCommon/network/SocketX.h \
         ../TangoCommon/players/Author.h \
         ../TangoCommon/players/Consumer.h \

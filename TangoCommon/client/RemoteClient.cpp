@@ -5,7 +5,6 @@
 #include <QJsonDocument>
 #include <QJsonParseError>
 #include <QJsonObject>
-#include "json_rpc.h"
 #include <QTcpSocket>
 
 #include "../players/Author.h"
@@ -29,6 +28,7 @@
 #include "scene/QueryUsersScene.h"
 #include "../types/MessageBox.h"
 #include "../network/SocketX.h"
+#include "../network/json_rpc.h"
 
 RemoteClient::RemoteClient(QObject *parent) : QObject(parent)
 {
