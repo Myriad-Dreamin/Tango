@@ -1,5 +1,7 @@
 
 #include "PlaySettleScene.h"
+#include "SelectingScene.h"
+#include "../mainwindow.h"
 
 
 PlaySettleScene::PlaySettleScene(QWidget *parent): Scene(parent)
