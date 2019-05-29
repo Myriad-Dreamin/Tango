@@ -96,7 +96,7 @@ private:
     inline bool consumer_sign_in(QString account, QString password);
     inline bool consumer_sign_up(QString account, QString password);
 
-    inline bool submit_creation_table(const std::vector<TangoPair> &tango_pairs);
+    bool submit_creation_table(const std::vector<TangoPair> &tango_pairs);
 };
 
 #endif // MAINWINDOW_H

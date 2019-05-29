@@ -3,6 +3,15 @@
 #include <QMessageLogger>
 
 
+/*********************************** Singletons ***********************************/
+
+LoggerManager LoggerManager::logger_destructor;
+Logger Logger::m_logger_instance;
+std::map<std::string, Logger*> LoggerManager::m_logger_instances;
+
+
+/*********************************** LoggerFlag ***********************************/
+
 namespace LoggerFlag {
 
     template<typename m_flag>
@@ -66,9 +75,11 @@ namespace LoggerFlag {
 }
 
 
+/************************************* Logger *************************************/
+
 Logger::Logger()
 {
-    handler = new LoggerHelper<LoggerFlag::logger_flag>;
+    this->handler = new LoggerHelper<LoggerFlag::logger_flag>;
 }
 
 Logger::~Logger()
@@ -78,43 +89,52 @@ Logger::~Logger()
     }
 }
 
-template<typename out_flag>
-Logger::Logger(out_flag)
-{
-    handler = new LoggerHelper<out_flag>;
-}
-
-
 Logger *Logger::get_logger(const std::string &logger_name)
 {
-    if (!logger_instances.count(logger_name)) {
+    static std::mutex alloc_mutex;
+    if (!LoggerManager::m_logger_instances.count(logger_name)) {
         alloc_mutex.lock();
-        if (!logger_instances.count(logger_name)) {
-            return logger_instances[logger_name] = new Logger();
+        if (!LoggerManager::m_logger_instances.count(logger_name)) {
+            LoggerManager::m_logger_instances[logger_name] = new Logger();
         }
         alloc_mutex.unlock();
     }
-    return logger_instances[logger_name];
+    return LoggerManager::m_logger_instances[logger_name];
 }
+
+
+/********************************* static methods *********************************/
 
 Logger::OutStream Logger::criticals()
 {
-    return Logger::m_instance._critical();
-}
-
-Logger::OutStream Logger::critical()
-{
-    return this->handler->_critical();
-}
-
-Logger::OutStream Logger::_critical()
-{
-    return Logger::m_instance._critical();
+    return Logger::m_logger_instance.handler->_critical();
 }
 
 Logger::OutStream Logger::errors()
 {
-    return Logger::m_instance._error();
+    return Logger::m_logger_instance.handler->_error();
+}
+
+Logger::OutStream Logger::debugs()
+{
+    return Logger::m_logger_instance.handler->_debug();
+}
+
+Logger::OutStream Logger::warnings()
+{
+    return Logger::m_logger_instance.handler->_warning();
+}
+
+Logger::OutStream Logger::infos()
+{
+    return Logger::m_logger_instance.handler->_info();
+}
+
+
+/******************************** instance methods ********************************/
+Logger::OutStream Logger::critical()
+{
+    return this->handler->_critical();
 }
 
 Logger::OutStream Logger::error()
@@ -122,24 +142,9 @@ Logger::OutStream Logger::error()
     return this->handler->_error();
 }
 
-Logger::OutStream Logger::_error()
-{
-    return Logger::m_instance._error();
-}
-
-Logger::OutStream Logger::debugs()
-{
-    return Logger::m_instance._debug();
-}
-
 Logger::OutStream Logger::debug()
 {
     return this->handler->_debug();
-}
-
-Logger::OutStream Logger::_debug()
-{
-    return Logger::m_instance._debug();
 }
 
 Logger::OutStream Logger::warning()
@@ -147,44 +152,290 @@ Logger::OutStream Logger::warning()
     return this->handler->_warning();
 }
 
-Logger::OutStream Logger::_warning()
-{
-    return Logger::m_instance._warning();
-}
-
-Logger::OutStream Logger::warnings()
-{
-    return Logger::m_instance._warning();
-}
-
 Logger::OutStream Logger::info()
 {
     return this->handler->_info();
 }
 
-Logger::OutStream Logger::_info()
-{
-    return Logger::m_instance._info();
-}
 
-bool Logger::set_mode(LoggerFlag::logger_flag flag)
+/******************************** aborted methods ********************************/
+
+//template<typename out_flag>
+//bool Logger::set_mode()
+//{
+//    if (this->handler != nullptr) {
+//        delete this->handler;
+//        this->handler = nullptr;
+//    }
+//    this->handler = new LoggerHelper<out_flag>;
+//    return this->handler != nullptr;
+//}
+
+//template<>
+//bool Logger::set_mode<LoggerFlag::critical_logger_flag>()
+//{
+//    if (this->handler != nullptr) {
+//        delete this->handler;
+//        this->handler = nullptr;
+//    }
+//    this->handler = new LoggerHelper<LoggerFlag::critical_logger_flag>;
+//    return this->handler != nullptr;
+//}
+
+//template<>
+//bool Logger::set_mode<LoggerFlag::error_logger_flag>()
+//{
+//    if (this->handler != nullptr) {
+//        delete this->handler;
+//        this->handler = nullptr;
+//    }
+//    this->handler = new LoggerHelper<LoggerFlag::error_logger_flag>;
+//    return this->handler != nullptr;
+//}
+
+//template<>
+//bool Logger::set_mode<LoggerFlag::debug_logger_flag>()
+//{
+//    if (this->handler != nullptr) {
+//        delete this->handler;
+//        this->handler = nullptr;
+//    }
+//    this->handler = new LoggerHelper<LoggerFlag::debug_logger_flag>;
+//    return this->handler != nullptr;
+//}
+
+//template<>
+//bool Logger::set_mode<LoggerFlag::warning_logger_flag>()
+//{
+//    if (this->handler != nullptr) {
+//        delete this->handler;
+//        this->handler = nullptr;
+//    }
+//    this->handler = new LoggerHelper<LoggerFlag::warning_logger_flag>;
+//    return this->handler != nullptr;
+//}
+
+//template<>
+//bool Logger::set_mode<LoggerFlag::info_logger_flag>()
+//{
+//    if (this->handler != nullptr) {
+//        delete this->handler;
+//        this->handler = nullptr;
+//    }
+//    this->handler = new LoggerHelper<LoggerFlag::info_logger_flag>;
+//    return this->handler != nullptr;
+//}
+
+//template<>
+//bool Logger::set_modes<LoggerFlag::logger_flag>()
+//{
+//    if (m_logger_instance.handler != nullptr) {
+//        delete m_logger_instance.handler;
+//        m_logger_instance.handler = nullptr;
+//    }
+//    m_logger_instance.handler = new LoggerHelper<LoggerFlag::logger_flag>;
+//    return m_logger_instance.handler != nullptr;
+//}
+
+//template<>
+//bool Logger::set_modes<LoggerFlag::critical_logger_flag>()
+//{
+//    if (m_logger_instance.handler != nullptr) {
+//        delete m_logger_instance.handler;
+//        m_logger_instance.handler = nullptr;
+//    }
+//    m_logger_instance.handler = new LoggerHelper<LoggerFlag::critical_logger_flag>;
+//    return m_logger_instance.handler != nullptr;
+//}
+
+//template<>
+//bool Logger::set_modes<LoggerFlag::error_logger_flag>()
+//{
+//    if (m_logger_instance.handler != nullptr) {
+//        delete m_logger_instance.handler;
+//        m_logger_instance.handler = nullptr;
+//    }
+//    m_logger_instance.handler = new LoggerHelper<LoggerFlag::error_logger_flag>;
+//    return m_logger_instance.handler != nullptr;
+//}
+
+//template<>
+//bool Logger::set_modes<LoggerFlag::debug_logger_flag>()
+//{
+//    if (m_logger_instance.handler != nullptr) {
+//        delete m_logger_instance.handler;
+//        m_logger_instance.handler = nullptr;
+//    }
+//    m_logger_instance.handler = new LoggerHelper<LoggerFlag::debug_logger_flag>;
+//    return m_logger_instance.handler != nullptr;
+//}
+
+//template<>
+//bool Logger::set_modes<LoggerFlag::warning_logger_flag>()
+//{
+//    if (m_logger_instance.handler != nullptr) {
+//        delete m_logger_instance.handler;
+//        m_logger_instance.handler = nullptr;
+//    }
+//    m_logger_instance.handler = new LoggerHelper<LoggerFlag::warning_logger_flag>;
+//    return m_logger_instance.handler != nullptr;
+//}
+
+//template<>
+//bool Logger::set_modes<LoggerFlag::info_logger_flag>()
+//{
+//    if (m_logger_instance.handler != nullptr) {
+//        delete m_logger_instance.handler;
+//        m_logger_instance.handler = nullptr;
+//    }
+//    m_logger_instance.handler = new LoggerHelper<LoggerFlag::info_logger_flag>;
+//    return m_logger_instance.handler != nullptr;
+//}
+
+
+//template<typename out_flag>
+//bool Logger::set_modes()
+//{
+//    qDebug() << "this flag is invalid";
+//    return false;
+//}
+
+
+/******************************** set_mode methods ********************************/
+
+bool Logger::set_mode(LoggerFlag::critical_logger_flag)
 {
     if (this->handler != nullptr) {
         delete this->handler;
         this->handler = nullptr;
     }
-    this->handler = new LoggerHelper<decltype(flag)>;
+    this->handler = new LoggerHelper<LoggerFlag::critical_logger_flag>;
     return this->handler != nullptr;
 }
 
-Logger::LoggerManager::LoggerManager()
+bool Logger::set_mode(LoggerFlag::error_logger_flag)
 {
-    logger_instances.clear();
+    if (this->handler != nullptr) {
+        delete this->handler;
+        this->handler = nullptr;
+    }
+    this->handler = new LoggerHelper<LoggerFlag::error_logger_flag>;
+    return this->handler != nullptr;
 }
 
-Logger::LoggerManager::~LoggerManager()
+bool Logger::set_mode(LoggerFlag::debug_logger_flag)
 {
-    for (auto &logger_instance: Logger::logger_instances) {
+    if (this->handler != nullptr) {
+        delete this->handler;
+        this->handler = nullptr;
+    }
+    this->handler = new LoggerHelper<LoggerFlag::debug_logger_flag>;
+    return this->handler != nullptr;
+}
+
+bool Logger::set_mode(LoggerFlag::warning_logger_flag)
+{
+    if (this->handler != nullptr) {
+        delete this->handler;
+        this->handler = nullptr;
+    }
+    this->handler = new LoggerHelper<LoggerFlag::warning_logger_flag>;
+    return this->handler != nullptr;
+}
+bool Logger::set_mode(LoggerFlag::info_logger_flag)
+{
+    if (this->handler != nullptr) {
+        delete this->handler;
+        this->handler = nullptr;
+    }
+    this->handler = new LoggerHelper<LoggerFlag::info_logger_flag>;
+    return this->handler != nullptr;
+}
+
+bool Logger::set_mode(LoggerFlag::logger_flag)
+{
+    if (this->handler != nullptr) {
+        delete this->handler;
+        this->handler = nullptr;
+    }
+    this->handler = new LoggerHelper<LoggerFlag::logger_flag>;
+    return this->handler != nullptr;
+}
+
+
+/******************************** setmodes methods ********************************/
+
+bool Logger::set_modes(LoggerFlag::logger_flag)
+{
+    if (m_logger_instance.handler != nullptr) {
+        delete m_logger_instance.handler;
+        m_logger_instance.handler = nullptr;
+    }
+    m_logger_instance.handler = new LoggerHelper<LoggerFlag::logger_flag>;
+    return m_logger_instance.handler != nullptr;
+}
+
+bool Logger::set_modes(LoggerFlag::info_logger_flag)
+{
+    if (m_logger_instance.handler != nullptr) {
+        delete m_logger_instance.handler;
+        m_logger_instance.handler = nullptr;
+    }
+    m_logger_instance.handler = new LoggerHelper<LoggerFlag::info_logger_flag>;
+    return m_logger_instance.handler != nullptr;
+}
+
+bool Logger::set_modes(LoggerFlag::warning_logger_flag)
+{
+    if (m_logger_instance.handler != nullptr) {
+        delete m_logger_instance.handler;
+        m_logger_instance.handler = nullptr;
+    }
+    m_logger_instance.handler = new LoggerHelper<LoggerFlag::warning_logger_flag>;
+    return m_logger_instance.handler != nullptr;
+}
+
+bool Logger::set_modes(LoggerFlag::debug_logger_flag)
+{
+    if (m_logger_instance.handler != nullptr) {
+        delete m_logger_instance.handler;
+        m_logger_instance.handler = nullptr;
+    }
+    m_logger_instance.handler = new LoggerHelper<LoggerFlag::debug_logger_flag>;
+    return m_logger_instance.handler != nullptr;
+}
+
+bool Logger::set_modes(LoggerFlag::error_logger_flag)
+{
+    if (m_logger_instance.handler != nullptr) {
+        delete m_logger_instance.handler;
+        m_logger_instance.handler = nullptr;
+    }
+    m_logger_instance.handler = new LoggerHelper<LoggerFlag::error_logger_flag>;
+    return m_logger_instance.handler != nullptr;
+}
+
+bool Logger::set_modes(LoggerFlag::critical_logger_flag)
+{
+    if (m_logger_instance.handler != nullptr) {
+        delete m_logger_instance.handler;
+        m_logger_instance.handler = nullptr;
+    }
+    m_logger_instance.handler = new LoggerHelper<LoggerFlag::critical_logger_flag>;
+    return m_logger_instance.handler != nullptr;
+}
+
+
+/******************************** Logger Manager *********************************/
+
+LoggerManager::LoggerManager()
+{
+    m_logger_instances.clear();
+}
+
+LoggerManager::~LoggerManager()
+{
+    for (auto &logger_instance: m_logger_instances) {
         if (logger_instance.second != nullptr) {
 #ifdef DEBUG
             qDebug() << "logger" << QString::fromStdString(logger_instance.first) << "is destructed";
@@ -195,74 +446,68 @@ Logger::LoggerManager::~LoggerManager()
     }
 }
 
-template<typename out_flag>
-Logger::OutStream LoggerHelper<out_flag>::_critical()
-{
-    return Logger::no_printer;
+
+/******************************** request stream ********************************/
+
+/* 申请假的stream(Not True Type) */
+template<typename request_bool_type>
+inline LoggerManagable::OutStream LoggerManagable::request_stream() {
+    static QString idle_buffer;
+    static QDebug idle_dbg(&idle_buffer);
+    idle_buffer.clear();
+    return idle_dbg;
 }
 
+/* 申请真的stream(偏特化True Type) */
 template<>
-Logger::OutStream LoggerHelper<LoggerFlag::critical_logger_flag>::_critical()
-{
-    return Logger::printer;
+inline LoggerManagable::OutStream LoggerManagable::request_stream<std::true_type>() {
+    return qDebug();
 }
 
+
+/****************************** select output or not ******************************/
+
+/* 根据type_traits里记录的值选择对应的stream */
 template<typename out_flag>
-Logger::OutStream LoggerHelper<out_flag>::_error()
+inline LoggerManagable::OutStream LoggerHelper<out_flag>::_critical()
 {
-    return Logger::no_printer;
-}
-
-template<>
-Logger::OutStream LoggerHelper<LoggerFlag::error_logger_flag>::_error()
-{
-    return Logger::printer;
-}
-
-template<typename out_flag>
-Logger::OutStream LoggerHelper<out_flag>::_debug()
-{
-    return Logger::no_printer;
-}
-
-template<>
-Logger::OutStream LoggerHelper<LoggerFlag::debug_logger_flag>::_debug()
-{
-    return Logger::printer;
+    return request_stream<typename LoggerFlag::type_traitor<out_flag>::enable_critical::type>();
 }
 
 template<typename out_flag>
-Logger::OutStream LoggerHelper<out_flag>::_warning()
+inline LoggerManagable::OutStream LoggerHelper<out_flag>::_error()
 {
-    return Logger::no_printer;
-}
-
-template<>
-Logger::OutStream LoggerHelper<LoggerFlag::warning_logger_flag>::_warning()
-{
-    return Logger::printer;
+    return request_stream<typename LoggerFlag::type_traitor<out_flag>::enable_error::type>();
 }
 
 template<typename out_flag>
-Logger::OutStream LoggerHelper<out_flag>::_info()
+inline LoggerManagable::OutStream LoggerHelper<out_flag>::_debug()
 {
-    return Logger::no_printer;
+    return request_stream<typename LoggerFlag::type_traitor<out_flag>::enable_debug::type>();
 }
 
-template<>
-Logger::OutStream LoggerHelper<LoggerFlag::info_logger_flag>::_info()
+template<typename out_flag>
+inline LoggerManagable::OutStream LoggerHelper<out_flag>::_warning()
 {
-    return Logger::printer;
+    return request_stream<typename LoggerFlag::type_traitor<out_flag>::enable_warning::type>();
 }
+
+
+template<typename out_flag>
+inline LoggerManagable::OutStream LoggerHelper<out_flag>::_info()
+{
+    return request_stream<typename LoggerFlag::type_traitor<out_flag>::enable_info::type>();
+}
+
+
+/******************************** void constructor ********************************/
 
 template<typename output_flag>
-LoggerHelper<output_flag>::LoggerHelper()
-{
-
-}
+LoggerHelper<output_flag>::LoggerHelper() {}
 
 template<typename output_flag>
-LoggerHelper<output_flag>::~LoggerHelper()
-{
+LoggerHelper<output_flag>::~LoggerHelper() {}
 
-}
+LoggerManagable::LoggerManagable() {}
+
+LoggerManagable::~LoggerManagable() {}

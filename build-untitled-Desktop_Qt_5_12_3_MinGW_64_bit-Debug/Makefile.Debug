@@ -13,9 +13,9 @@ EQ            = =
 
 CC            = gcc
 CXX           = g++
-DEFINES       = -DUNICODE -D_UNICODE -DWIN32 -DMINGW_HAS_SECURE_API=1 -DQT_DEPRECATED_WARNINGS -DQT_QML_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_SQL_LIB -DQT_CORE_LIB -DQT_NEEDS_QMAIN
+DEFINES       = -DUNICODE -D_UNICODE -DWIN32 -DMINGW_HAS_SECURE_API=1 -DQT_DEPRECATED_WARNINGS -DQT_NO_WARNING_OUTPUT -DQT_QML_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_SQL_LIB -DQT_CORE_LIB -DQT_NEEDS_QMAIN
 CFLAGS        = -fno-keep-inline-dllexport -g -Wall -W -Wextra $(DEFINES)
-CXXFLAGS      = -fno-keep-inline-dllexport -g -std=gnu++11 -Wall -W -Wextra -fexceptions -mthreads $(DEFINES)
+CXXFLAGS      = -fno-keep-inline-dllexport -g -std=gnu++1z -Wall -W -Wextra -fexceptions -mthreads $(DEFINES)
 INCPATH       = -I../Tango -I. -IE:/Qt5/5.12.3/mingw73_64/include -IE:/Qt5/5.12.3/mingw73_64/include/QtWidgets -IE:/Qt5/5.12.3/mingw73_64/include/QtGui -IE:/Qt5/5.12.3/mingw73_64/include/QtANGLE -IE:/Qt5/5.12.3/mingw73_64/include/QtNetwork -IE:/Qt5/5.12.3/mingw73_64/include/QtSql -IE:/Qt5/5.12.3/mingw73_64/include/QtCore -Idebug -IC:\VulkanSDK\1.0.51.0\include -IE:/Qt5/5.12.3/mingw73_64/mkspecs/win32-g++ 
 LINKER      =        g++
 LFLAGS        =        -Wl,-subsystem,windows -mthreads
@@ -296,7 +296,7 @@ compiler_moc_predefs_make_all: debug/moc_predefs.h
 compiler_moc_predefs_clean:
 	-$(DEL_FILE) debug/moc_predefs.h
 debug/moc_predefs.h: E:/Qt5/5.12.3/mingw73_64/mkspecs/features/data/dummy.cpp
-	g++ -fno-keep-inline-dllexport -g -std=gnu++11 -Wall -W -Wextra -dM -E -o debug/moc_predefs.h E:/Qt5/5.12.3/mingw73_64/mkspecs/features/data/dummy.cpp
+	g++ -fno-keep-inline-dllexport -g -std=gnu++1z -Wall -W -Wextra -dM -E -o debug/moc_predefs.h E:/Qt5/5.12.3/mingw73_64/mkspecs/features/data/dummy.cpp
 
 compiler_moc_header_make_all: debug/moc_AbstractGameAutomation.cpp debug/moc_Client.cpp debug/moc_GameAutomation.cpp debug/moc_GameAutomationRelayer.cpp debug/moc_LocalClient.cpp debug/moc_RemoteClient.cpp debug/moc_SocketX.cpp debug/moc_Author.cpp debug/moc_Player.cpp debug/moc_PairTableItem.cpp debug/moc_TimerWidget.cpp debug/moc_mainwindow.cpp debug/moc_CreationScene.cpp debug/moc_MainScene.cpp debug/moc_MultiPlayingScene.cpp debug/moc_PlaySettleScene.cpp debug/moc_PlaySubScene.cpp debug/moc_PlayingScene.cpp debug/moc_QueryUsersScene.cpp debug/moc_RankingAuthorsScene.cpp debug/moc_RankingConsumersScene.cpp debug/moc_RegisterScene.cpp debug/moc_Scene.cpp debug/moc_SelectingScene.cpp
 compiler_moc_header_clean:
@@ -5698,7 +5698,8 @@ debug/mainwindow.o: ../Tango/mainwindow.cpp ../Tango/mainwindow.h \
 		../Tango/scene/PlaySettleScene.h \
 		../Tango/scene/RankingAuthorsScene.h \
 		../Tango/scene/RankingConsumersScene.h \
-		../Tango/scene/QueryUsersScene.h
+		../Tango/scene/QueryUsersScene.h \
+		../TangoCommon/types/Logger.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug/mainwindow.o ../Tango/mainwindow.cpp
 
 debug/CreationScene.o: ../Tango/scene/CreationScene.cpp ../Tango/scene/CreationScene.h \
