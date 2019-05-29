@@ -5,7 +5,7 @@
 #include <QString>
 #include <iostream>
 #include <string>
-#include <map>
+#include <unordered_map>
 #include <mutex>
 #include <type_traits>
 #include <QDebug>
@@ -91,8 +91,8 @@ private:
 /* Logger单例管理器 */
 class LoggerManager{
     friend class Logger;
-    static std::map<std::string, Logger*> *m_logger_instances;
-    static LoggerManager logger_destructor;
+    static std::unordered_map<std::string, Logger*> *m_logger_instances;
+    static LoggerManager logger_manager;
 public:
     LoggerManager();
     ~LoggerManager();

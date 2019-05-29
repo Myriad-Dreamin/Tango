@@ -6,7 +6,8 @@
 /*********************************** Singletons ***********************************/
 
 Logger Logger::m_logger_instance;
-LoggerManager LoggerManager::logger_destructor;
+std::unordered_map<std::string, Logger*> *LoggerManager::m_logger_instances = nullptr;
+LoggerManager LoggerManager::logger_manager;
 
 
 /*********************************** LoggerFlag ***********************************/
@@ -430,7 +431,7 @@ bool Logger::set_modes(LoggerFlag::critical_logger_flag)
 LoggerManager::LoggerManager()
 {
     m_logger_instances = nullptr;
-    m_logger_instances = new std::map<std::string, Logger*>;
+    m_logger_instances = new std::unordered_map<std::string, Logger*>;
     if (m_logger_instances == nullptr) {
         throw std::bad_alloc();
     }
