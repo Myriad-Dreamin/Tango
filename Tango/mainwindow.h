@@ -8,6 +8,7 @@ class Logger;
 class TangoPair;
 class TimerWidget;
 
+
 class MainScene;
 class PlayingScene;
 class MultiPlayingScene;
@@ -20,30 +21,25 @@ class RankingAuthorsScene;
 class RankingConsumersScene;
 class QueryUsersScene;
 
+namespace Ui {
+class MainWindow;
+}
 
-/*
- * 主窗口类
- * 
- * 相当于游戏引擎的Director
- */
 class MainWindow : public QMainWindow
 {
 // property:
     Q_OBJECT
     friend class RemoteClient;
-    
     friend class MainScene;
     friend class PlayingScene;
     friend class MultiPlayingScene;
     friend class PlaySubScene;
     friend class RegisterScene;
-
     friend class CreationScene;
     friend class SelectingScene;
     friend class PlaySettleScene;
     friend class RankingAuthorsScene;
     friend class RankingConsumersScene;
-    
     friend class QueryUsersScene;
 
 public:
@@ -90,13 +86,13 @@ private:
     inline bool init_ranking_consumers_scene();
     inline bool init_query_users_scene();
 
-    inline bool author_sign_in(QString account, QString password);
-    inline bool author_sign_up(QString account, QString password);
+    bool author_sign_in(QString account, QString password);
+    bool author_sign_up(QString account, QString password);
 
-    inline bool consumer_sign_in(QString account, QString password);
-    inline bool consumer_sign_up(QString account, QString password);
+    bool consumer_sign_in(QString account, QString password);
+    bool consumer_sign_up(QString account, QString password);
 
-    inline bool submit_creation_table(const std::vector<TangoPair> &tango_pairs);
+    bool submit_creation_table(const std::vector<TangoPair> &tango_pairs);
 };
 
 #endif // MAINWINDOW_H
