@@ -1,13 +1,6 @@
 
-#include <functional>
-
-#include <QPushButton>
-#include <QLayout>
-#include <QDebug>
-
 #include "SelectingScene.h"
-#include "../mainwindow.h"
-#include "../../TangoCommon/client/Client.h"
+
 
 SelectingScene::SelectingScene(QWidget *parent): Scene(parent)
 {
@@ -19,26 +12,32 @@ SelectingScene::SelectingScene(QWidget *parent): Scene(parent)
     creation_button->setText("开始创造");
     creation_button->setMinimumHeight(32);
     main_center_lay->addWidget(creation_button);
+    
     play_button = new QPushButton;
     play_button->setText("开始游玩");
     play_button->setMinimumHeight(32);
     main_center_lay->addWidget(play_button);
+    
     multi_play_button = new QPushButton;
     multi_play_button->setText("多人对战");
     multi_play_button->setMinimumHeight(32);
     main_center_lay->addWidget(multi_play_button);
+    
     player_list_button = new QPushButton;
     player_list_button->setText("其他玩家");
     player_list_button->setMinimumHeight(32);
     main_center_lay->addWidget(player_list_button);
+    
     ranking_authors_button = new QPushButton;
     ranking_authors_button->setText("作者排行榜");
     ranking_authors_button->setMinimumHeight(32);
     main_center_lay->addWidget(ranking_authors_button);
+    
     ranking_consumers_button = new QPushButton;
     ranking_consumers_button->setText("读者排行榜");
     ranking_consumers_button->setMinimumHeight(32);
     main_center_lay->addWidget(ranking_consumers_button);
+    
     return_button = new QPushButton;
     return_button->setText("返回登录/注册界面");
     return_button->setMinimumHeight(32);
