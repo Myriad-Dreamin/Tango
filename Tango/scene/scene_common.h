@@ -34,8 +34,8 @@ class MainWindow;
 #include <QLineEdit>
 
 /* 自定义类型 */
-#include "../../TangoCommon/client/GameAutomation.h"
-#include "../../TangoCommon/client/GameConfig.h"
+#include "../../TangoCommon/automator/GameAutomation.h"
+#include "../../TangoCommon/automator/GameConfig.h"
 #include "../../TangoCommon/client/Client.h"
 
 #include "../../TangoCommon/types/MessageBox.h"

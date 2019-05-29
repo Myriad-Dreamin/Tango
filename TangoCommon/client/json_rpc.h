@@ -12,7 +12,7 @@
 #include "../types/UserFullInfo.h"
 #include "../types/UserStatus.h"
 #include "../types/TangoPair.h"
-#include "AbstractGameAutomation.h"
+#include "../automator/AbstractGameAutomation.h"
 #include "../types/UserBriefInfo.h"
 #include "../types/RetriveMode.h"
 

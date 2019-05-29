@@ -20,8 +20,8 @@
 
 #include "../types/MessageBox.h"
 
-#include "GameAutomation.h"
-#include "GameConfig.h"
+#include "../automator/GameAutomation.h"
+#include "../automator/GameConfig.h"
 
 #include "AbstractClient.h"
 #include "LocalClient.h"
