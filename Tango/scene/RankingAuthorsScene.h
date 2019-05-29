@@ -1,12 +1,18 @@
 #ifndef RANKINGAUTHORSSCENE_H
 #define RANKINGAUTHORSSCENE_H
 
-#include "scene_common.h"
+#include "Scene.h"
 
+const int DEFAULT_AUTHOR_PAGE_LIMIT = 10;
 
-/*
- * 作者排行榜场景
- */
+class MainWindow;
+class QLabel;
+class QPushButton;
+class QVBoxLayout;
+class QLineEdit;
+class QHBoxLayout;
+class UserBriefInfo;
+
 class RankingAuthorsScene : public Scene
 {
     Q_OBJECT

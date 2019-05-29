@@ -1,12 +1,18 @@
 #ifndef PLAYSUBSCENE_H
 #define PLAYSUBSCENE_H
 
-#include "scene_common.h"
+#include "Scene.h"
 
+class MainWindow;
 
-/*
- * 游玩子场景
- */
+class QPushButton;
+class QVBoxLayout;
+class QGridLayout;
+class QLineEdit;
+class GameConfig;
+class QLabel;
+class GameAutomation;
+
 class PlaySubScene : public Scene
 {
     Q_OBJECT
@@ -16,16 +22,12 @@ public:
     ~PlaySubScene();
 
 private:
+    QPushButton *stop_button, *answer_button;
     MainWindow *parent;
     QGridLayout *lay;
-    QVBoxLayout *play_lay;
-    
-    QPushButton *stop_button;
-    QPushButton *answer_button;
-    
     QLineEdit *user_ret;
-    QLabel *key_label;
-    QLabel *value_label;
+    QVBoxLayout *play_lay;
+    QLabel *key_label, *value_label;
 };
 
 #endif // PLAYSUBSCENE_H

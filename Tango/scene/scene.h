@@ -10,9 +10,6 @@ class Scene: public QWidget
 public:
     Scene(QWidget* parent=nullptr);
     ~Scene();
-
-    virtual void on_incoming();
-    virtual void on_exiting();
 };
 
 

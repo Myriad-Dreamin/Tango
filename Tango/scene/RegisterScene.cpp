@@ -1,4 +1,18 @@
+
 #include "RegisterScene.h"
+
+#include <functional>
+
+#include <QDebug>
+
+#include <QLabel>
+#include <QLayout>
+#include <QLineEdit>
+
+#include <QPushButton>
+#include <QRadioButton>
+
+#include "../mainwindow.h"
 
 
 RegisterScene::RegisterScene(QWidget *parent): Scene(parent)
