@@ -3,12 +3,14 @@
 
 #include "mainwindow.h"
 
-/* 程序开始的地方 */
 int main(int argc, char *argv[])
 {
+    qDebug("---------------");
     QApplication a(argc, argv);
 
     MainWindow w;
+
+    // exec(), show() 模态, 非模态
 
     w.show();
 
