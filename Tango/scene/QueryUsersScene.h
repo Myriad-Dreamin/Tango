@@ -7,7 +7,7 @@
 /*
  * 查询其他用户场景
  */
-class QueryUsersScene: Scene
+class QueryUsersScene: public Scene
 {
     Q_OBJECT
     friend class MainWindow;

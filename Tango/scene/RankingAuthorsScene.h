@@ -11,6 +11,7 @@ class RankingAuthorsScene : public Scene
 {
     Q_OBJECT
     friend class MainWindow;
+    friend class SelectingScene;
 public:
     RankingAuthorsScene(QWidget *parent=nullptr);
     ~RankingAuthorsScene();

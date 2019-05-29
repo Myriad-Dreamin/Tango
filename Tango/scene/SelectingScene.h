@@ -31,6 +31,8 @@ public:
 private:
     MainWindow *parent;
     QGridLayout *lay;
+
+    void set_button_events();
 };
 
 #endif // SELECTINGSCENE_H

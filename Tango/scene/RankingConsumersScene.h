@@ -10,6 +10,7 @@ class RankingConsumersScene : public Scene
 {
     Q_OBJECT
     friend class MainWindow;
+    friend class SelectingScene;
 public:
     RankingConsumersScene(QWidget *parent=nullptr);
     ~RankingConsumersScene();

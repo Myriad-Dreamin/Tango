@@ -186,52 +186,6 @@ inline bool MainWindow::init_selecting_scene()
 {
     this->selecting_scene = new SelectingScene(this);
 
-    /* 前往创造界面事件 */
-    this->selecting_scene->set_creation_button_event([this]() mutable {
-        qDebug() << "clicked creation button";
-
-        this->switch_scene(this->creation_scene);
-    });
-
-    /* 前往游玩界面事件 */
-    this->selecting_scene->set_play_button_event([this]() mutable {
-        qDebug() << "clicked play button";
-
-        this->switch_scene(this->playing_scene);
-    });
-
-    this->selecting_scene->set_multi_play_button_event([this]() mutable {
-        qDebug() << "clicked play button";
-
-        this->switch_scene(this->multiplaying_scene);
-    });
-
-    this->selecting_scene->set_ranking_authors_button_event([this]() mutable {
-        qDebug() << "clicked ranking button";
-
-        this->ranking_authors_scene->switch_page(1);
-        this->switch_scene(this->ranking_authors_scene);
-    });
-
-    this->selecting_scene->set_ranking_consumers_button_event([this]() mutable {
-        qDebug() << "clicked ranking button";
-
-        this->ranking_consumers_scene->switch_page(1);
-        this->switch_scene(this->ranking_consumers_scene);
-    });
-
-    this->selecting_scene->set_player_list_button_event([this]() mutable {
-        qDebug() << "clicked player list button";
-
-        this->switch_scene(this->query_users_scene);
-    });
-
-    this->selecting_scene->set_return_button_event([this]() mutable {
-        qDebug() << "clicked return button";
-
-        this->client->logout();
-        this->switch_scene(this->main_scene);
-    });
 
     this->selecting_scene->hide();
     return true;
