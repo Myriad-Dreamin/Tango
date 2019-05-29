@@ -117,7 +117,4 @@ namespace GameConfigMode {
 }
 
 
-
-
-
 #endif // GAMECONFIG_H
