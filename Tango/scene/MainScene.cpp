@@ -1,6 +1,19 @@
 
 #include "MainScene.h"
 
+#include <functional>
+
+#include <QDebug>
+
+#include <QLayout>
+
+#include <QLabel>
+#include <QLineEdit>
+
+#include <QPushButton>
+#include <QRadioButton>
+
+#include "../mainwindow.h"
 
 MainScene::MainScene(QWidget *parent): Scene(parent)
 {
