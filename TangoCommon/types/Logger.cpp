@@ -160,145 +160,145 @@ Logger::OutStream Logger::info()
 
 /******************************** aborted methods ********************************/
 
-//template<typename out_flag>
-//bool Logger::set_mode()
-//{
-//    if (this->handler != nullptr) {
-//        delete this->handler;
-//        this->handler = nullptr;
-//    }
-//    this->handler = new LoggerHelper<out_flag>;
-//    return this->handler != nullptr;
-//}
+template<typename out_flag>
+[[deprecated]] bool Logger::set_mode()
+{
+    if (this->handler != nullptr) {
+        delete this->handler;
+        this->handler = nullptr;
+    }
+    this->handler = new LoggerHelper<out_flag>;
+    return this->handler != nullptr;
+}
 
-//template<>
-//bool Logger::set_mode<LoggerFlag::critical_logger_flag>()
-//{
-//    if (this->handler != nullptr) {
-//        delete this->handler;
-//        this->handler = nullptr;
-//    }
-//    this->handler = new LoggerHelper<LoggerFlag::critical_logger_flag>;
-//    return this->handler != nullptr;
-//}
+template<>
+[[deprecated]] bool Logger::set_mode<LoggerFlag::critical_logger_flag>()
+{
+    if (this->handler != nullptr) {
+        delete this->handler;
+        this->handler = nullptr;
+    }
+    this->handler = new LoggerHelper<LoggerFlag::critical_logger_flag>;
+    return this->handler != nullptr;
+}
 
-//template<>
-//bool Logger::set_mode<LoggerFlag::error_logger_flag>()
-//{
-//    if (this->handler != nullptr) {
-//        delete this->handler;
-//        this->handler = nullptr;
-//    }
-//    this->handler = new LoggerHelper<LoggerFlag::error_logger_flag>;
-//    return this->handler != nullptr;
-//}
+template<>
+[[deprecated]] bool Logger::set_mode<LoggerFlag::error_logger_flag>()
+{
+    if (this->handler != nullptr) {
+        delete this->handler;
+        this->handler = nullptr;
+    }
+    this->handler = new LoggerHelper<LoggerFlag::error_logger_flag>;
+    return this->handler != nullptr;
+}
 
-//template<>
-//bool Logger::set_mode<LoggerFlag::debug_logger_flag>()
-//{
-//    if (this->handler != nullptr) {
-//        delete this->handler;
-//        this->handler = nullptr;
-//    }
-//    this->handler = new LoggerHelper<LoggerFlag::debug_logger_flag>;
-//    return this->handler != nullptr;
-//}
+template<>
+[[deprecated]] bool Logger::set_mode<LoggerFlag::debug_logger_flag>()
+{
+    if (this->handler != nullptr) {
+        delete this->handler;
+        this->handler = nullptr;
+    }
+    this->handler = new LoggerHelper<LoggerFlag::debug_logger_flag>;
+    return this->handler != nullptr;
+}
 
-//template<>
-//bool Logger::set_mode<LoggerFlag::warning_logger_flag>()
-//{
-//    if (this->handler != nullptr) {
-//        delete this->handler;
-//        this->handler = nullptr;
-//    }
-//    this->handler = new LoggerHelper<LoggerFlag::warning_logger_flag>;
-//    return this->handler != nullptr;
-//}
+template<>
+[[deprecated]] bool Logger::set_mode<LoggerFlag::warning_logger_flag>()
+{
+    if (this->handler != nullptr) {
+        delete this->handler;
+        this->handler = nullptr;
+    }
+    this->handler = new LoggerHelper<LoggerFlag::warning_logger_flag>;
+    return this->handler != nullptr;
+}
 
-//template<>
-//bool Logger::set_mode<LoggerFlag::info_logger_flag>()
-//{
-//    if (this->handler != nullptr) {
-//        delete this->handler;
-//        this->handler = nullptr;
-//    }
-//    this->handler = new LoggerHelper<LoggerFlag::info_logger_flag>;
-//    return this->handler != nullptr;
-//}
+template<>
+[[deprecated]] bool Logger::set_mode<LoggerFlag::info_logger_flag>()
+{
+    if (this->handler != nullptr) {
+        delete this->handler;
+        this->handler = nullptr;
+    }
+    this->handler = new LoggerHelper<LoggerFlag::info_logger_flag>;
+    return this->handler != nullptr;
+}
 
-//template<>
-//bool Logger::set_modes<LoggerFlag::logger_flag>()
-//{
-//    if (m_logger_instance.handler != nullptr) {
-//        delete m_logger_instance.handler;
-//        m_logger_instance.handler = nullptr;
-//    }
-//    m_logger_instance.handler = new LoggerHelper<LoggerFlag::logger_flag>;
-//    return m_logger_instance.handler != nullptr;
-//}
+template<>
+[[deprecated]] bool Logger::set_modes<LoggerFlag::logger_flag>()
+{
+    if (m_logger_instance.handler != nullptr) {
+        delete m_logger_instance.handler;
+        m_logger_instance.handler = nullptr;
+    }
+    m_logger_instance.handler = new LoggerHelper<LoggerFlag::logger_flag>;
+    return m_logger_instance.handler != nullptr;
+}
 
-//template<>
-//bool Logger::set_modes<LoggerFlag::critical_logger_flag>()
-//{
-//    if (m_logger_instance.handler != nullptr) {
-//        delete m_logger_instance.handler;
-//        m_logger_instance.handler = nullptr;
-//    }
-//    m_logger_instance.handler = new LoggerHelper<LoggerFlag::critical_logger_flag>;
-//    return m_logger_instance.handler != nullptr;
-//}
+template<>
+[[deprecated]] bool Logger::set_modes<LoggerFlag::critical_logger_flag>()
+{
+    if (m_logger_instance.handler != nullptr) {
+        delete m_logger_instance.handler;
+        m_logger_instance.handler = nullptr;
+    }
+    m_logger_instance.handler = new LoggerHelper<LoggerFlag::critical_logger_flag>;
+    return m_logger_instance.handler != nullptr;
+}
 
-//template<>
-//bool Logger::set_modes<LoggerFlag::error_logger_flag>()
-//{
-//    if (m_logger_instance.handler != nullptr) {
-//        delete m_logger_instance.handler;
-//        m_logger_instance.handler = nullptr;
-//    }
-//    m_logger_instance.handler = new LoggerHelper<LoggerFlag::error_logger_flag>;
-//    return m_logger_instance.handler != nullptr;
-//}
+template<>
+[[deprecated]] bool Logger::set_modes<LoggerFlag::error_logger_flag>()
+{
+    if (m_logger_instance.handler != nullptr) {
+        delete m_logger_instance.handler;
+        m_logger_instance.handler = nullptr;
+    }
+    m_logger_instance.handler = new LoggerHelper<LoggerFlag::error_logger_flag>;
+    return m_logger_instance.handler != nullptr;
+}
 
-//template<>
-//bool Logger::set_modes<LoggerFlag::debug_logger_flag>()
-//{
-//    if (m_logger_instance.handler != nullptr) {
-//        delete m_logger_instance.handler;
-//        m_logger_instance.handler = nullptr;
-//    }
-//    m_logger_instance.handler = new LoggerHelper<LoggerFlag::debug_logger_flag>;
-//    return m_logger_instance.handler != nullptr;
-//}
+template<>
+[[deprecated]] bool Logger::set_modes<LoggerFlag::debug_logger_flag>()
+{
+    if (m_logger_instance.handler != nullptr) {
+        delete m_logger_instance.handler;
+        m_logger_instance.handler = nullptr;
+    }
+    m_logger_instance.handler = new LoggerHelper<LoggerFlag::debug_logger_flag>;
+    return m_logger_instance.handler != nullptr;
+}
 
-//template<>
-//bool Logger::set_modes<LoggerFlag::warning_logger_flag>()
-//{
-//    if (m_logger_instance.handler != nullptr) {
-//        delete m_logger_instance.handler;
-//        m_logger_instance.handler = nullptr;
-//    }
-//    m_logger_instance.handler = new LoggerHelper<LoggerFlag::warning_logger_flag>;
-//    return m_logger_instance.handler != nullptr;
-//}
+template<>
+[[deprecated]] bool Logger::set_modes<LoggerFlag::warning_logger_flag>()
+{
+    if (m_logger_instance.handler != nullptr) {
+        delete m_logger_instance.handler;
+        m_logger_instance.handler = nullptr;
+    }
+    m_logger_instance.handler = new LoggerHelper<LoggerFlag::warning_logger_flag>;
+    return m_logger_instance.handler != nullptr;
+}
 
-//template<>
-//bool Logger::set_modes<LoggerFlag::info_logger_flag>()
-//{
-//    if (m_logger_instance.handler != nullptr) {
-//        delete m_logger_instance.handler;
-//        m_logger_instance.handler = nullptr;
-//    }
-//    m_logger_instance.handler = new LoggerHelper<LoggerFlag::info_logger_flag>;
-//    return m_logger_instance.handler != nullptr;
-//}
+template<>
+[[deprecated]] bool Logger::set_modes<LoggerFlag::info_logger_flag>()
+{
+    if (m_logger_instance.handler != nullptr) {
+        delete m_logger_instance.handler;
+        m_logger_instance.handler = nullptr;
+    }
+    m_logger_instance.handler = new LoggerHelper<LoggerFlag::info_logger_flag>;
+    return m_logger_instance.handler != nullptr;
+}
 
 
-//template<typename out_flag>
-//bool Logger::set_modes()
-//{
-//    qDebug() << "this flag is invalid";
-//    return false;
-//}
+template<typename out_flag>
+[[deprecated]] bool Logger::set_modes()
+{
+    qDebug() << "this flag is invalid";
+    return false;
+}
 
 
 /******************************** set_mode methods ********************************/

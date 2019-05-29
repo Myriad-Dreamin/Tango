@@ -58,6 +58,8 @@ public:
     static OutStream warnings();
     static OutStream infos();
 
+    template<typename out_flag>
+    [[deprecated]] bool set_mode();
     bool set_mode(LoggerFlag::logger_flag);
     bool set_mode(LoggerFlag::critical_logger_flag);
     bool set_mode(LoggerFlag::error_logger_flag);
@@ -65,6 +67,8 @@ public:
     bool set_mode(LoggerFlag::warning_logger_flag);
     bool set_mode(LoggerFlag::info_logger_flag);
 
+    template<typename out_flag>
+    [[deprecated]] static bool set_modes();
     static bool set_modes(LoggerFlag::logger_flag);
     static bool set_modes(LoggerFlag::critical_logger_flag);
     static bool set_modes(LoggerFlag::error_logger_flag);
