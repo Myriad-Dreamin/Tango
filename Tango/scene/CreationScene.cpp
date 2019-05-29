@@ -1,7 +1,5 @@
 
 #include "CreationScene.h"
-#include "SelectingScene.h"
-#include "../mainwindow.h"
 
 
 CreationScene::CreationScene(QWidget *parent): Scene(parent)
@@ -207,7 +205,7 @@ void CreationScene::try_submit_tangos()
 
         tango_list.emplace_back(TangoPair(item->first->text(), item->second->text()));
     }
-
+    
     if (this->parent->submit_creation_table(tango_list)) {
         this->parent->client->sync_status();
         this->reset_table();

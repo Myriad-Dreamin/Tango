@@ -17,7 +17,7 @@ public:
 
     UserStatus user_selecting_status;
 
-    QPushButton *sign_in_button;
+    QPushButton *sign_in_button；
     QPushButton *cancel_button;
     QPushButton *sign_up_button;
     QPushButton *role_button;

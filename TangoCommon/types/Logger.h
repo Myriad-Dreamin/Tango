@@ -1,116 +1,65 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
+#define INFOFLAG 60
+#define WARNINGFLAG 50
+#define DEBUGFLAG 40
+#define ERRORFLAG 30
+#define CRITICALFLAG 20
+#define ALLFLAG 10
 
-#include <QString>
+#define DEBUGLEVEL INFOFLAG
+
+# if DEBUGLEVEL >= DEBUGFLAG
+# define DEBUGRET QDebug
+# else
+# define DEBUGRET QNoDebug
+# endif
+
+# if DEBUGLEVEL >= WARNINGFLAG
+# define WARNINGRET QDebug
+# else
+# define WARNINGRET QNoDebug
+# endif
+
+# if DEBUGLEVEL >= INFOFLAG
+# define INFORET QDebug
+# else
+# define INFORET QNoDebug
+# endif
+
+
 #include <iostream>
-#include <string>
-#include <unordered_map>
-#include <mutex>
-#include <type_traits>
-#include <QDebug>
+#include <QObject>
+#include <map>
 
-namespace LoggerFlag {
-    struct logger_flag                                       {};
-    struct critical_logger_flag : public logger_flag         {};
-    struct error_logger_flag    : public critical_logger_flag{};
-    struct debug_logger_flag    : public error_logger_flag   {};
-    struct warning_logger_flag  : public debug_logger_flag   {};
-    struct info_logger_flag     : public warning_logger_flag {};
 
-    template<typename m_flag> struct type_traitor;
-}
-
-class LoggerQStream{
-public:
-    inline QDebug stream() {return qDebug();}
-};
-
-class LoggerQDebugStream: public LoggerQStream
+//template<typename adaptor>
+class Logger: public QObject
 {
-public:
-    LoggerQDebugStream() {}
-    inline QDebug stream() {return qDebug();}
-};
-
-class LoggerQNoDebugStream: public LoggerQStream
-{
-public:
-    LoggerQNoDebugStream() {}
-    inline QDebug stream() {return qWarning();}
-};
-
-
-
-class Logger
-{
-protected:
-    typedef LoggerQStream OutStream;
-public:
-
-    static Logger *get_logger(const std::string &logger_name);
-
-    static OutStream criticals();
-    static OutStream errors();
-    static OutStream debugs();
-    static OutStream warnings();
-    static OutStream infos();
-
-    bool set_mode(LoggerFlag::logger_flag flag);
-
-    OutStream critical();
-    OutStream error();
-    OutStream debug();
-    OutStream warning();
-    OutStream info();
-
-public:
-    class LoggerManager{
-    public:
-        LoggerManager();
-        ~LoggerManager();
-    };
-protected:
-    static LoggerQDebugStream printer;
-    static LoggerQNoDebugStream no_printer;
-    Logger();
-    virtual ~Logger();
 private:
-    template<typename out_flag=LoggerFlag::logger_flag>
-    Logger(out_flag);
-    Logger *handler;
-    static std::mutex alloc_mutex;
-    static std::unordered_map<std::string, Logger*> logger_instances;
-    static Logger m_instance;
-    static LoggerManager logger_destructor;
+    static std::map<QString, Logger*> logger_instances;
 
-    virtual OutStream _critical();
-    virtual OutStream _error();
-    virtual OutStream _debug();
-    virtual OutStream _warning();
-    virtual OutStream _info();
-};
-
-template <typename output_flag>
-class LoggerHelper: public Logger
-{
 public:
-    LoggerHelper();
-    ~LoggerHelper();
+//    const static int AllFlag = 60;
+//    const static int CriticalFlag = 50;
+//    const static int ErrorFlag = 40;
+//    const static int DebugFlag = 30;
+//    const static int WarningFlag = 20;
+//    const static int InfoFlag = 10;
+private:
+    int log_flag;
+    Logger(QObject *parent = nullptr);
+public:
 
-    OutStream _critical();
-    OutStream _error();
-    OutStream _debug();
-    OutStream _warning();
-    OutStream _info();
+    static Logger *get_logger(QString logger_name, QObject)
+
+
+    DEBUGRET debug();
+    WARNINGRET warning();
+    INFORET info();
 };
 
-std::mutex Logger::alloc_mutex;
-std::unordered_map<std::string, Logger*> Logger::logger_instances;
-Logger Logger::m_instance;
-Logger::LoggerManager Logger::logger_destructor;
-LoggerQDebugStream Logger::printer;
-LoggerQNoDebugStream Logger::no_printer;
 
 
 #endif // LOGGER_H

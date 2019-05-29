@@ -1,5 +1,4 @@
 #include "RegisterScene.h"
-#include "../mainwindow.h"
 
 
 RegisterScene::RegisterScene(QWidget *parent): Scene(parent)

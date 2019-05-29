@@ -1,7 +1,5 @@
 
 #include "RankingAuthorsScene.h"
-#include "SelectingScene.h"
-#include "../mainwindow.h"
 
 
 RankingAuthorsScene::RankingAuthorsScene(QWidget *parent): Scene(parent)

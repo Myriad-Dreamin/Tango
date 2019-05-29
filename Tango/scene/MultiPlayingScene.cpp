@@ -1,8 +1,5 @@
 
 #include "MultiPlayingScene.h"
-#include "SelectingScene.h"
-#include "../mainwindow.h"
-
 
 
 MultiPlayingScene::MultiPlayingScene(QWidget *parent) : Scene (parent)

@@ -24,6 +24,7 @@ debug/UserStatus.o
 debug/main.o
 debug/mainwindow.o
 debug/CreationScene.o
+debug/CreationTableItem.o
 debug/MainScene.o
 debug/MultiPlayingScene.o
 debug/PlaySettleScene.o
@@ -49,6 +50,7 @@ debug/moc_PairTableItem.o
 debug/moc_TimerWidget.o
 debug/moc_mainwindow.o
 debug/moc_CreationScene.o
+debug/moc_CreationTableItem.o
 debug/moc_MainScene.o
 debug/moc_MultiPlayingScene.o
 debug/moc_PlaySettleScene.o

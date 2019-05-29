@@ -1,9 +1,5 @@
 
 #include "PlayingScene.h"
-#include "SelectingScene.h"
-#include "PlaySubScene.h"
-#include "PlaySettleScene.h"
-#include "../mainwindow.h"
 
 
 std::function<AbstractGameAutomation *()> PlayingScene::default_automate()
