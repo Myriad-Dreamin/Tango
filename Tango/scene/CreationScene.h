@@ -3,7 +3,6 @@
 
 #include "scene_common.h"
 
-
 /*
  * 提交单词的创造场景
  */
@@ -18,7 +17,7 @@ public:
 
 private:
     MainWindow *parent;
-
+    Logger *logger;
     QGridLayout *lay;
     
     /* 表格 */

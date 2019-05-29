@@ -47,6 +47,7 @@ class MainWindow;
 #include "../../TangoCommon/types/UserFullInfo.h"
 #include "../../TangoCommon/types/UserBriefInfo.h"
 #include "../../TangoCommon/types/TangoPair.h"
+#include "../../TangoCommon/types/Logger.h"
 
 
 const int DEFAULT_CREATION_TABLE_ITEMS_COUNT = 3;

@@ -5,9 +5,8 @@
 
 /*********************************** Singletons ***********************************/
 
-LoggerManager LoggerManager::logger_destructor;
 Logger Logger::m_logger_instance;
-std::map<std::string, Logger*> LoggerManager::m_logger_instances;
+LoggerManager LoggerManager::logger_destructor;
 
 
 /*********************************** LoggerFlag ***********************************/
@@ -92,14 +91,14 @@ Logger::~Logger()
 Logger *Logger::get_logger(const std::string &logger_name)
 {
     static std::mutex alloc_mutex;
-    if (!LoggerManager::m_logger_instances.count(logger_name)) {
+    if (!LoggerManager::m_logger_instances->count(logger_name)) {
         alloc_mutex.lock();
-        if (!LoggerManager::m_logger_instances.count(logger_name)) {
-            LoggerManager::m_logger_instances[logger_name] = new Logger();
+        if (!LoggerManager::m_logger_instances->count(logger_name)) {
+            (*LoggerManager::m_logger_instances)[logger_name] = new Logger();
         }
         alloc_mutex.unlock();
     }
-    return LoggerManager::m_logger_instances[logger_name];
+    return (*LoggerManager::m_logger_instances)[logger_name];
 }
 
 
@@ -430,12 +429,17 @@ bool Logger::set_modes(LoggerFlag::critical_logger_flag)
 
 LoggerManager::LoggerManager()
 {
-    m_logger_instances.clear();
+    m_logger_instances = nullptr;
+    m_logger_instances = new std::map<std::string, Logger*>;
+    if (m_logger_instances == nullptr) {
+        throw std::bad_alloc();
+    }
+    m_logger_instances->clear();
 }
-
+#define DEBUG
 LoggerManager::~LoggerManager()
 {
-    for (auto &logger_instance: m_logger_instances) {
+    for (auto &logger_instance: *m_logger_instances) {
         if (logger_instance.second != nullptr) {
 #ifdef DEBUG
             qDebug() << "logger" << QString::fromStdString(logger_instance.first) << "is destructed";
@@ -444,6 +448,8 @@ LoggerManager::~LoggerManager()
             logger_instance.second = nullptr;
         }
     }
+    delete m_logger_instances;
+    m_logger_instances = nullptr;
 }
 
 

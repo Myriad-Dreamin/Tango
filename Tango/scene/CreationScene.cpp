@@ -6,6 +6,7 @@
 
 CreationScene::CreationScene(QWidget *parent): Scene(parent)
 {
+    this->logger = Logger::get_logger("main");
     this->parent = dynamic_cast<MainWindow*>(parent);
     creation_table_row = 0;
 
@@ -49,7 +50,7 @@ CreationScene::CreationScene(QWidget *parent): Scene(parent)
 
 CreationScene::~CreationScene()
 {
-    qDebug() << "creation scene deleted";
+    logger->info() << "creation scene deleted";
 }
 
 
@@ -135,7 +136,7 @@ CreationScene::CreationTableItem *CreationScene::make_creation_table_item()
 
     item->set_delete_this_event([this, item](){
         this->creation_table_row --;
-        qDebug() << "deleted";
+        logger->info() << "deleted";
         item->hide();
         item->deleteLater();
     });
@@ -162,7 +163,7 @@ void CreationScene::reset_table()
 /* 向creation table之后插入一项 */
 void CreationScene::insert_back_item(QWidget *row_widget)
 {
-    qDebug() << "creating item" << row_widget;
+    logger->info() << "creating item" << row_widget;
     this->creation_table->insertWidget(creation_table_row - 1, row_widget, 1);
     creation_table_row++;
 }
@@ -170,7 +171,7 @@ void CreationScene::insert_back_item(QWidget *row_widget)
 /* 提交单词 */
 void CreationScene::try_submit_tangos()
 {
-    qDebug() << "try submitting";
+    logger->info() << "try submitting";
 
     if (creation_table_row <= 1) {
         MessageBox::critical(this->parent, tr("错误"), "不能提交空的表格");
@@ -183,9 +184,9 @@ void CreationScene::try_submit_tangos()
     }
 
     for (int i = creation_table_row - 2; i >= 0; i--) {
-        qDebug() << "try getting" << i;
+        logger->info() << "try getting" << i;
         auto item = dynamic_cast<CreationScene::CreationTableItem*>(this->creation_table->itemAt(i)->widget());
-        qDebug() << "getting" << item;
+        logger->info() << "getting" << item;
         
         if (item->first->text().isEmpty() || item->second->text().isEmpty()) {
             MessageBox::critical(this->parent, tr("错误"), "有空的单词格未填写");
@@ -202,7 +203,7 @@ void CreationScene::try_submit_tangos()
     std::vector<TangoPair> tango_list;
     tango_list.reserve(static_cast<size_t>(creation_table_row - 1));
     for (int i = creation_table_row - 2; i >= 0; i--) {
-        qDebug() << "try getting" << i;
+        logger->info() << "try getting" << i;
         auto item = dynamic_cast<CreationScene::CreationTableItem*>(this->creation_table->itemAt(i)->widget());
 
         tango_list.emplace_back(TangoPair(item->first->text(), item->second->text()));

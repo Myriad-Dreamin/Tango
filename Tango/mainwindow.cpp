@@ -80,6 +80,7 @@ MainWindow::MainWindow(QWidget *parent):
     this->init_ranking_consumers_scene();
     this->init_query_users_scene();
 
+    this->init_client();
     this->init_menubar();
     this->init_statusbar();
 
@@ -166,81 +167,6 @@ inline bool MainWindow::init_main_scene()
 
     main_scene = new MainScene(this);
 
-    /* 登录事件 */
-    main_scene->set_sign_in_button_event([this]() mutable {
-
-        QString account_text = this->main_scene->account_edit->text();
-        QString password_text = this->main_scene->password_edit->text();
-
-        qDebug() << "clicked confirm button" << account_text;
-        qDebug() << "clicked confirm button" << password_text;
-
-
-        if (account_text == "") {
-            MessageBox::critical(this, tr("错误"), tr("用户名不能为空"));
-            return;
-        }
-
-        if (password_text == "") {
-            MessageBox::critical(this, tr("错误"), tr("密码不能为空"));
-            return;
-        }
-
-        /* 根据 remote button的值判断是否远程连接 */
-        if (this->main_scene->remote_button->isChecked()) {
-            qDebug() << "checked";
-
-            QHostAddress host_address(this->main_scene->network_edit->text());
-            quint16 server_port = quint16(this->main_scene->port_edit->text().toShort());
-
-            if (!this->client->setup_remote_connection(host_address, server_port)) {
-                MessageBox::critical(this, tr("远程连接失败"), this->client->last_error());
-                return;
-            }
-        } else {
-            qDebug() << "not checked";
-
-            if (!this->client->setup_local_connection()) {
-                MessageBox::critical(this, tr("本地连接失败"), this->client->last_error());
-                return;
-            }
-        }
-
-        bool sign_in_success = false;
-
-        if (this->main_scene->user_selecting_status == UserStatus::Author) {
-            sign_in_success = this->author_sign_in(account_text, password_text);
-        } else {
-            sign_in_success = this->consumer_sign_in(account_text, password_text);
-        }
-
-        if (sign_in_success) {
-            this->selecting_scene->set_visble_buttons();
-            this->switch_scene(this->selecting_scene);
-        }
-    });
-
-    /* 角色变换 */
-    main_scene->set_role_button_event([this]() mutable {
-        if (this->main_scene->user_selecting_status == UserStatus::Author) {
-            this->main_scene->role_button->setText("consumer!");
-            this->main_scene->user_selecting_status = UserStatus::Consumer;
-        } else {
-            this->main_scene->role_button->setText("author!");
-            this->main_scene->user_selecting_status = UserStatus::Author;
-        }
-    });
-
-    /* 退出事件 */
-    main_scene->set_cancel_button_event([this]() mutable {
-        qDebug() << "clicked cancel button";
-        this->close();
-    });
-
-    /* 转入注册页事件 */
-    main_scene->set_sign_up_button_event([this]() mutable {
-         this->switch_scene(this->register_scene);
-    });
 
     this->main_scene->hide();
     return true;
@@ -251,105 +177,6 @@ inline bool MainWindow::init_register_scene()
 {
     register_scene = new RegisterScene(this);
 
-    /* 注册事件 */
-    register_scene->set_confirm_button_event([this]() mutable {
-
-        QString account_text = this->register_scene->account_edit->text();
-        QString password_text = this->register_scene->password_edit->text();
-        QString confirm_password_text = this->register_scene->confirm_edit->text();
-
-        qDebug() << "clicked confirm button" << account_text;
-        qDebug() << "clicked confirm button" << password_text;
-        qDebug() << "clicked confirm button" << confirm_password_text;
-
-        if (account_text == "") {
-            MessageBox::critical(this, tr("错误"), tr("用户名不能为空"));
-            return;
-        }
-
-        if (password_text == "") {
-            MessageBox::critical(this, tr("错误"), tr("密码不能为空"));
-            return;
-        }
-
-        if (password_text != confirm_password_text) {
-            qDebug() << "not equal";
-            MessageBox::critical(this, tr("错误"), tr("两次输入密码不一致"));
-            return;
-        }
-
-        /* 根据 remote button的值判断是否远程连接 */
-        if (this->register_scene->remote_button->isChecked()) {
-            qDebug() << "checked";
-
-            QHostAddress host_address(this->register_scene->network_edit->text());
-            quint16 server_port = quint16(this->register_scene->port_edit->text().toShort());
-
-            if (!this->client->setup_remote_connection(host_address, server_port)) {
-                MessageBox::critical(this, tr("远程连接失败"), this->client->last_error());
-                return;
-            }
-        } else {
-            qDebug() << "not checked";
-
-            if (!this->client->setup_local_connection()) {
-                MessageBox::critical(this, tr("本地连接失败"), this->client->last_error());
-                return;
-            }
-        }
-
-        bool sign_up_success = false;
-
-        if (this->register_scene->user_selecting_status == UserStatus::Author) {
-            sign_up_success = this->author_sign_up(account_text, password_text);
-        } else {
-            sign_up_success = this->consumer_sign_up(account_text, password_text);
-        }
-
-        if (sign_up_success) {
-            if (!this->register_scene->remote_button->isChecked()) {
-                int query_count;
-                if (!this->client->query_users(query_count)) {
-                    MessageBox::critical(this, tr("查询用户总量失败"), this->client->last_error());
-                    return;
-                }
-                qDebug() << "querying" << query_count;
-                if (query_count > 0) {
-                    if (!this->client->init_default_tangos()) {
-                        MessageBox::critical(this, tr("初始化词库失败"), this->client->last_error());
-                        return;
-                    }
-                }
-            }
-
-            this->selecting_scene->set_visble_buttons();
-            this->switch_scene(this->selecting_scene);
-        }
-    });
-
-    /* 角色变换 */
-    register_scene->set_role_button_event([this]() mutable {
-        if (this->register_scene->user_selecting_status == UserStatus::Author) {
-            this->register_scene->role_button->setText("consumer!");
-            this->register_scene->user_selecting_status = UserStatus::Consumer;
-        } else {
-            this->register_scene->role_button->setText("author!");
-            this->register_scene->user_selecting_status = UserStatus::Author;
-        }
-    });
-
-    /* 退出事件 */
-    register_scene->set_cancel_button_event([this]() mutable {
-        qDebug() << "clicked cancel button";
-        this->close();
-    });
-
-    /* 返回登录界面事件 */
-    register_scene->set_return_button_event([this]() mutable {
-        qDebug() << "clicked return button" << this->main_scene;
-        this->client->logout();
-        this->switch_scene(this->main_scene);
-    });
 
     this->register_scene->hide();
     return true;

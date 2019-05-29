@@ -42,6 +42,7 @@ public:
 private:
     MainWindow *parent;
     QHBoxLayout *lay;
+    void set_button_events();
 };
 
 #endif // REGISTERSCENE_H

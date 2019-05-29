@@ -90,11 +90,11 @@ private:
     inline bool init_ranking_consumers_scene();
     inline bool init_query_users_scene();
 
-    inline bool author_sign_in(QString account, QString password);
-    inline bool author_sign_up(QString account, QString password);
+    bool author_sign_in(QString account, QString password);
+    bool author_sign_up(QString account, QString password);
 
-    inline bool consumer_sign_in(QString account, QString password);
-    inline bool consumer_sign_up(QString account, QString password);
+    bool consumer_sign_in(QString account, QString password);
+    bool consumer_sign_up(QString account, QString password);
 
     bool submit_creation_table(const std::vector<TangoPair> &tango_pairs);
 };

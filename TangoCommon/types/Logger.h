@@ -91,7 +91,7 @@ private:
 /* Logger单例管理器 */
 class LoggerManager{
     friend class Logger;
-    static std::map<std::string, Logger*> m_logger_instances;
+    static std::map<std::string, Logger*> *m_logger_instances;
     static LoggerManager logger_destructor;
 public:
     LoggerManager();
