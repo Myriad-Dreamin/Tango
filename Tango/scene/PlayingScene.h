@@ -1,12 +1,19 @@
 #ifndef PLAYINGSCENE_H
 #define PLAYINGSCENE_H
 
-#include "scene_common.h"
+#include "Scene.h"
+#include <functional>
+
+class MainWindow;
+
+class QPushButton;
+class QVBoxLayout;
+class QGridLayout;
+class QLineEdit;
+class GameConfig;
+class AbstractGameAutomation;
 
 
-/*
- * 游玩场景
- */
 class PlayingScene : public Scene
 {
     Q_OBJECT

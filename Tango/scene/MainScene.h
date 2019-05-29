@@ -1,12 +1,23 @@
 #ifndef MAINSCENE_H
 #define MAINSCENE_H
 
-#include "scene_common.h"
+#include "Scene.h"
+#include "../../TangoCommon/types/UserStatus.h"
 
+namespace std
+{
+    template<typename function_signature>
+    class function;
+}
 
-/*
- * 主场景
- */
+class MainWindow;
+
+class QLineEdit;
+class QHBoxLayout;
+
+class QPushButton;
+class QRadioButton;
+
 class MainScene : public Scene
 {
     Q_OBJECT
@@ -17,17 +28,9 @@ public:
 
     UserStatus user_selecting_status;
 
-    QPushButton *sign_in_button；
-    QPushButton *cancel_button;
-    QPushButton *sign_up_button;
-    QPushButton *role_button;
-    
+    QPushButton *sign_in_button, *cancel_button, *sign_up_button, *role_button;
     QRadioButton *remote_button;
-    
-    QLineEdit *account_edit;
-    QLineEdit *password_edit;
-    QLineEdit *network_edit;
-    QLineEdit *port_edit;
+    QLineEdit *account_edit, *password_edit, *network_edit, *port_edit;
 
 public:
 // c++11 public slots:

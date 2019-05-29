@@ -1,31 +1,45 @@
 #ifndef CREATIONSCENE_H
 #define CREATIONSCENE_H
 
-#include "scene_common.h"
+#include "Scene.h"
+
+const int DEFAULT_CREATION_TABLE_ITEMS_COUNT = 3;
 
 
-/*
- * 提交单词的创造场景
- */
+namespace std
+{
+    template<typename function_signature>
+    class function;
+}
+
+class MainWindow;
+
+class QLineEdit;
+class QVBoxLayout;
+class QHBoxLayout;
+class QGridLayout;
+
+class CreationTableItem;
+
+
 class CreationScene : public Scene
 {
     Q_OBJECT
-    class CreationTableItem;
+
 public:
     CreationScene(QWidget *parent=nullptr);
     ~CreationScene();
+
+    QLineEdit *table_name_edit;
 
 private:
     MainWindow *parent;
 
     QGridLayout *lay;
-    
-    /* 表格 */
-    int         creation_table_row;
-    QLineEdit   *table_name_edit;
+    QHBoxLayout *header_lay, *table_name_lay;
+
+    int creation_table_row;
     QVBoxLayout *creation_table;
-    QHBoxLayout *header_lay;
-    QHBoxLayout *table_name_lay;
 
     CreationTableItem *make_creation_table_item();
     void insert_back_item(QWidget *row_widget);
@@ -33,14 +47,6 @@ private:
     void reset_table();
     bool create_header();
     void try_submit_tangos();
-public:
-    class CreationTableItem : public PairTableItem
-    {
-        Q_OBJECT
-
-    public:
-        CreationTableItem(QWidget *parent = nullptr);
-    };
 };
 
 #endif // CREATIONSCENE_H
