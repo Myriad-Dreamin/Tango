@@ -2,7 +2,7 @@
 #include <QApplication>
 
 #include "mainwindow.h"
-#include "../TangoCommon/types/Logger.h"
+#include "../TangoCommon/component/Logger.h"
 
 /* 程序开始的地方 */
 int main(int argc, char *argv[])

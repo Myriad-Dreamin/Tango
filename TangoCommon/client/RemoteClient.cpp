@@ -26,7 +26,7 @@
 #include "scene/RankingAuthorsScene.h"
 #include "scene/RankingConsumersScene.h"
 #include "scene/QueryUsersScene.h"
-#include "../types/MessageBox.h"
+#include "../component/MessageBox.h"
 #include "../network/SocketX.h"
 #include "../network/json_rpc.h"
 

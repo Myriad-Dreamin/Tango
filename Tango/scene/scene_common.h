@@ -36,21 +36,20 @@ class MainWindow;
 /* 自定义类型 */
 #include "../../TangoCommon/automator/GameAutomation.h"
 #include "../../TangoCommon/automator/GameConfig.h"
+
 #include "../../TangoCommon/client/Client.h"
 
-#include "../../TangoCommon/types/MessageBox.h"
-#include "../../TangoCommon/types/TimerWidget.h"
-
-#include "../../TangoCommon/types/PairTableItem.h"
 #include "../../TangoCommon/types/RetriveMode.h"
 #include "../../TangoCommon/types/UserStatus.h"
 #include "../../TangoCommon/types/UserFullInfo.h"
 #include "../../TangoCommon/types/UserBriefInfo.h"
 #include "../../TangoCommon/types/TangoPair.h"
-#include "../../TangoCommon/types/Logger.h"
 
+#include "../../TangoCommon/component/Logger.h"
+#include "../../TangoCommon/component/MessageBox.h"
+#include "../../TangoCommon/component/TimerWidget.h"
+#include "../../TangoCommon/component/PairTableItem.h"
 
-const int DEFAULT_CREATION_TABLE_ITEMS_COUNT = 3;
 const int DEFAULT_AUTHOR_PAGE_LIMIT = 10;
 const int DEFAULT_CONSUMER_PAGE_LIMIT = 10;
 

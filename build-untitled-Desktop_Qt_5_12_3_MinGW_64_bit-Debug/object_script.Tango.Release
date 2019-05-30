@@ -15,9 +15,9 @@ release/player.o
 release/Logger.o
 release/MessageBox.o
 release/PairTableItem.o
+release/TimerWidget.o
 release/RetriveMode.o
 release/TangoPair.o
-release/TimerWidget.o
 release/UserBriefInfo.o
 release/UserFullInfo.o
 release/UserStatus.o

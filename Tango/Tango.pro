@@ -35,17 +35,18 @@ SOURCES += \
         ../TangoCommon/client/GameClient.cpp \
         ../TangoCommon/client/LocalClient.cpp \
         ../TangoCommon/client/RemoteClient.cpp \
+        ../TangoCommon/component/ConfigSet.cpp \
         ../TangoCommon/network/json_rpc.cpp \
         ../TangoCommon/network/SocketX.cpp \
         ../TangoCommon/players/Author.cpp \
         ../TangoCommon/players/Consumer.cpp \
         ../TangoCommon/players/player.cpp \
-        ../TangoCommon/types/Logger.cpp \
-        ../TangoCommon/types/MessageBox.cpp \
-        ../TangoCommon/types/PairTableItem.cpp \
+        ../TangoCommon/component/Logger.cpp \
+        ../TangoCommon/component/MessageBox.cpp \
+        ../TangoCommon/component/PairTableItem.cpp \
+        ../TangoCommon/component/TimerWidget.cpp \
         ../TangoCommon/types/RetriveMode.cpp \
         ../TangoCommon/types/TangoPair.cpp \
-        ../TangoCommon/types/TimerWidget.cpp \
         ../TangoCommon/types/UserBriefInfo.cpp \
         ../TangoCommon/types/UserFullInfo.cpp \
         ../TangoCommon/types/UserStatus.cpp \
@@ -74,17 +75,18 @@ HEADERS += \
         ../TangoCommon/client/GameClient.h \
         ../TangoCommon/client/LocalClient.h \
         ../TangoCommon/client/RemoteClient.h \
+        ../TangoCommon/component/ConfigSet.h \
         ../TangoCommon/network/json_rpc.h \
         ../TangoCommon/network/SocketX.h \
         ../TangoCommon/players/Author.h \
         ../TangoCommon/players/Consumer.h \
         ../TangoCommon/players/Player.h \
-        ../TangoCommon/types/Logger.h \
-        ../TangoCommon/types/MessageBox.h \
-        ../TangoCommon/types/PairTableItem.h \
+        ../TangoCommon/component/Logger.h \
+        ../TangoCommon/component/MessageBox.h \
+        ../TangoCommon/component/PairTableItem.h \
+        ../TangoCommon/component/TimerWidget.h \
         ../TangoCommon/types/RetriveMode.h \
         ../TangoCommon/types/TangoPair.h \
-        ../TangoCommon/types/TimerWidget.h \
         ../TangoCommon/types/UserBriefInfo.h \
         ../TangoCommon/types/UserFullInfo.h \
         ../TangoCommon/types/UserStatus.h \

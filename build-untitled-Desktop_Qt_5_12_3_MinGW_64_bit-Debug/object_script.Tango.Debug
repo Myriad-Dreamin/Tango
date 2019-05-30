@@ -15,9 +15,9 @@ debug/player.o
 debug/Logger.o
 debug/MessageBox.o
 debug/PairTableItem.o
+debug/TimerWidget.o
 debug/RetriveMode.o
 debug/TangoPair.o
-debug/TimerWidget.o
 debug/UserBriefInfo.o
 debug/UserFullInfo.o
 debug/UserStatus.o

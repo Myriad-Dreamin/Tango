@@ -155,6 +155,7 @@ void CreationScene::reset_table()
         }
         creation_table_row = 1;
     }
+    auto DEFAULT_CREATION_TABLE_ITEMS_COUNT = this->parent->config_set[tr("default_creation_table_items_count")].toInt();
     for (int i = 0; i < DEFAULT_CREATION_TABLE_ITEMS_COUNT; i++) {
         this->insert_back_item(this->make_creation_table_item());
     }

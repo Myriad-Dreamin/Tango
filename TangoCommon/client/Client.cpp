@@ -18,7 +18,7 @@
 #include "../types/UserBriefInfo.h"
 #include "../types/UserFullInfo.h"
 
-#include "../types/MessageBox.h"
+#include "../component/MessageBox.h"
 
 #include "../automator/GameAutomation.h"
 #include "../automator/GameConfig.h"

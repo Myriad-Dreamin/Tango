@@ -9,8 +9,6 @@
 
 #include <QDebug>
 
-#include "GameClient.h"
-
 GameAutomation::GameAutomation(const GameConfig *game_config, QObject *parent): AbstractGameAutomation(parent)
 {
     this->clear_state();

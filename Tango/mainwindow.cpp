@@ -8,7 +8,7 @@
 #include <QString>
 #include <QAction>
 #include <QFile>
-
+#include <QSettings>
 
 #include <QSqlError>
 #include <QHostAddress>
@@ -41,9 +41,10 @@
 /* 自定类型 */
 #include "../TangoCommon/types/TangoPair.h"
 #include "../TangoCommon/types/UserStatus.h"
-#include "../TangoCommon/types/TimerWidget.h"
-#include "../TangoCommon/types/Logger.h"
-#include "../TangoCommon/types/MessageBox.h"
+
+#include "../TangoCommon/component/TimerWidget.h"
+#include "../TangoCommon/component/Logger.h"
+#include "../TangoCommon/component/MessageBox.h"
 
 /* 客户端代理 */
 #include "../TangoCommon/client/Client.h"
@@ -52,6 +53,8 @@
 MainWindow::MainWindow(QWidget *parent):
     QMainWindow(parent)
 {
+    this->qconfig = nullptr;
+    this->load_configs();
 
     this->client = nullptr;
     this->cur_scene = nullptr;
@@ -95,6 +98,7 @@ MainWindow::MainWindow(QWidget *parent):
     // qDebug() << reading;
     this->setStyleSheet(reading);
     qssf.close();
+
 }
 
 
@@ -111,6 +115,7 @@ MainWindow::~MainWindow()
     this->ranking_authors_scene->deleteLater();
     this->ranking_consumers_scene->deleteLater();
     this->query_users_scene->deleteLater();
+    this->save_configs();
 }
 
 /*********************************** Initialize ***********************************/
@@ -255,7 +260,6 @@ void MainWindow::switch_scene(QWidget *to_set)
     return;
 }
 
-
 /************************************* Player *************************************/
 
 bool MainWindow::author_sign_in(QString account, QString password)
@@ -305,5 +309,39 @@ bool MainWindow::submit_creation_table(const std::vector<TangoPair> &tango_pairs
         return false;
     }
 
+    return true;
+}
+
+
+bool MainWindow::load_configs()
+{
+    this->qconfig = new QSettings("config.ini", QSettings::IniFormat, this);
+    if (this->qconfig == nullptr) {
+        MessageBox::critical(this, "错误", "未能读取config.ini文件，将使用默认设定");
+        this->set_default_configs();
+        return false;
+    }
+    this->qconfig->sync();
+    this->config_set["default_creation_table_items_count"] = this->qconfig->value("limit/default_creation_table_items_count", 3);
+    return true;
+}
+
+bool MainWindow::save_configs()
+{
+    if (this->qconfig == nullptr) {
+        this->qconfig = new QSettings("config.ini", QSettings::IniFormat, this);
+        if (this->qconfig == nullptr) {
+            MessageBox::critical(this, "错误", "未能将配置写入config.ini文件");
+            return false;
+        }
+    }
+    this->qconfig->setValue("limit/default_creation_table_items_count", this->config_set["default_creation_table_items_count"]);
+    return true;
+}
+
+
+bool MainWindow::set_default_configs()
+{
+    this->config_set["default_creation_table_items_count"] = QVariant(3);
     return true;
 }
