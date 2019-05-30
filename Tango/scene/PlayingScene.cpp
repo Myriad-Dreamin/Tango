@@ -1,9 +1,29 @@
 
 #include "PlayingScene.h"
-#include "SelectingScene.h"
+
+#include <algorithm>
+#include <random>
+#include <ctime>
+
+#include <QDebug>
+
+#include <QPushButton>
+#include <QGridLayout>
+#include <QVBoxLayout>
+#include <QMessageBox>
+#include <QLabel>
+#include <QLineEdit>
 #include "PlaySubScene.h"
 #include "PlaySettleScene.h"
 #include "../mainwindow.h"
+#include "../../TangoCommon/client/Client.h"
+#include "../../TangoCommon/client/GameAutomation.h"
+#include "../../TangoCommon/client/GameConfig.h"
+
+#include "../../TangoCommon/types/TimerWidget.h"
+#include "../../TangoCommon/types/RetriveMode.h"
+
+#include "../../TangoCommon/types/MessageBox.h"
 
 
 std::function<AbstractGameAutomation *()> PlayingScene::default_automate()

@@ -17,12 +17,6 @@ class UserFullInfo;
 class GameConfig;
 class AbstractGameAutomation;
 
-/*
- * 抽象客户端
- * 
- * 定义客户端接口供其他需要客户端的服务使用
- * 
- */
 class AbstractClient
 {
 public:

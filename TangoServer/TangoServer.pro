@@ -25,52 +25,52 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
-    ../TangoCommon/automator/AbstractGameAutomation.cpp \
-    ../TangoCommon/automator/GameAutomation.cpp \
-    ../TangoCommon/automator/GameConfig.cpp \
     ../TangoCommon/client/AbstractClient.cpp \
+    ../TangoCommon/client/AbstractGameAutomation.cpp \
+    ../TangoCommon/client/GameAutomation.cpp \
+    ../TangoCommon/client/GameClient.cpp \
+    ../TangoCommon/client/GameConfig.cpp \
     ../TangoCommon/client/LocalClient.cpp \
-    ../TangoCommon/component/ConfigSet.cpp \
-    ../TangoCommon/component/Logger.cpp \
-    ../TangoCommon/component/MessageBox.cpp \
-    ../TangoCommon/component/PairTableItem.cpp \
-    ../TangoCommon/component/TimerWidget.cpp \
-    ../TangoCommon/network/SocketX.cpp \
-    ../TangoCommon/network/json_rpc.cpp \
+    ../TangoCommon/client/json_rpc.cpp \
     ../TangoCommon/players/Author.cpp \
     ../TangoCommon/players/Consumer.cpp \
     ../TangoCommon/players/player.cpp \
+    ../TangoCommon/types/Logger.cpp \
+    ../TangoCommon/types/MessageBox.cpp \
+    ../TangoCommon/types/PairTableItem.cpp \
     ../TangoCommon/types/RetriveMode.cpp \
     ../TangoCommon/types/TangoPair.cpp \
+    ../TangoCommon/types/TimerWidget.cpp \
     ../TangoCommon/types/UserBriefInfo.cpp \
     ../TangoCommon/types/UserFullInfo.cpp \
     ../TangoCommon/types/UserStatus.cpp \
+    ../TangoCommon/network/SocketX.cpp \
         engine/TangoThread.cpp \
         engine/TcpServer.cpp \
         main.cpp \
         mainwindow.cpp \
 
 HEADERS += \
-    ../TangoCommon/automator/AbstractGameAutomation.h \
-    ../TangoCommon/automator/GameAutomation.h \
-    ../TangoCommon/automator/GameConfig.h \
     ../TangoCommon/client/AbstractClient.h \
+    ../TangoCommon/client/AbstractGameAutomation.h \
+    ../TangoCommon/client/GameAutomation.h \
+    ../TangoCommon/client/GameClient.h \
+    ../TangoCommon/client/GameConfig.h \
     ../TangoCommon/client/LocalClient.h \
-    ../TangoCommon/component/ConfigSet.h \
-    ../TangoCommon/component/Logger.h \
-    ../TangoCommon/component/MessageBox.h \
-    ../TangoCommon/component/PairTableItem.h \
-    ../TangoCommon/component/TimerWidget.h \
-    ../TangoCommon/network/SocketX.h \
-    ../TangoCommon/network/json_rpc.h \
+    ../TangoCommon/client/json_rpc.h \
     ../TangoCommon/players/Author.h \
     ../TangoCommon/players/Consumer.h \
     ../TangoCommon/players/Player.h \
+    ../TangoCommon/types/Logger.h \
+    ../TangoCommon/types/MessageBox.h \
+    ../TangoCommon/types/PairTableItem.h \
     ../TangoCommon/types/RetriveMode.h \
     ../TangoCommon/types/TangoPair.h \
+    ../TangoCommon/types/TimerWidget.h \
     ../TangoCommon/types/UserBriefInfo.h \
     ../TangoCommon/types/UserFullInfo.h \
     ../TangoCommon/types/UserStatus.h \
+    ../TangoCommon/network/SocketX.h \
         engine/TangoThread.h \
         engine/TcpServer.h \
         mainwindow.h \

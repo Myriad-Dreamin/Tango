@@ -8,7 +8,7 @@
 #include <QString>
 #include <QAction>
 #include <QFile>
-#include <QSettings>
+
 
 #include <QSqlError>
 #include <QHostAddress>
@@ -41,10 +41,9 @@
 /* 自定类型 */
 #include "../TangoCommon/types/TangoPair.h"
 #include "../TangoCommon/types/UserStatus.h"
-
-#include "../TangoCommon/component/TimerWidget.h"
-#include "../TangoCommon/component/Logger.h"
-#include "../TangoCommon/component/MessageBox.h"
+#include "../TangoCommon/types/TimerWidget.h"
+#include "../TangoCommon/types/Logger.h"
+#include "../TangoCommon/types/MessageBox.h"
 
 /* 客户端代理 */
 #include "../TangoCommon/client/Client.h"
@@ -53,8 +52,6 @@
 MainWindow::MainWindow(QWidget *parent):
     QMainWindow(parent)
 {
-    this->qconfig = nullptr;
-    this->load_configs();
 
     this->client = nullptr;
     this->cur_scene = nullptr;
@@ -70,6 +67,8 @@ MainWindow::MainWindow(QWidget *parent):
     this->ranking_consumers_scene = nullptr;
     this->query_users_scene = nullptr;
 
+    this->logger = new Logger(this);
+    this->init_client();
 
     this->init_main_scene();
     this->init_playing_scene();
@@ -83,7 +82,6 @@ MainWindow::MainWindow(QWidget *parent):
     this->init_ranking_consumers_scene();
     this->init_query_users_scene();
 
-    this->init_client();
     this->init_menubar();
     this->init_statusbar();
 
@@ -98,7 +96,6 @@ MainWindow::MainWindow(QWidget *parent):
     // qDebug() << reading;
     this->setStyleSheet(reading);
     qssf.close();
-
 }
 
 
@@ -115,7 +112,7 @@ MainWindow::~MainWindow()
     this->ranking_authors_scene->deleteLater();
     this->ranking_consumers_scene->deleteLater();
     this->query_users_scene->deleteLater();
-    this->save_configs();
+    this->logger->deleteLater();
 }
 
 /*********************************** Initialize ***********************************/
@@ -172,6 +169,81 @@ inline bool MainWindow::init_main_scene()
 
     main_scene = new MainScene(this);
 
+    /* 登录事件 */
+    main_scene->set_sign_in_button_event([this]() mutable {
+
+        QString account_text = this->main_scene->account_edit->text();
+        QString password_text = this->main_scene->password_edit->text();
+
+        qDebug() << "clicked confirm button" << account_text;
+        qDebug() << "clicked confirm button" << password_text;
+
+
+        if (account_text == "") {
+            MessageBox::critical(this, tr("错误"), tr("用户名不能为空"));
+            return;
+        }
+
+        if (password_text == "") {
+            MessageBox::critical(this, tr("错误"), tr("密码不能为空"));
+            return;
+        }
+
+        /* 根据 remote button的值判断是否远程连接 */
+        if (this->main_scene->remote_button->isChecked()) {
+            qDebug() << "checked";
+
+            QHostAddress host_address(this->main_scene->network_edit->text());
+            quint16 server_port = quint16(this->main_scene->port_edit->text().toShort());
+
+            if (!this->client->setup_remote_connection(host_address, server_port)) {
+                MessageBox::critical(this, tr("远程连接失败"), this->client->last_error());
+                return;
+            }
+        } else {
+            qDebug() << "not checked";
+
+            if (!this->client->setup_local_connection()) {
+                MessageBox::critical(this, tr("本地连接失败"), this->client->last_error());
+                return;
+            }
+        }
+
+        bool sign_in_success = false;
+
+        if (this->main_scene->user_selecting_status == UserStatus::Author) {
+            sign_in_success = this->author_sign_in(account_text, password_text);
+        } else {
+            sign_in_success = this->consumer_sign_in(account_text, password_text);
+        }
+
+        if (sign_in_success) {
+            this->selecting_scene->set_visble_buttons();
+            this->switch_scene(this->selecting_scene);
+        }
+    });
+
+    /* 角色变换 */
+    main_scene->set_role_button_event([this]() mutable {
+        if (this->main_scene->user_selecting_status == UserStatus::Author) {
+            this->main_scene->role_button->setText("consumer!");
+            this->main_scene->user_selecting_status = UserStatus::Consumer;
+        } else {
+            this->main_scene->role_button->setText("author!");
+            this->main_scene->user_selecting_status = UserStatus::Author;
+        }
+    });
+
+    /* 退出事件 */
+    main_scene->set_cancel_button_event([this]() mutable {
+        qDebug() << "clicked cancel button";
+        this->close();
+    });
+
+    /* 转入注册页事件 */
+    main_scene->set_sign_up_button_event([this]() mutable {
+         this->switch_scene(this->register_scene);
+    });
 
     this->main_scene->hide();
     return true;
@@ -182,6 +254,105 @@ inline bool MainWindow::init_register_scene()
 {
     register_scene = new RegisterScene(this);
 
+    /* 注册事件 */
+    register_scene->set_confirm_button_event([this]() mutable {
+
+        QString account_text = this->register_scene->account_edit->text();
+        QString password_text = this->register_scene->password_edit->text();
+        QString confirm_password_text = this->register_scene->confirm_edit->text();
+
+        qDebug() << "clicked confirm button" << account_text;
+        qDebug() << "clicked confirm button" << password_text;
+        qDebug() << "clicked confirm button" << confirm_password_text;
+
+        if (account_text == "") {
+            MessageBox::critical(this, tr("错误"), tr("用户名不能为空"));
+            return;
+        }
+
+        if (password_text == "") {
+            MessageBox::critical(this, tr("错误"), tr("密码不能为空"));
+            return;
+        }
+
+        if (password_text != confirm_password_text) {
+            qDebug() << "not equal";
+            MessageBox::critical(this, tr("错误"), tr("两次输入密码不一致"));
+            return;
+        }
+
+        /* 根据 remote button的值判断是否远程连接 */
+        if (this->register_scene->remote_button->isChecked()) {
+            qDebug() << "checked";
+
+            QHostAddress host_address(this->register_scene->network_edit->text());
+            quint16 server_port = quint16(this->register_scene->port_edit->text().toShort());
+
+            if (!this->client->setup_remote_connection(host_address, server_port)) {
+                MessageBox::critical(this, tr("远程连接失败"), this->client->last_error());
+                return;
+            }
+        } else {
+            qDebug() << "not checked";
+
+            if (!this->client->setup_local_connection()) {
+                MessageBox::critical(this, tr("本地连接失败"), this->client->last_error());
+                return;
+            }
+        }
+
+        bool sign_up_success = false;
+
+        if (this->register_scene->user_selecting_status == UserStatus::Author) {
+            sign_up_success = this->author_sign_up(account_text, password_text);
+        } else {
+            sign_up_success = this->consumer_sign_up(account_text, password_text);
+        }
+
+        if (sign_up_success) {
+            if (!this->register_scene->remote_button->isChecked()) {
+                int query_count;
+                if (!this->client->query_users(query_count)) {
+                    MessageBox::critical(this, tr("查询用户总量失败"), this->client->last_error());
+                    return;
+                }
+                qDebug() << "querying" << query_count;
+                if (query_count > 0) {
+                    if (!this->client->init_default_tangos()) {
+                        MessageBox::critical(this, tr("初始化词库失败"), this->client->last_error());
+                        return;
+                    }
+                }
+            }
+
+            this->selecting_scene->set_visble_buttons();
+            this->switch_scene(this->selecting_scene);
+        }
+    });
+
+    /* 角色变换 */
+    register_scene->set_role_button_event([this]() mutable {
+        if (this->register_scene->user_selecting_status == UserStatus::Author) {
+            this->register_scene->role_button->setText("consumer!");
+            this->register_scene->user_selecting_status = UserStatus::Consumer;
+        } else {
+            this->register_scene->role_button->setText("author!");
+            this->register_scene->user_selecting_status = UserStatus::Author;
+        }
+    });
+
+    /* 退出事件 */
+    register_scene->set_cancel_button_event([this]() mutable {
+        qDebug() << "clicked cancel button";
+        this->close();
+    });
+
+    /* 返回登录界面事件 */
+    register_scene->set_return_button_event([this]() mutable {
+        qDebug() << "clicked return button" << this->main_scene;
+        this->client->logout();
+        this->switch_scene(this->main_scene);
+    });
 
     this->register_scene->hide();
     return true;
@@ -191,6 +362,52 @@ inline bool MainWindow::init_selecting_scene()
 {
     this->selecting_scene = new SelectingScene(this);
 
+    /* 前往创造界面事件 */
+    this->selecting_scene->set_creation_button_event([this]() mutable {
+        qDebug() << "clicked creation button";
+
+        this->switch_scene(this->creation_scene);
+    });
+
+    /* 前往游玩界面事件 */
+    this->selecting_scene->set_play_button_event([this]() mutable {
+        qDebug() << "clicked play button";
+
+        this->switch_scene(this->playing_scene);
+    });
+
+    this->selecting_scene->set_multi_play_button_event([this]() mutable {
+        qDebug() << "clicked play button";
+
+        this->switch_scene(this->multiplaying_scene);
+    });
+
+    this->selecting_scene->set_ranking_authors_button_event([this]() mutable {
+        qDebug() << "clicked ranking button";
+
+        this->ranking_authors_scene->switch_page(1);
+        this->switch_scene(this->ranking_authors_scene);
+    });
+
+    this->selecting_scene->set_ranking_consumers_button_event([this]() mutable {
+        qDebug() << "clicked ranking button";
+
+        this->ranking_consumers_scene->switch_page(1);
+        this->switch_scene(this->ranking_consumers_scene);
+    });
+
+    this->selecting_scene->set_player_list_button_event([this]() mutable {
+        qDebug() << "clicked player list button";
+
+        this->switch_scene(this->query_users_scene);
+    });
+
+    this->selecting_scene->set_return_button_event([this]() mutable {
+        qDebug() << "clicked return button";
+
+        this->client->logout();
+        this->switch_scene(this->main_scene);
+    });
 
     this->selecting_scene->hide();
     return true;
@@ -260,6 +477,7 @@ void MainWindow::switch_scene(QWidget *to_set)
     return;
 }
 
+
 /************************************* Player *************************************/
 
 bool MainWindow::author_sign_in(QString account, QString password)
@@ -309,39 +527,5 @@ bool MainWindow::submit_creation_table(const std::vector<TangoPair> &tango_pairs
         return false;
     }
 
-    return true;
-}
-
-
-bool MainWindow::load_configs()
-{
-    this->qconfig = new QSettings("config.ini", QSettings::IniFormat, this);
-    if (this->qconfig == nullptr) {
-        MessageBox::critical(this, "错误", "未能读取config.ini文件，将使用默认设定");
-        this->set_default_configs();
-        return false;
-    }
-    this->qconfig->sync();
-    this->config_set["default_creation_table_items_count"] = this->qconfig->value("limit/default_creation_table_items_count", 3);
-    return true;
-}
-
-bool MainWindow::save_configs()
-{
-    if (this->qconfig == nullptr) {
-        this->qconfig = new QSettings("config.ini", QSettings::IniFormat, this);
-        if (this->qconfig == nullptr) {
-            MessageBox::critical(this, "错误", "未能将配置写入config.ini文件");
-            return false;
-        }
-    }
-    this->qconfig->setValue("limit/default_creation_table_items_count", this->config_set["default_creation_table_items_count"]);
-    return true;
-}
-
-
-bool MainWindow::set_default_configs()
-{
-    this->config_set["default_creation_table_items_count"] = QVariant(3);
     return true;
 }

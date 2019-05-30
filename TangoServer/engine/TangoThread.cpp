@@ -4,9 +4,9 @@
 #include "../../TangoCommon/network/SocketX.h"
 
 #include <QJsonDocument>
-#include "../../TangoCommon/network/json_rpc.h"
+#include "../../TangoCommon/client/json_rpc.h"
 #include "../../TangoCommon/client/LocalClient.h"
-#include "../../TangoCommon/automator/GameConfig.h"
+#include "../../TangoCommon/client/GameConfig.h"
 
 TangoThread::TangoThread(long long sock_desc, QObject *parent) :
     QThread(parent),

@@ -9,12 +9,6 @@ class SocketX;
 class GameAutomationRelayer;
 class MainWindow;
 
-
-/*
- * 远程客户端
- * 
- * 负责网络化客户端服务，使用JSON-RPC服务
- */
 class RemoteClient : public QObject, public AbstractClient
 {
     Q_OBJECT

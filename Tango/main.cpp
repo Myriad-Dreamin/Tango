@@ -2,16 +2,15 @@
 #include <QApplication>
 
 #include "mainwindow.h"
-#include "../TangoCommon/component/Logger.h"
 
-/* 程序开始的地方 */
 int main(int argc, char *argv[])
 {
-    Logger::get_logger("main")->set_mode(LoggerFlag::debug_logger_flag());
-
+    qDebug("---------------");
     QApplication a(argc, argv);
 
     MainWindow w;
+
+    // exec(), show() 模态, 非模态
 
     w.show();
 

@@ -1,8 +1,17 @@
-
 #include "QueryUsersScene.h"
-#include "SelectingScene.h"
-#include "../mainwindow.h"
 
+#include <QLayout>
+#include <QLabel>
+#include <QPushButton>
+#include <QLineEdit>
+#include <QMessageBox>
+
+
+#include "../mainwindow.h"
+#include "SelectingScene.h"
+#include "../../TangoCommon/client/Client.h"
+#include "../../TangoCommon/types/MessageBox.h"
+#include "../../TangoCommon/types/UserFullInfo.h"
 
 QueryUsersScene::QueryUsersScene(QWidget *parent): Scene(parent)
 {

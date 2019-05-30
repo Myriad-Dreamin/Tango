@@ -1,16 +1,22 @@
 #ifndef RANKINGCONSUMERSSCENE_H
 #define RANKINGCONSUMERSSCENE_H
 
-#include "scene_common.h"
+#include "Scene.h"
 
-/*
- * 读者排行榜场景
- */
+const int DEFAULT_CONSUMER_PAGE_LIMIT = 10;
+
+class MainWindow;
+class QVBoxLayout;
+class QLabel;
+class QPushButton;
+class QLineEdit;
+class QHBoxLayout;
+class UserBriefInfo;
+
 class RankingConsumersScene : public Scene
 {
     Q_OBJECT
     friend class MainWindow;
-    friend class SelectingScene;
 public:
     RankingConsumersScene(QWidget *parent=nullptr);
     ~RankingConsumersScene();

@@ -3,11 +3,6 @@
 
 #include <QString>
 
-/*
- * 游戏客户端
- * 
- * 已废弃
- */
 class GameClient
 {
 public:
