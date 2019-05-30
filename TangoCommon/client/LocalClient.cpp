@@ -26,6 +26,49 @@ LocalClient::LocalClient(QObject *parent): QObject (parent), AbstractClient ()
     this->ready = false;
 }
 
+LocalClient::LocalClient(
+    QString host_name,
+    QString base_name,
+    QString user_name,
+    QString password,
+    QObject *parent
+): QObject (parent), AbstractClient () {
+    this->user_author = nullptr;
+    this->user_consumer = nullptr;
+    this->user_status = UserStatus::None;
+
+    handler = QSqlDatabase::addDatabase("QMYSQL");
+    handler.setHostName(host_name);
+    handler.setDatabaseName(base_name);
+    handler.setUserName(user_name);
+    handler.setPassword(password);
+    this->ready = false;
+}
+
+bool LocalClient::reset_database_config(QString host_name, QString base_name)
+{
+    if (this->ready) {
+        this->handler.close();
+        this->ready = false;
+    }
+    this->handler.setHostName(host_name);
+    this->handler.setDatabaseName(base_name);
+    return true;
+}
+
+bool LocalClient::reset_database_user(QString user_name, QString password)
+{
+    if (this->ready) {
+        this->handler.close();
+        this->ready = false;
+    }
+    this->handler.setUserName(user_name);
+    this->handler.setPassword(password);
+    return true;
+}
+
+
+
 LocalClient::LocalClient(QSqlDatabase out_link, QObject *parent): QObject (parent), AbstractClient ()
 {
     this->user_author = nullptr;

@@ -155,7 +155,7 @@ void CreationScene::reset_table()
         }
         creation_table_row = 1;
     }
-    auto DEFAULT_CREATION_TABLE_ITEMS_COUNT = this->parent->config_set[tr("default_creation_table_items_count")].toInt();
+    auto DEFAULT_CREATION_TABLE_ITEMS_COUNT = this->parent->qconfig->at("limit/default_creation_table_items_count").toInt();
     for (int i = 0; i < DEFAULT_CREATION_TABLE_ITEMS_COUNT; i++) {
         this->insert_back_item(this->make_creation_table_item());
     }
@@ -209,11 +209,13 @@ void CreationScene::try_submit_tangos()
 
         tango_list.emplace_back(TangoPair(item->first->text(), item->second->text()));
     }
-
-    if (this->parent->submit_creation_table(tango_list)) {
-        this->parent->client->sync_status();
-        this->reset_table();
+    if (!this->parent->client->submit_tango_items(tango_list)) {
+        MessageBox::critical(this, tr("错误"), "添加单词失败：" + this->parent->client->last_error());
+        return ;
     }
+
+    this->parent->client->sync_status();
+    this->reset_table();
 }
 
 /* 内嵌类CrationTableItem构造函数 */

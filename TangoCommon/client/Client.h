@@ -12,6 +12,7 @@
 
 class QTcpSocket;
 class QSqlDatabase;
+class MainWindow;
 
 class TangoPair;
 class UserBriefInfo;
@@ -156,6 +157,7 @@ public:
     bool consumer_logining();
     bool author_logining();
 private:
+    MainWindow *parent;
     AbstractClient *handler;
     LocalClient *local_handler;
     RemoteClient *remote_handler;

@@ -49,6 +49,7 @@ class MainWindow;
 #include "../../TangoCommon/component/MessageBox.h"
 #include "../../TangoCommon/component/TimerWidget.h"
 #include "../../TangoCommon/component/PairTableItem.h"
+#include "../TangoCommon/component/ConfigSet.h"
 
 const int DEFAULT_AUTHOR_PAGE_LIMIT = 10;
 const int DEFAULT_CONSUMER_PAGE_LIMIT = 10;

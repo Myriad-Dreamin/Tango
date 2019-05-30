@@ -20,7 +20,7 @@ class RankingAuthorsScene;
 class RankingConsumersScene;
 class QueryUsersScene;
 
-class QSettings;
+class ConfigSet;
 /*
  * 主窗口类
  * 
@@ -30,6 +30,7 @@ class MainWindow : public QMainWindow
 {
 // property:
     Q_OBJECT
+    friend class Client;
     friend class RemoteClient;
     
     friend class MainScene;
@@ -52,16 +53,13 @@ public:
 
     void switch_scene(QWidget *to_set);
 private:
-    std::map<QString, QVariant> config_set;
-    QSettings *qconfig;
+    Client *client;
+    ConfigSet *qconfig;
     Logger *logger;
     TimerWidget *timer;
-    QString caughted_error;
 
     QWidget *cur_scene;
 
-    bool client_connected;
-    Client *client;
 
     MainScene *main_scene;
     PlayingScene *playing_scene;
@@ -76,6 +74,7 @@ private:
     QueryUsersScene *query_users_scene;
 
     inline bool load_configs();
+    bool set_default_configs();
     inline bool init_client();
     inline bool init_menubar();
     inline bool init_statusbar();
@@ -91,16 +90,6 @@ private:
     inline bool init_ranking_authors_scene();
     inline bool init_ranking_consumers_scene();
     inline bool init_query_users_scene();
-
-    bool author_sign_in(QString account, QString password);
-    bool author_sign_up(QString account, QString password);
-
-    bool consumer_sign_in(QString account, QString password);
-    bool consumer_sign_up(QString account, QString password);
-
-    bool submit_creation_table(const std::vector<TangoPair> &tango_pairs);
-    bool save_configs();
-    bool set_default_configs();
 };
 
 #endif // MAINWINDOW_H

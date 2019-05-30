@@ -158,18 +158,20 @@ void MainScene::set_button_events()
             }
         }
 
-        bool sign_in_success = false;
-
         if (this->user_selecting_status == UserStatus::Author) {
-            sign_in_success = this->parent->author_sign_in(account_text, password_text);
+            if (!this->parent->client->author_sign_in(account_text, password_text)) {
+                MessageBox::critical(this, tr("错误"), "登录失败：" + this->parent->client->last_error());
+                return ;
+            }
         } else {
-            sign_in_success = this->parent->consumer_sign_in(account_text, password_text);
+            if (!this->parent->client->consumer_sign_in(account_text, password_text)) {
+                MessageBox::critical(this, tr("错误"), "登录失败：" + this->parent->client->last_error());
+                return ;
+            }
         }
 
-        if (sign_in_success) {
-            this->parent->selecting_scene->set_visble_buttons();
-            this->parent->switch_scene(this->parent->selecting_scene);
-        }
+        this->parent->selecting_scene->set_visble_buttons();
+        this->parent->switch_scene(this->parent->selecting_scene);
     });
 
     /* 角色变换 */

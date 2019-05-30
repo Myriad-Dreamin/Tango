@@ -19,6 +19,7 @@
 #include "../types/UserFullInfo.h"
 
 #include "../component/MessageBox.h"
+#include "../component/ConfigSet.h"
 
 #include "../automator/GameAutomation.h"
 #include "../automator/GameConfig.h"
@@ -30,6 +31,7 @@
 
 Client::Client(QObject *parent) : QObject(parent)
 {
+    this->parent = dynamic_cast<MainWindow*>(parent);
     this->handler = nullptr;
     this->local_handler = new LocalClient(this);
     this->remote_handler = new RemoteClient(parent);
@@ -71,6 +73,16 @@ bool Client::setup_local_connection()
         _last_error = "local_handler is not inited";
         return false;
     }
+    this->local_handler->reset_database_config(
+        this->parent->qconfig->at("mysql/host").toString(),
+        this->parent->qconfig->at("mysql/basename").toString()
+    );
+
+    this->local_handler->reset_database_user(
+        this->parent->qconfig->at("mysql/user").toString(),
+        this->parent->qconfig->at("mysql/password").toString()
+    );
+
     if (!this->local_handler->setup_connection()) {
         this->_last_error = this->local_handler->last_error();
         qDebug() << "..." << this->local_handler->last_error();

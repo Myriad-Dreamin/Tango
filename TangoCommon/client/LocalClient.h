@@ -16,6 +16,7 @@ class LocalClient : public QObject, public AbstractClient
 public:
     explicit LocalClient(QObject *parent = nullptr);
     explicit LocalClient(QSqlDatabase out_link, QObject *parent = nullptr);
+    LocalClient(QString host_name, QString base_name, QString user_name, QString password, QObject *parent);
     virtual ~LocalClient() override;
 signals:
     /* 连接信号 */
@@ -29,6 +30,8 @@ public:
     bool setup_connection();
     bool stop_connection();
     bool set_handler(QSqlDatabase out_link);
+    bool reset_database_config(QString host_name, QString base_name);
+    bool reset_database_user(QString user_name, QString password);
 
     bool author_sign_in(QString account, QString password) override;
     bool author_sign_up(QString account, QString password) override;

@@ -45,6 +45,8 @@
 #include "../TangoCommon/component/TimerWidget.h"
 #include "../TangoCommon/component/Logger.h"
 #include "../TangoCommon/component/MessageBox.h"
+#include "../TangoCommon/component/ConfigSet.h"
+
 
 /* 客户端代理 */
 #include "../TangoCommon/client/Client.h"
@@ -115,7 +117,6 @@ MainWindow::~MainWindow()
     this->ranking_authors_scene->deleteLater();
     this->ranking_consumers_scene->deleteLater();
     this->query_users_scene->deleteLater();
-    this->save_configs();
 }
 
 /*********************************** Initialize ***********************************/
@@ -260,88 +261,29 @@ void MainWindow::switch_scene(QWidget *to_set)
     return;
 }
 
-/************************************* Player *************************************/
-
-bool MainWindow::author_sign_in(QString account, QString password)
-{
-    if (!this->client->author_sign_in(account, password)) {
-        MessageBox::critical(this, tr("错误"), "登录失败：" + this->client->last_error());
-        return false;
-    }
-
-    return true;
-}
-
-bool MainWindow::author_sign_up(QString account, QString password)
-{
-    if (!this->client->author_sign_up(account, password)) {
-        MessageBox::critical(this, tr("错误"), "注册失败：" + this->client->last_error());
-        return false;
-    }
-
-    return true;
-}
-
-bool MainWindow::consumer_sign_in(QString account, QString password)
-{
-    if (!this->client->consumer_sign_in(account, password)) {
-        MessageBox::critical(this, tr("错误"), "登录失败：" + this->client->last_error());
-        return false;
-    }
-
-    return true;
-}
-
-bool MainWindow::consumer_sign_up(QString account, QString password)
-{
-    if (!this->client->consumer_sign_up(account, password)) {
-        MessageBox::critical(this, tr("错误"), "注册失败：" + this->client->last_error());
-        return false;
-    }
-
-    return true;
-}
-
-bool MainWindow::submit_creation_table(const std::vector<TangoPair> &tango_pairs)
-{
-    if (!this->client->submit_tango_items(tango_pairs)) {
-        MessageBox::critical(this, tr("错误"), "添加单词失败：" + this->client->last_error());
-        return false;
-    }
-
-    return true;
-}
+/************************************* Config *************************************/
 
 
 bool MainWindow::load_configs()
 {
-    this->qconfig = new QSettings("config.ini", QSettings::IniFormat, this);
-    if (this->qconfig == nullptr) {
-        MessageBox::critical(this, "错误", "未能读取config.ini文件，将使用默认设定");
-        this->set_default_configs();
-        return false;
-    }
-    this->qconfig->sync();
-    this->config_set["default_creation_table_items_count"] = this->qconfig->value("limit/default_creation_table_items_count", 3);
-    return true;
-}
+    this->qconfig = new ConfigSet("config.ini", QSettings::IniFormat, this);
+//    if (!this->qconfig) {
+//        MessageBox::critical(this, "错误", "未能读取config.ini文件，将使用默认设定");
 
-bool MainWindow::save_configs()
-{
-    if (this->qconfig == nullptr) {
-        this->qconfig = new QSettings("config.ini", QSettings::IniFormat, this);
-        if (this->qconfig == nullptr) {
-            MessageBox::critical(this, "错误", "未能将配置写入config.ini文件");
-            return false;
-        }
-    }
-    this->qconfig->setValue("limit/default_creation_table_items_count", this->config_set["default_creation_table_items_count"]);
+//        return false;
+//    }
+    this->set_default_configs();
+    this->qconfig->sync();
     return true;
 }
 
 
 bool MainWindow::set_default_configs()
 {
-    this->config_set["default_creation_table_items_count"] = QVariant(3);
+    this->qconfig->set_default_value("limit/default_creation_table_items_count", 3);
+    this->qconfig->set_default_value("mysql/host", "localhost");
+    this->qconfig->set_default_value("mysql/basename", "tango");
+    this->qconfig->set_default_value("mysql/user", "tangosql");
+    this->qconfig->set_default_value("mysql/password", "123456");
     return true;
 }

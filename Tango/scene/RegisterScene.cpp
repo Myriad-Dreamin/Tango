@@ -175,33 +175,35 @@ void RegisterScene::set_button_events()
             }
         }
 
-        bool sign_up_success = false;
-
         if (this->user_selecting_status == UserStatus::Author) {
-            sign_up_success = this->parent->author_sign_up(account_text, password_text);
+            if (!this->parent->client->author_sign_up(account_text, password_text)) {
+                MessageBox::critical(this, tr("错误"), "注册失败：" + this->parent->client->last_error());
+                return;
+            }
         } else {
-            sign_up_success = this->parent->consumer_sign_up(account_text, password_text);
+            if (!this->parent->client->consumer_sign_up(account_text, password_text)) {
+                MessageBox::critical(this, tr("错误"), "注册失败：" + this->parent->client->last_error());
+                return;
+            }
         }
 
-        if (sign_up_success) {
-            if (!this->remote_button->isChecked()) {
-                int query_count;
-                if (!this->parent->client->query_users(query_count)) {
-                    MessageBox::critical(this, tr("查询用户总量失败"), this->parent->client->last_error());
+        if (!this->remote_button->isChecked()) {
+            int query_count;
+            if (!this->parent->client->query_users(query_count)) {
+                MessageBox::critical(this, tr("查询用户总量失败"), this->parent->client->last_error());
+                return;
+            }
+            qDebug() << "querying" << query_count;
+            if (query_count > 0) {
+                if (!this->parent->client->init_default_tangos()) {
+                    MessageBox::critical(this, tr("初始化词库失败"), this->parent->client->last_error());
                     return;
                 }
-                qDebug() << "querying" << query_count;
-                if (query_count > 0) {
-                    if (!this->parent->client->init_default_tangos()) {
-                        MessageBox::critical(this, tr("初始化词库失败"), this->parent->client->last_error());
-                        return;
-                    }
-                }
             }
-
-            this->parent->selecting_scene->set_visble_buttons();
-            this->parent->switch_scene(this->parent->selecting_scene);
         }
+
+        this->parent->selecting_scene->set_visble_buttons();
+        this->parent->switch_scene(this->parent->selecting_scene);
     });
 
     /* 角色变换 */

@@ -1,6 +1,6 @@
 #include "GameAutomationRelayer.h"
 
-#include "RemoteClient.h"
+#include "../client/RemoteClient.h"
 
 GameAutomationRelayer::GameAutomationRelayer(RemoteClient *client, QObject *parent) : AbstractGameAutomation(parent)
 {
