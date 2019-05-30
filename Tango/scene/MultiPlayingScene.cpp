@@ -5,9 +5,10 @@
 
 
 
-MultiPlayingScene::MultiPlayingScene(QWidget *parent) : Scene (parent)
+MultiPlayingScene::MultiPlayingScene(MainWindow *parent) : Scene (parent)
 {
-    this->parent = dynamic_cast<MainWindow*>(parent);
+    this->logger = Logger::get_logger("main");
+    this->parent = parent;
     this->ranking_table_row = 0;
     auto main_center_lay = new QVBoxLayout;
 
@@ -88,6 +89,11 @@ MultiPlayingScene::~MultiPlayingScene()
 
 }
 
+void MultiPlayingScene::on_incoming()
+{
+    this->clear_table();
+}
+
 void MultiPlayingScene::clear_table()
 {
     for (int i = ranking_table_row - 1; i > 0; i--) {
@@ -126,7 +132,6 @@ void MultiPlayingScene::set_page_contain(std::vector<UserFullInfo> &authors_list
             });
             connect(seek_button, &QPushButton::clicked, [=]() {
                 static wchar_t x[500];
-                qDebug() << "here";
                 QString info;
                 auto &uinfo = this->a_list[i];
                 uinfo.name.toWCharArray(x);
@@ -156,7 +161,6 @@ void MultiPlayingScene::set_page_contain(std::vector<UserFullInfo> &authors_list
             item_lay->addStretch(1);
             item->setLayout(item_lay);
             this->player_list->insertWidget(ranking_table_row, item);
-            qDebug() << item;
             this->ranking_table_row++;
         }
 
@@ -177,11 +181,9 @@ void MultiPlayingScene::set_page_contain(std::vector<UserFullInfo> &authors_list
             });
             connect(seek_button, &QPushButton::clicked, [=]() {
                 static wchar_t x[500];
-                qDebug() << "here";
+
                 QString info;
-                qDebug() << "here";
                 auto &uinfo = this->c_list[i];
-                qDebug() << "here";
                 uinfo.name.toWCharArray(x);
                 MessageBox::info_text(this, tr("用户信息"), info.sprintf(
                     "id: %d\n昵称: %ls\n通过单词量: %d\n通过关卡量: %d\n等级: %d\n经验: %d",
@@ -192,7 +194,6 @@ void MultiPlayingScene::set_page_contain(std::vector<UserFullInfo> &authors_list
                     uinfo.level,
                     uinfo.exp
                 ));
-                qDebug() << "here";
             });
 
 
@@ -212,7 +213,6 @@ void MultiPlayingScene::set_page_contain(std::vector<UserFullInfo> &authors_list
             item->setLayout(item_lay);
             this->player_list->insertWidget(ranking_table_row, item);
             this->ranking_table_row++;
-            qDebug() << item;
         }
 
     }

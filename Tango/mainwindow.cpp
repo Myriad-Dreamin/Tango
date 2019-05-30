@@ -55,6 +55,7 @@
 MainWindow::MainWindow(QWidget *parent):
     QMainWindow(parent)
 {
+    this->logger = Logger::get_logger("main");
     this->qconfig = nullptr;
     this->load_configs();
 
@@ -97,7 +98,6 @@ MainWindow::MainWindow(QWidget *parent):
     QFile qssf(":/qss/main.qss");
     qssf.open(QFile::ReadOnly);
     QString reading = qssf.readAll();
-    // qDebug() << reading;
     this->setStyleSheet(reading);
     qssf.close();
 
@@ -106,7 +106,7 @@ MainWindow::MainWindow(QWidget *parent):
 
 MainWindow::~MainWindow()
 {
-    qDebug() << "mainwindow delete";
+    logger->info() << "mainwindow delete";
     this->client->logout();
     this->client->deleteLater();
     this->main_scene->deleteLater();
@@ -245,17 +245,19 @@ inline bool MainWindow::init_playsub_scene()
     return true;
 }
 
-void MainWindow::switch_scene(QWidget *to_set)
+void MainWindow::switch_scene(Scene *to_set)
 {
-    qDebug() << this->cur_scene << to_set;
+    logger->info() << this->cur_scene << to_set;
 
     if (this->cur_scene) {
+        this->cur_scene->on_exiting();
         this->cur_scene->hide();
     }
 
     this->takeCentralWidget();
     this->setCentralWidget(to_set);
     this->cur_scene = to_set;
+    this->cur_scene->on_incoming();
     this->cur_scene->show();
 
     return;

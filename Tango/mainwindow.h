@@ -8,6 +8,7 @@ class Logger;
 class TangoPair;
 class TimerWidget;
 
+class Scene;
 class MainScene;
 class PlayingScene;
 class MultiPlayingScene;
@@ -50,17 +51,13 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-
-    void switch_scene(QWidget *to_set);
 private:
     Client *client;
     ConfigSet *qconfig;
     Logger *logger;
     TimerWidget *timer;
 
-    QWidget *cur_scene;
-
-
+    Scene *cur_scene;
     MainScene *main_scene;
     PlayingScene *playing_scene;
     MultiPlayingScene *multiplaying_scene;
@@ -73,6 +70,9 @@ private:
     RankingConsumersScene *ranking_consumers_scene;
     QueryUsersScene *query_users_scene;
 
+    void switch_scene(Scene *to_set);
+
+private:
     inline bool load_configs();
     bool set_default_configs();
     inline bool init_client();

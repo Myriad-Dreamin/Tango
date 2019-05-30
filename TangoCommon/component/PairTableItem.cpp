@@ -36,7 +36,6 @@ PairTableItem::PairTableItem(QString first_label, QString second_label, QWidget 
 
 PairTableItem::~PairTableItem()
 {
-    qDebug() << "truely deleted";
 }
 
 

@@ -25,9 +25,7 @@ bool ConfigSet::set_default_value(const QString &key, const QVariant &value)
 {
     static QVariant invalid_element(QVariant::Type::Invalid);
     default_set[key] = value;
-    qDebug() << "here" << key << value;
     if (!this->value(key, invalid_element).isValid()) {
-        qDebug() << "here" << key << value;
         this->setValue(key, value);
     }
     return true;

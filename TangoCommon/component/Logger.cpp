@@ -437,7 +437,7 @@ LoggerManager::LoggerManager()
     }
     m_logger_instances->clear();
 }
-#define DEBUG
+
 LoggerManager::~LoggerManager()
 {
     for (auto &logger_instance: *m_logger_instances) {

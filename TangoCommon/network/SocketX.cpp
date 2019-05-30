@@ -30,8 +30,7 @@ bool SocketX::wait_for_new_package(const std::function<void (QByteArray)> &callb
     QEventLoop loop;
     connect(&loop_timeout, &QTimer::timeout, &loop, &QEventLoop::quit);
 
-    auto xx =  [&](const QString &ip, const quint16 &port, const QByteArray &bytes_json) mutable {
-        qDebug() << ip << port << bytes_json;
+    auto xx =  [&](const QString &, const quint16 &, const QByteArray &bytes_json) mutable {
         loop_timeout.stop();
         callback(bytes_json);
         success = true;
@@ -40,22 +39,19 @@ bool SocketX::wait_for_new_package(const std::function<void (QByteArray)> &callb
     connect(this, &SocketX::package_ready, xx);
     loop_timeout.start(timeout);
     loop.exec();
-    qDebug() << "exec...";
     disconnect(this, &SocketX::package_ready, this, nullptr);
     return success;
 }
 
 bool SocketX::write_package(QByteArray to_send)
 {
-    qDebug() << "writed bytes" << this->write(to_send.toBase64().append(package_delimit));
-    this->waitForBytesWritten();
+    this->write(to_send.toBase64().append(package_delimit));
     return true;
 }
 
 void SocketX::make_ready_read_slot(void)
 {
     connect(this, &QIODevice::readyRead, [this]() mutable {
-        // qDebug() << "new Socket X Data from " << this->peerName() << " " << this->peerAddress() << " " << this->peerPort();
         QByteArray data = readAll();
         // qDebug() << "retriving data" << data;
 
@@ -63,12 +59,10 @@ void SocketX::make_ready_read_slot(void)
         buffer.append(package_list[0]);
         int packages_count = package_list.length() - 1;
         if (package_list.length() > 1) {
-            qDebug() << "receving" << QByteArray::fromBase64(buffer);
             emit this->package_ready(peerAddress().toString(), this->peerPort(), QByteArray::fromBase64(buffer));
             buffer = package_list[packages_count];
         }
         for (int i = 1; i < packages_count; i++) {
-            qDebug() << "receving" << QByteArray::fromBase64(package_list[i]);
             emit this->package_ready(peerAddress().toString(), this->peerPort(), QByteArray::fromBase64(package_list[i]));
         }
     });

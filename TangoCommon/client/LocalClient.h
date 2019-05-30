@@ -5,6 +5,8 @@
 #include <QObject>
 #include <QSqlDatabase>
 
+class Logger;
+
 /*
  * 本地客户端
  * 
@@ -84,6 +86,7 @@ private:
     QSqlDatabase handler;
     bool ready;
 
+    Logger *logger;
     QString _last_error;
 
     bool create_author_table();

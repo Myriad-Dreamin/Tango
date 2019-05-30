@@ -4,10 +4,10 @@
 #include "../mainwindow.h"
 
 
-CreationScene::CreationScene(QWidget *parent): Scene(parent)
+CreationScene::CreationScene(MainWindow *parent): Scene(parent)
 {
     this->logger = Logger::get_logger("main");
-    this->parent = dynamic_cast<MainWindow*>(parent);
+    this->parent = parent;
     creation_table_row = 0;
 
     this->create_header();

@@ -5,15 +5,20 @@
 #include <QSqlQuery>
 #include "../players/Author.h"
 #include "../players/Consumer.h"
+
+#include "../component/Logger.h"
+
 #include "../types/TangoPair.h"
 #include "../types/UserBriefInfo.h"
 #include "../types/UserFullInfo.h"
 #include "../types/UserStatus.h"
+
 #include "../automator/GameAutomation.h"
 #include "../automator/GameConfig.h"
 
 LocalClient::LocalClient(QObject *parent): QObject (parent), AbstractClient ()
 {
+    this->logger = Logger::get_logger("main");
     this->user_author = nullptr;
     this->user_consumer = nullptr;
     this->user_status = UserStatus::None;
@@ -90,7 +95,7 @@ bool LocalClient::setup_connection()
     if (this->ready == false) {
 
         if (!handler.open()) {
-            qDebug() << "db open error:" << handler.lastError().text();
+            logger->debug() << "db open error:" << handler.lastError().text();
             _last_error = handler.lastError().text();
             return false;
         }
@@ -103,7 +108,7 @@ bool LocalClient::setup_connection()
         return true;
     }
 
-    qDebug() << "might be open" << this->handler.isOpen();
+    logger->info() << "might be open" << this->handler.isOpen();
     return true;
 }
 
@@ -128,7 +133,7 @@ bool LocalClient::stop_connection()
 bool LocalClient::author_sign_in(QString account, QString password)
 {
     if (user_status_util::has_author_status(this->user_status)) {
-        qDebug() << "user_doesn't logout";
+        logger->info() << "user_doesn't logout";
         user_author->deleteLater();
         user_author = nullptr;
         user_status_util::remove_author_status(this->user_status);
@@ -155,7 +160,7 @@ bool LocalClient::_author_sign_in(QString account, QString password)
 bool LocalClient::author_sign_up(QString account, QString password)
 {
     if (user_status_util::has_author_status(this->user_status)) {
-        qDebug() << "author doesn't logout";
+        logger->info() << "author doesn't logout";
         user_author->deleteLater();
         user_author = nullptr;
         user_status_util::remove_author_status(this->user_status);
@@ -182,7 +187,7 @@ bool LocalClient::_author_sign_up(QString account, QString password)
 bool LocalClient::consumer_sign_in(QString account, QString password)
 {
     if (user_status_util::has_consumer_status(this->user_status)) {
-        qDebug() << "consumer doesn't logout";
+        logger->info() << "consumer doesn't logout";
         user_consumer->deleteLater();
         user_consumer = nullptr;
         user_status_util::remove_consumer_status(this->user_status);
@@ -210,7 +215,7 @@ bool LocalClient::_consumer_sign_in(QString account, QString password)
 bool LocalClient::consumer_sign_up(QString account, QString password)
 {
     if (user_status_util::has_consumer_status(this->user_status)) {
-        qDebug() << "consumer doesn't logout";
+        logger->info() << "consumer doesn't logout";
         user_consumer->deleteLater();
         user_consumer = nullptr;
         user_status_util::remove_consumer_status(this->user_status);
@@ -220,28 +225,28 @@ bool LocalClient::consumer_sign_up(QString account, QString password)
 
 bool LocalClient::logout()
 {
-    qDebug() << "logouting";
+    logger->info() << "logouting";
     if (user_status_util::has_author_status(this->user_status)) {
-        qDebug() << "logout author";
+        logger->info() << "logout author";
         if (user_author->login_out_local()) {
             user_author->deleteLater();
             user_author = nullptr;
             user_status_util::remove_author_status(this->user_status);
         } else {
             _last_error = user_author->last_error();
-            qDebug() << "error occured" << _last_error;
+            logger->debug() << "error occured when logout author" << _last_error;
             return false;
         }
     }
     if (user_status_util::has_consumer_status(this->user_status)) {
-        qDebug() << "logout consumer" << this->user_consumer->user_info.tango_count;
+        logger->info() << "logout consumer" << this->user_consumer->user_info.tango_count;
         if (user_consumer->login_out_local()) {
             user_consumer->deleteLater();
             user_consumer = nullptr;
             user_status_util::remove_consumer_status(this->user_status);
         } else {
             _last_error = user_consumer->last_error();
-            qDebug() << "error occured" << _last_error;
+            logger->debug() << "error occured when logout consumer" << _last_error;
             return false;
         }
     }
@@ -251,20 +256,20 @@ bool LocalClient::logout()
 
 bool LocalClient::sync_status()
 {
-    qDebug() << "syncing";
+    logger->info() << "syncing";
     if (user_status_util::has_author_status(this->user_status)) {
-        qDebug() << "syncing author";
+        logger->info() << "syncing author";
         if (!user_author->update_full_info_local()) {
             _last_error = user_author->last_error();
-            qDebug() << "error occured" << _last_error;
+            logger->debug() << "error occured when sync status" << _last_error;
             return false;
         }
     }
     if (user_status_util::has_consumer_status(this->user_status)) {
-        qDebug() << "syncing consumer" << this->user_consumer->user_info.tango_count;
+        logger->info() << "syncing consumer" << this->user_consumer->user_info.tango_count;
         if (!user_consumer->update_full_info_local()) {
             _last_error = user_consumer->last_error();
-            qDebug() << "error occured" << _last_error;
+            logger->debug() << "error occured when syncing consumer" << _last_error;
             return false;
         }
     }
@@ -345,7 +350,7 @@ bool LocalClient::init_default_tangos()
             if (_last_error[0] == 'D' && _last_error[1] == 'u' && _last_error[2] == 'p') {
                 continue;
             }
-            qDebug() << "init consumers table failed" << query.lastError().text();
+            logger->debug() << "init consumers table failed" << query.lastError().text();
             return false;
         }
     }
@@ -372,7 +377,7 @@ AbstractGameAutomation *LocalClient::start_game_event(const GameConfig *game_con
 
 bool LocalClient::settle_game_event(const AbstractGameAutomation *automate)
 {
-    qDebug() << this->user_consumer << this->user_consumer->user_info.misson_count << this->user_consumer->user_info.exp << this->user_consumer->user_info.tango_count << this->user_consumer->user_info.level;
+    logger->info() << this->user_consumer << this->user_consumer->user_info.misson_count << this->user_consumer->user_info.exp << this->user_consumer->user_info.tango_count << this->user_consumer->user_info.level;
     if (static_cast<unsigned int>(automate->success_count) < automate->tango_pool->size()) {
         this->user_consumer->user_info.misson_count++;
     }
@@ -382,7 +387,7 @@ bool LocalClient::settle_game_event(const AbstractGameAutomation *automate)
         this->user_consumer->user_info.exp -= this->user_consumer->user_info.level * 10 + 10;
         this->user_consumer->user_info.level++;
     }
-    qDebug() << this->user_consumer << this->user_consumer->user_info.misson_count << this->user_consumer->user_info.exp << this->user_consumer->user_info.tango_count << this->user_consumer->user_info.level;
+    logger->info() << this->user_consumer << this->user_consumer->user_info.misson_count << this->user_consumer->user_info.exp << this->user_consumer->user_info.tango_count << this->user_consumer->user_info.level;
     return true;
 }
 
@@ -397,17 +402,17 @@ bool LocalClient::query_authors_brief_info(std::vector<UserBriefInfo> &info_list
     query.prepare(query_command);
     query.bindValue(":kth", l);
     query.bindValue(":ntimes", r-l+1);
-    qDebug() << "k, n" << l << " " << r-l+1;
+    logger->info() << "k, n" << l << " " << r-l+1;
     if (!query.exec()) {
         _last_error = query.lastError().text();
-        qDebug() << "error occured: " << _last_error;
+        logger->debug() << "error occured when query authors brief info" << _last_error;
 
         return false;
     }
 
     while (query.next()) {
         info_list.emplace_back(UserBriefInfo(query.value(0).toInt(), query.value(1).toString(), query.value(2).toInt()));
-        qDebug() << "fetched " << query.value(0).toInt() << query.value(1).toString() << query.value(2).toInt();
+        logger->info() << "fetched " << query.value(0).toInt() << query.value(1).toString() << query.value(2).toInt();
     }
 
     return true;
@@ -422,13 +427,13 @@ bool LocalClient::query_authors_by_id(UserFullInfo &query_container, int id)
     query.bindValue(":id", id);
     if (!query.exec()) {
         _last_error = query.lastError().text();
-        qDebug() << "error occured: " << _last_error;
+        logger->debug() << "error occured when query authors by id" << _last_error;
 
         return false;
     }
     if (!query.first()) {
         _last_error = "该用户不存在";
-        qDebug() << "fetch first element error occured: " << _last_error;
+        logger->debug() << "fetch first element error occured when query authors by id" << _last_error;
 
         return false;
     }
@@ -453,13 +458,13 @@ bool LocalClient::query_consumers_by_id(UserFullInfo &query_container, int id)
     query.bindValue(":id", id);
     if (!query.exec()) {
         _last_error = query.lastError().text();
-        qDebug() << "error occured: " << _last_error;
+        logger->debug() << "error occured when query consumers by id" << _last_error;
 
         return false;
     }
     if (!query.first()) {
         _last_error = "该用户不存在";
-        qDebug() << "fetch first element error occured: " << _last_error;
+        logger->debug() << "fetch first element error occured when query consumers by id" << _last_error;
 
         return false;
     }
@@ -484,13 +489,13 @@ bool LocalClient::query_authors_by_name(UserFullInfo &query_container, QString n
     query.bindValue(":name", name);
     if (!query.exec()) {
         _last_error = query.lastError().text();
-        qDebug() << "error occured: " << _last_error;
+        logger->debug() << "error occured when query authors by name" << _last_error;
 
         return false;
     }
     if (!query.first()) {
         _last_error = "该用户不存在";
-        qDebug() << "fetch first element error occured: " << _last_error;
+        logger->debug() << "fetch first element error occured query authors by name" << _last_error;
 
         return false;
     }
@@ -515,13 +520,13 @@ bool LocalClient::query_consumers_by_name(UserFullInfo &query_container, QString
     query.bindValue(":name", name);
     if (!query.exec()) {
         _last_error = query.lastError().text();
-        qDebug() << "error occured: " << _last_error;
+        logger->debug() << "error occured query consumers by name" << _last_error;
 
         return false;
     }
     if (!query.first()) {
         _last_error = "该用户不存在";
-        qDebug() << "fetch first element error occured: " << _last_error;
+        logger->debug() << "fetch first element error occured query consumers by name" << _last_error;
 
         return false;
     }
@@ -548,17 +553,17 @@ bool LocalClient::query_consumers_brief_info(std::vector<UserBriefInfo> &info_li
     query.prepare(query_command);
     query.bindValue(":kth", l);
     query.bindValue(":ntimes", r-l+1);
-    qDebug() << "k, n" << l << " " << r-l+1;
+    logger->info() << "k, n" << l << " " << r-l+1;
     if (!query.exec()) {
         _last_error = query.lastError().text();
-        qDebug() << "error occured: " << _last_error;
+        logger->info() << "error occured: " << _last_error;
 
         return false;
     }
 
     while (query.next()) {
         info_list.emplace_back(UserBriefInfo(query.value(0).toInt(), query.value(1).toString(), query.value(2).toInt()));
-        qDebug() << "fetched " << query.value(0).toInt() << query.value(1).toString() << query.value(2).toInt();
+        logger->info() << "fetched " << query.value(0).toInt() << query.value(1).toString() << query.value(2).toInt();
     }
 
     return true;
@@ -573,31 +578,31 @@ bool LocalClient::query_users(int &query_count)
     QSqlQuery query(this->handler);
     if (!query.exec(query_command_aut)) {
         _last_error = query.lastError().text();
-        qDebug() << "error occured: " << _last_error;
+        logger->debug() << "error occured when query authors count" << _last_error;
         return false;
     }
     if (!query.first()) {
         _last_error = "first fetch error";
-        qDebug() << "error occured: " << _last_error;
+        logger->debug() << "error occured when query authors count" << _last_error;
         return false;
     }
 
     query_count += query.value(0).toInt();
-    qDebug() << "tot_length " << query.value(0).toInt();
+    logger->info() << "tot_length " << query.value(0).toInt();
 
     if (!query.exec(query_command_con)) {
         _last_error = query.lastError().text();
-        qDebug() << "error occured: " << _last_error;
+        logger->debug() << "error occured when query consumers count" << _last_error;
         return false;
     }
     if (!query.first()) {
         _last_error = "first fetch error";
-        qDebug() << "error occured: " << _last_error;
+        logger->debug() << "error occured when query consumers count" << _last_error;
         return false;
     }
 
     query_count += query.value(0).toInt();
-    qDebug() << "tot_length " << query.value(0).toInt();
+    logger->info() << "tot_length " << query.value(0).toInt();
     return true;
 }
 
@@ -627,7 +632,7 @@ int LocalClient::consumer_exp()
     if (user_status_util::has_consumer_status(this->user_status)) {
         return this->user_consumer->user_info.exp;
     }
-    qDebug() << "consumer exp=0";
+    logger->info() << "consumer exp=0";
     return -1;
 }
 
@@ -661,7 +666,7 @@ AbstractGameAutomation *LocalClient::_start_game_event(const GameConfig *game_co
 {
     std::vector<TangoPair> tango_list;
     tango_list.reserve(static_cast<unsigned int>(n));
-    qDebug() << "want " << n;
+    logger->info() << "want " << n;
     int temp_n = n;
     if (!this->retrive_tango_items(tango_list, temp_n, mode)) {
         return nullptr;
@@ -682,11 +687,11 @@ bool LocalClient::_submit_tango_items(const std::vector<TangoPair> &tango_list)
         "insert into `tangos` ( `key`, `value`, `last_submit`) "
         "               values (:key,  :value,  :ls)";
 
-    qDebug() << "tango list" << tango_list;
+    logger->info() << "tango list" << tango_list;
 
     QSqlQuery query(this->handler);
     if (!query.exec("start transaction")) {
-        qDebug() << "start transaction error" << query.lastError().text();
+        logger->debug() << "start transaction error when submit tangos" << query.lastError().text();
         _last_error = query.lastError().text();
         return false;
     }
@@ -699,10 +704,10 @@ bool LocalClient::_submit_tango_items(const std::vector<TangoPair> &tango_list)
         query.bindValue(":value", tango_list[i].second);
 
         if (!query.exec()) {
-             qDebug() << "exec error" << query.lastError().text();
+             logger->debug() << "exec error when submit tangos" << query.lastError().text();
              _last_error = query.lastError().text();
              if (!query.exec("rollback")) {
-                 qDebug() << "rollback error" << query.lastError().text();
+                 logger->debug() << "rollback error when submit tangos" << query.lastError().text();
                  _last_error = query.lastError().text();
                  return false;
              }
@@ -711,7 +716,7 @@ bool LocalClient::_submit_tango_items(const std::vector<TangoPair> &tango_list)
     }
 
     if (!query.exec("commit")) {
-        qDebug() << "commit error" << query.lastError().text();
+        logger->debug() << "commit error when submit tangos" << query.lastError().text();
         _last_error = query.lastError().text();
         return false;
     }
@@ -772,7 +777,7 @@ bool LocalClient::create_author_table()
 
     query.exec("set names 'utf8'");
     if (!query.exec(create_command)) {
-        qDebug() << "create authors table failed" << query.lastError().text();
+        logger->debug() << "create authors table failed" << query.lastError().text();
         _last_error = query.lastError().text();
 
         return false;
@@ -801,7 +806,7 @@ bool LocalClient::create_consumer_table()
 
     query.exec("set names 'utf8'");
     if (!query.exec(create_command)) {
-        qDebug() << "create consumers table failed" << query.lastError().text();
+        logger->debug() << "create consumers table failed" << query.lastError().text();
         _last_error = query.lastError().text();
 
         return false;
@@ -828,7 +833,7 @@ inline bool LocalClient::create_tangos_table()
 
     query.exec("set names 'utf8'");
     if (!query.exec(create_command)) {
-        qDebug() << "create authors table failed" << query.lastError().text();
+        logger->debug() << "create authors table failed" << query.lastError().text();
         _last_error = query.lastError().text();
         return false;
     }
@@ -863,7 +868,7 @@ bool LocalClient::retrive_kth_tango_item(TangoPair &tp, int k) {
 
     if (!query.exec()) {
         _last_error = query.lastError().text();
-        qDebug() << "error occured: " << _last_error;
+        logger->debug() << "error occured when retrive kth tango" << _last_error;
 
         return false;
     }
@@ -886,10 +891,10 @@ int LocalClient::retrive_since_kth_tango_item(std::vector<TangoPair> &tango_list
     query.prepare(search_command);
     query.bindValue(":kth", k);
     query.bindValue(":ntimes", n);
-    qDebug() << "k, n" << k << " " << n;
+    logger->info() << "k, n" << k << " " << n;
     if (!query.exec()) {
         _last_error = query.lastError().text();
-        qDebug() << "error occured: " << _last_error;
+        logger->debug() << "error occured when retrive since kth tango" << _last_error;
 
         return 0;
     }
@@ -897,7 +902,7 @@ int LocalClient::retrive_since_kth_tango_item(std::vector<TangoPair> &tango_list
     int ret = 0;
     while (query.next()) {
         tango_list.push_back(TangoPair(query.value(1).toString(), query.value(2).toString()));
-        qDebug() << "fetched " << TangoPair(query.value(1).toString(), query.value(2).toString());
+        logger->info() << "fetched " << TangoPair(query.value(1).toString(), query.value(2).toString());
         ret++;
     }
 
@@ -912,17 +917,17 @@ bool LocalClient::retrive_tango_items(std::vector<TangoPair> &tango_list, int &n
     QSqlQuery query(this->handler);
     if (!query.exec(query_count)) {
         _last_error = query.lastError().text();
-        qDebug() << "error occured: " << _last_error;
+        logger->debug() << "error occured when retrive tangos" << _last_error;
         return false;
     }
     if (!query.first()) {
         _last_error = "first fetch error";
-        qDebug() << "error occured: " << _last_error;
+        logger->debug() << "error occured when retrive tangos" << _last_error;
         return false;
     }
 
     int tot_length = query.value(0).toInt();
-    qDebug() << "tot_length " << tot_length;
+    logger->info() << "tot_length " << tot_length;
 
     if (tot_length == 0) {
         _last_error = "empty pool in the tango database";

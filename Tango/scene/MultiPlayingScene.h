@@ -11,11 +11,12 @@ class MultiPlayingScene : public Scene
     Q_OBJECT
 
 public:
-    MultiPlayingScene(QWidget *parent=nullptr);
+    MultiPlayingScene(MainWindow *parent=nullptr);
     ~MultiPlayingScene();
     
     void clear_table();
     void set_page_contain(std::vector<UserFullInfo> &authors_list, std::vector<UserFullInfo> &consumers_list, std::vector<long long> &socket_list);
+    void on_incoming();
 private:
     std::vector<UserFullInfo> a_list;
     std::vector<UserFullInfo> c_list;
@@ -24,6 +25,7 @@ private:
     QHBoxLayout *lay;
     QVBoxLayout *player_list;
     int ranking_table_row;
+    Logger *logger;
 };
 
 #endif // MULTIPLAYINGSCENE_H

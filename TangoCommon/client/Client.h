@@ -13,6 +13,7 @@
 class QTcpSocket;
 class QSqlDatabase;
 class MainWindow;
+class Logger;
 
 class TangoPair;
 class UserBriefInfo;
@@ -37,7 +38,7 @@ class Client: public QObject
 {
     Q_OBJECT
 public:
-    explicit Client(QObject *parent = nullptr);
+    explicit Client(MainWindow *parent = nullptr);
     virtual ~Client() override;
 
     /* 远程登陆 */
@@ -196,6 +197,8 @@ signals:
     void connected();
     /* 断开信号 */
     void disconnected();
+private:
+    Logger *logger;
 };
 
 #endif // CLIENT_H

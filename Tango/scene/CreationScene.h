@@ -12,7 +12,7 @@ class CreationScene : public Scene
 public:
     class CreationTableItem;
 public:
-    CreationScene(QWidget *parent=nullptr);
+    CreationScene(MainWindow *parent=nullptr);
     ~CreationScene();
 
 private:

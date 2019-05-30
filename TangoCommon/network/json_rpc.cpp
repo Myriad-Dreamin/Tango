@@ -1,6 +1,6 @@
 
 #include "json_rpc.h"
-#include <QDebug>
+#include "../component/Logger.h"
 
 namespace client_rpc {
     QByteArray author_sign_in_request(QString account, QString password)
@@ -151,7 +151,6 @@ namespace client_rpc {
         QJsonArray params;
 
         request.insert("params", params);
-        qDebug() << "req" << QJsonDocument(request);
         return QJsonDocument(request).toJson();
     }
 
@@ -167,7 +166,6 @@ namespace client_rpc {
         result.push_back(UserFullInfo::to_json_array(consumer_info));
 
         request.insert("result", result);
-        qDebug() << "ret" << status << author_info.user_id << consumer_info.user_id;
         return QJsonDocument(request).toJson();
     }
 
@@ -428,7 +426,7 @@ namespace client_rpc {
         QJsonArray result;
 
         if (authors_list.size() != consumers_list.size() || authors_list.size() != socket_list.size()) {
-            qDebug() << "size does not equal" << authors_list.size() << consumers_list.size() << socket_list.size();
+            Logger::get_logger("main")->debug() <<"size does not equal" << authors_list.size() << consumers_list.size() << socket_list.size();
         }
         for (unsigned int i = 0; i < authors_list.size(); i++) {
             QJsonArray ret;
@@ -447,12 +445,10 @@ namespace client_rpc {
     {
         QJsonParseError decode_err;
         QJsonDocument json_decoder = QJsonDocument::fromJson(bytes_json, &decode_err);;
-        qDebug() << "decoding" << bytes_json;
         if (decode_err.error != QJsonParseError::NoError) {
             err = decode_err.errorString();
             return false;
         }
-        qDebug() << "decoding" << json_decoder;
         if (!json_decoder.isObject()) {
             err = "not obj";
             return false;
@@ -483,12 +479,10 @@ namespace client_rpc {
     {
         QJsonParseError decode_err;
         QJsonDocument json_decoder = QJsonDocument::fromJson(bytes_json, &decode_err);;
-        qDebug() << "decoding" << bytes_json;
         if (decode_err.error != QJsonParseError::NoError) {
             err = decode_err.errorString();
             return false;
         }
-        qDebug() << "decoding" << json_decoder;
         if (!json_decoder.isObject()) {
             err = "not obj";
             return false;
@@ -520,13 +514,11 @@ namespace client_rpc {
     bool decode_json_object(QByteArray bytes_json, QJsonValue &params, bool &para, int &id, QString &err)
     {
         QJsonParseError decode_err;
-        QJsonDocument json_decoder = QJsonDocument::fromJson(bytes_json, &decode_err);;
-        qDebug() << "decoding" << bytes_json;
+        QJsonDocument json_decoder = QJsonDocument::fromJson(bytes_json, &decode_err);
         if (decode_err.error != QJsonParseError::NoError) {
             err = decode_err.errorString();
             return false;
         }
-        qDebug() << "decoding" << json_decoder;
         if (!json_decoder.isObject()) {
             err = "not obj";
             return false;

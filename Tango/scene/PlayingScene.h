@@ -12,7 +12,7 @@ class PlayingScene : public Scene
     Q_OBJECT
 
 public:
-    PlayingScene(QWidget *parent=nullptr);
+    PlayingScene(MainWindow *parent=nullptr);
     ~PlayingScene();
 
 private:
@@ -26,6 +26,7 @@ private:
     GameConfig *game_config;
     QGridLayout *lay;
     QVBoxLayout *center_lay;
+    Logger *logger;
     void settle_game(AbstractGameAutomation *automate);
     void abort_game(AbstractGameAutomation *automate);
     std::function<void ()> single_round(const std::function<AbstractGameAutomation *()> &moder);

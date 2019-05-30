@@ -12,7 +12,7 @@ class MainScene : public Scene
     Q_OBJECT
 
 public:
-    MainScene(QWidget *parent=nullptr);
+    MainScene(MainWindow *parent=nullptr);
     ~MainScene();
 
     UserStatus user_selecting_status;
@@ -35,9 +35,12 @@ public:
     void set_sign_up_button_event(const std::function<void ()> &ev);
     void set_cancel_button_event(const std::function<void ()> &ev);
     void set_role_button_event(const std::function<void ()> &ev);
+
+    virtual void on_incoming();
 private:
     MainWindow *parent;
     QHBoxLayout *lay;
+    Logger *logger;
     void set_button_events();
 };
 

@@ -39,10 +39,6 @@ std::function<AbstractGameAutomation *()> PlayingScene::easy_increment_automate(
     };
 }
 
-void normal_increment_automate(int &exp, TangoPair tango, int success_count)
-{
-    exp = exp + static_cast<int>(tango.first.length() * (1.2 + success_count * 0.02) + 0.99);
-}
 
 std::function<AbstractGameAutomation *()> PlayingScene::normal_increment_automate()
 {
@@ -88,12 +84,6 @@ std::function<AbstractGameAutomation *()> PlayingScene::hard_increment_automate(
     };
 }
 
-//GameAutomation *PlayingScene::easy_increment_automate()
-//{
-
-
-//}
-
 
 std::function<void()> PlayingScene::single_round(const std::function<AbstractGameAutomation*()> &moder)
 {
@@ -109,11 +99,11 @@ std::function<void()> PlayingScene::single_round(const std::function<AbstractGam
         automate->setParent(this);
 
         connect(automate, &AbstractGameAutomation::start_game, [this]() mutable {
-            qDebug() << "start game";
+            logger->info() << "start game";
             this->parent->switch_scene(this->parent->playsub_scene);
         });
         connect(automate, &AbstractGameAutomation::new_tango, [this](TangoPair tango, int fade_time) mutable {
-            qDebug() << "retreving" << tango;
+            logger->info() << "retreving" << tango;
             this->parent->playsub_scene->key_label->setText(tango.first);
             this->parent->playsub_scene->value_label->setText(tango.second);
             this->parent->playsub_scene->key_label->show();
@@ -126,7 +116,7 @@ std::function<void()> PlayingScene::single_round(const std::function<AbstractGam
             this->parent->timer->set_timer(fade_time);
         });
         connect(automate, &GameAutomation::tango_faded, [this](int ans_time) mutable {
-            qDebug() << "tango faded";
+            logger->info() << "tango faded";
             this->parent->playsub_scene->key_label->hide();
             this->parent->playsub_scene->value_label->hide();
 
@@ -135,15 +125,15 @@ std::function<void()> PlayingScene::single_round(const std::function<AbstractGam
 
             this->parent->timer->set_timer(ans_time);
         });
-        connect(automate, &AbstractGameAutomation::answer_failed, []() mutable {
-            qDebug() << "answer failed";
+        connect(automate, &AbstractGameAutomation::answer_failed, [this]() mutable {
+            logger->info() << "answer failed";
         });
         connect(automate, &AbstractGameAutomation::success, [this, automate]() mutable {
-            qDebug() << "success";
+            logger->info() << "success";
             this->settle_game(automate);
         });
         connect(automate, &AbstractGameAutomation::failed, [this, automate]() mutable {
-            qDebug() << "failed";
+            logger->info() << "failed";
             this->settle_game(automate);
         });
         connect(this->parent->playsub_scene->answer_button, &QPushButton::clicked, [this, automate]() mutable {
@@ -177,11 +167,11 @@ std::function<void()> PlayingScene::single_round_must_done(const std::function<A
         automate->setParent(this);
 
         connect(automate, &AbstractGameAutomation::start_game, [this]() mutable {
-            qDebug() << "start game";
+            logger->info() << "start game";
             this->parent->switch_scene(this->parent->playsub_scene);
         });
         connect(automate, &AbstractGameAutomation::new_tango, [this](TangoPair tango, int fade_time) mutable {
-            qDebug() << "retreving" << tango;
+            logger->info() << "retreving" << tango;
             this->parent->playsub_scene->key_label->setText(tango.first);
             this->parent->playsub_scene->value_label->setText(tango.second);
             this->parent->playsub_scene->key_label->show();
@@ -194,7 +184,7 @@ std::function<void()> PlayingScene::single_round_must_done(const std::function<A
             this->parent->timer->set_timer(fade_time);
         });
         connect(automate, &AbstractGameAutomation::tango_faded, [this](int ans_time) mutable {
-            qDebug() << "tango faded";
+            logger->info() << "tango faded";
             this->parent->playsub_scene->key_label->hide();
             this->parent->playsub_scene->value_label->hide();
 
@@ -203,15 +193,15 @@ std::function<void()> PlayingScene::single_round_must_done(const std::function<A
 
             this->parent->timer->set_timer(ans_time);
         });
-        connect(automate, &AbstractGameAutomation::answer_failed, []() mutable {
-            qDebug() << "answer failed";
+        connect(automate, &AbstractGameAutomation::answer_failed, [this]() mutable {
+            logger->info() << "answer failed";
         });
         connect(automate, &AbstractGameAutomation::success, [this, automate]() mutable {
-            qDebug() << "success";
+            logger->info() << "success";
             this->settle_game(automate);
         });
         connect(automate, &AbstractGameAutomation::failed, [this, automate]() mutable {
-            qDebug() << "failed";
+            logger->info() << "failed";
             this->abort_game(automate);
         });
         connect(this->parent->playsub_scene->answer_button, &QPushButton::clicked, [this, automate]() mutable {
@@ -232,9 +222,10 @@ std::function<void()> PlayingScene::single_round_must_done(const std::function<A
 }
 
 
-PlayingScene::PlayingScene(QWidget *parent): Scene (parent)
+PlayingScene::PlayingScene(MainWindow *parent): Scene (parent)
 {
-    this->parent = dynamic_cast<MainWindow*>(parent);
+    this->logger = Logger::get_logger("main");
+    this->parent = parent;
     game_config = nullptr;
 
     trial_button = new QPushButton;
@@ -279,7 +270,6 @@ PlayingScene::PlayingScene(QWidget *parent): Scene (parent)
     });
 
 
-
     this->lay = new QGridLayout;
     this->lay->addLayout(center_lay, 1, 1, 3, 3);
     this->lay->setColumnStretch(0, 1);
@@ -292,13 +282,15 @@ PlayingScene::PlayingScene(QWidget *parent): Scene (parent)
 
 PlayingScene::~PlayingScene()
 {
-    qDebug() << "playing scene deleted";
-    delete game_config;
+    logger->info() << "playing scene deleted";
+    if (game_config != nullptr) {
+        delete game_config;
+    }
 }
 
 void PlayingScene::settle_game(AbstractGameAutomation *automate)
 {
-    qDebug() << "setting...";
+    logger->info() << "setting...";
     disconnect(this->parent->playsub_scene->answer_button, nullptr, nullptr, nullptr);
     disconnect(this->parent->playsub_scene->stop_button, nullptr, nullptr, nullptr);
     this->parent->timer->stop_timer();
@@ -316,11 +308,11 @@ void PlayingScene::settle_game(AbstractGameAutomation *automate)
     } else {
         this->parent->playset_scene->level_flag->setText("-");
     }
-    qDebug() << "setting...";
+    logger->info() << "setting...";
 
     automate->deleteLater();
     if (!this->parent->client->sync_status()) {
-        qDebug() << "同步失败..." << this->parent->client->last_error();
+        logger->debug() << "同步失败..." << this->parent->client->last_error();
     }
     this->parent->switch_scene(this->parent->playset_scene);
     this->parent->playsub_scene->user_ret->setText("");
@@ -328,7 +320,7 @@ void PlayingScene::settle_game(AbstractGameAutomation *automate)
 
 void PlayingScene::abort_game(AbstractGameAutomation *automate)
 {
-    qDebug() << "abort setting...";
+    logger->info() << "abort setting...";
     disconnect(this->parent->playsub_scene->answer_button, nullptr, nullptr, nullptr);
     disconnect(this->parent->playsub_scene->stop_button, nullptr, nullptr, nullptr);
     this->parent->timer->stop_timer();
@@ -343,7 +335,7 @@ void PlayingScene::abort_game(AbstractGameAutomation *automate)
     } else {
         this->parent->playset_scene->level_flag->setText("-");
     }
-    qDebug() << "setting...";
+    logger->info() << "setting...";
 
     automate->deleteLater();
     this->parent->switch_scene(this->parent->playset_scene);

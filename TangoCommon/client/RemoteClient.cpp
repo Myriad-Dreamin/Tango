@@ -32,6 +32,7 @@
 
 RemoteClient::RemoteClient(QObject *parent) : QObject(parent)
 {
+    this->logger = Logger::get_logger("main");
     this->parent = dynamic_cast<MainWindow*>(parent);
 
     this->user_author = new class Author(this);
@@ -59,13 +60,13 @@ bool RemoteClient::is_connected()
 
 void RemoteClient::receive_packages(const QString &ip, const quint16 &port, const QByteArray &data)
 {
-    qDebug() << "package received" << ip << port << data;
+    logger->debug() << "package received" << ip << port << data;
 
     QString err;
     QJsonValue params;
     int id;bool para;
     if (client_rpc::decode_json_object(data, params, para, id, err)) {
-        qDebug() << "ww" << err;
+        logger->debug() << "error occurs when receive packages" << err;
         if (para) {
             this->params_packages(id, params.toArray());
         } else {
@@ -73,7 +74,7 @@ void RemoteClient::receive_packages(const QString &ip, const quint16 &port, cons
         }
         return;
     }
-    qDebug() << "errobj" << err;
+    logger->debug() << "errobj" << err;
     return;
 }
 
@@ -85,16 +86,16 @@ void RemoteClient::params_packages(int id, QJsonArray params)
         return;
     }
     case client_rpc::signal_new_tango: {
-        qDebug() << "signal_new_tango";
-        qDebug() << "new tango" << params;
+        logger->info() << "signal_new_tango";
+        logger->info() << "new tango" << params;
         if (params.size() != 2) {
             // ignore
-            qDebug() << "err signal new tango" << params;
+            logger->debug() << "err signal new tango" << params;
             return;
         }
         if (!params[0].isArray() || (params[1].toInt(2133333333) == 2133333333)) {
             // ignore
-            qDebug() << "err signal new tango" << params;
+            logger->debug() << "err signal new tango" << params;
             return;
         }
         TangoPair tango = TangoPair::from_json_array(params[0].toArray());
@@ -103,41 +104,41 @@ void RemoteClient::params_packages(int id, QJsonArray params)
         return;
     }
     case client_rpc::signal_tango_faded: {
-        qDebug() << "signal_tango_faded";
+        logger->info() << "signal_tango_faded";
         if (params.size() != 1) {
             // ignore
-            qDebug() << "err signal tango faded" << params;
+            logger->debug() << "err signal tango faded" << params;
             return;
         }
         int answer_time = params[0].toInt(-1);
         if (answer_time < 0) {
             // ignore
-            qDebug() << "err signal tango faded" << params;
+            logger->info() << "err signal tango faded" << params;
             return;
         }
         emit game_signal_tango_faded(answer_time);
         return;
     }
     case client_rpc::signal_game_success: {
-        qDebug() << "game success received";
+        logger->info() << "game success received";
         emit game_signal_success();
         return;
     }
     case client_rpc::signal_game_failed: {
-        qDebug() << "game success failed";
+        logger->info() << "game success failed";
         emit game_signal_failed();
         return;
     }
     default:
         // ignore
-        qDebug() << "err signal tango faded" << params;
+        logger->info() << "err signal tango faded" << params;
         return;
     }
 }
 
 void RemoteClient::returns_packages(int id, QJsonValue rets, QString err)
 {
-    qDebug() << id << rets << err;
+    logger->info() << id << rets << err;
     switch (id) {
     case client_rpc::start_game_event: {
         automate->start();
@@ -205,7 +206,7 @@ void RemoteClient::returns_packages(int id, QJsonValue rets, QString err)
         return;
     }
     case client_rpc::settle_game_event: {
-        qDebug() << "settle gaming ...!!!!";
+        logger->info() << "settle gaming ...!!!!";
         if (err != nullptr) {
             MessageBox::critical(this->parent, tr("错误"), err);
             return ;
@@ -232,9 +233,7 @@ void RemoteClient::returns_packages(int id, QJsonValue rets, QString err)
         return;
     }
     case client_rpc::query_consumers_brief_info: {
-        qDebug() << "settle query_consumers_brief_info ...!!!!";
-        qDebug() << "settle query_consumers_brief_info ...!!!!";
-        qDebug() << "settle query_consumers_brief_info ...!!!!";
+        logger->info() << "settle query_consumers_brief_info ...!!!!";
         if (err != nullptr) {
             MessageBox::critical(this->parent, tr("错误"), err);
             return ;
@@ -248,9 +247,7 @@ void RemoteClient::returns_packages(int id, QJsonValue rets, QString err)
         return;
     }
     case client_rpc::code::query_authors_brief_info: {
-        qDebug() << "settle query_authors_brief_info ...!!!!";
-        qDebug() << "settle query_authors_brief_info ...!!!!";
-        qDebug() << "settle query_authors_brief_info ...!!!!";
+        logger->info() << "settle query_authors_brief_info ...!!!!";
         if (err != nullptr) {
             MessageBox::critical(this->parent, tr("错误"), err);
             return ;
@@ -264,7 +261,7 @@ void RemoteClient::returns_packages(int id, QJsonValue rets, QString err)
         return;
     }
     case client_rpc::code::query_consumers_by_name: {
-        qDebug() << "query_consumers_by_name!!!!!!";
+        logger->info() << "query_consumers_by_name!!!!!!";
         if (err != nullptr) {
             UserFullInfo result = UserFullInfo();
             this->parent->query_users_scene->fill_info(result);
@@ -276,7 +273,7 @@ void RemoteClient::returns_packages(int id, QJsonValue rets, QString err)
         return;
     }
     case client_rpc::code::query_consumers_by_id: {
-        qDebug() << "query_consumers_by_id!!!!!!";
+        logger->info() << "query_consumers_by_id!!!!!!";
         if (err != nullptr) {
             UserFullInfo result = UserFullInfo();
             this->parent->query_users_scene->fill_info(result);
@@ -288,7 +285,7 @@ void RemoteClient::returns_packages(int id, QJsonValue rets, QString err)
         return;
     }
     case client_rpc::code::query_authors_by_name: {
-        qDebug() << "query_authors_by_name!!!!!!";
+        logger->info() << "query_authors_by_name!!!!!!";
         if (err != nullptr) {
             UserFullInfo result = UserFullInfo();
             this->parent->query_users_scene->fill_info(result);
@@ -300,7 +297,7 @@ void RemoteClient::returns_packages(int id, QJsonValue rets, QString err)
         return;
     }
     case client_rpc::code::query_authors_by_id: {
-        qDebug() << "query_authors_by_id!!!!!!";
+        logger->info() << "query_authors_by_id!!!!!!";
         if (err != nullptr) {
             UserFullInfo result = UserFullInfo();
             this->parent->query_users_scene->fill_info(result);
@@ -312,7 +309,7 @@ void RemoteClient::returns_packages(int id, QJsonValue rets, QString err)
         return;
     }
     case client_rpc::code::query_users: {
-        qDebug() << "query_users!!!!!!";
+        logger->info() << "query_users!!!!!!";
         if (err != nullptr) {
             MessageBox::critical(this->parent, tr("错误"), err);
             return ;
@@ -320,7 +317,7 @@ void RemoteClient::returns_packages(int id, QJsonValue rets, QString err)
         return;
     }
     case client_rpc::code::query_online_users: {
-        qDebug() << "query_online_users!!!!!!";
+        logger->info() << "query_online_users!!!!!!";
         if (err != nullptr) {
             MessageBox::critical(this->parent, tr("错误"), err);
             return ;
@@ -332,7 +329,7 @@ void RemoteClient::returns_packages(int id, QJsonValue rets, QString err)
             auto item = arr.at(i).toArray();
             authors_list.push_back(UserFullInfo::from_json_array(item.at(0).toArray()));
             consumers_list.push_back(UserFullInfo::from_json_array(item.at(1).toArray()));
-            qDebug() << "resulting" << item.at(0) << item.at(1) << item.at(2);
+            logger->info() << "resulting" << item.at(0) << item.at(1) << item.at(2);
             socket_list.push_back(item.at(2).toInt());
         }
         this->parent->multiplaying_scene->set_page_contain(authors_list, consumers_list, socket_list);
@@ -369,8 +366,8 @@ bool RemoteClient::setup_connection(QHostAddress host_address, quint16 server_po
         this->remote_port = server_port;
         goto wait_for_connection;
     }
-    qDebug() << "conne" << this->handler->socketDescriptor();
-    qDebug() << "might be open" << this->handler->isOpen();
+    logger->info() << "conne" << this->handler->socketDescriptor();
+    logger->info() << "might be open" << this->handler->isOpen();
     return true;
 
 wait_for_connection:
@@ -379,13 +376,13 @@ wait_for_connection:
         return false;
     }
 
-    qDebug() << "might be open" << this->handler->isOpen();
+    logger->info() << "might be open" << this->handler->isOpen();
     return true;
 }
 
 bool RemoteClient::stop_connection()
 {
-    qDebug() << "is open?" << this->handler->isOpen();
+    logger->info() << "is open?" << this->handler->isOpen();
 
     if (this->ready) {
         this->ready = false;
@@ -400,7 +397,7 @@ bool RemoteClient::stop_connection()
 inline void RemoteClient::make_server_on_connected()
 {
     connect(this->handler, &QTcpSocket::connected, [this]() mutable {
-        qDebug() << "remote client on connected";
+        logger->info() << "remote client on connected";
         this->ready = true;
         emit this->connected();
     });
@@ -409,7 +406,7 @@ inline void RemoteClient::make_server_on_connected()
 inline void RemoteClient::make_server_on_disconnected()
 {
     connect(this->handler, &QTcpSocket::disconnected, [this]() mutable {
-        qDebug() << "remote client on disconnected";
+        logger->info() << "remote client on disconnected";
         this->ready = false;
         emit this->disconnected();
     });
@@ -424,10 +421,10 @@ bool RemoteClient::author_sign_in(QString account, QString password)
 //    QJsonValue ret;
 //    int id;
 //    this->handler->wait_for_new_package([&](QByteArray bytes_json) mutable {
-//        qDebug() << "ret" << bytes_json;
+//        logger->info() << "ret" << bytes_json;
 //        success = client_rpc::decode_json_rets_object(bytes_json, ret, id, _last_error);
 //    }, 3000);
-//    qDebug() << ret;
+//    logger->info() << ret;
 //    if (success == false) {
 //        return false;
 //    }
@@ -445,10 +442,10 @@ bool RemoteClient::author_sign_up(QString account, QString password)
 //    QJsonValue ret;
 //    int id;
 //    this->handler->wait_for_new_package([&](QByteArray bytes_json) mutable {
-//        qDebug() << "ret" << bytes_json;
+//        logger->info() << "ret" << bytes_json;
 //        success = client_rpc::decode_json_rets_object(bytes_json, ret, id, _last_error);
 //    }, 3000);
-//    qDebug() << ret;
+//    logger->info() << ret;
 //    if (success == false) {
 //        return false;
 //    }
@@ -467,10 +464,10 @@ bool RemoteClient::consumer_sign_in(QString account, QString password)
 //    QJsonValue ret;
 //    int id;
 //    this->handler->wait_for_new_package([&](QByteArray bytes_json) mutable {
-//        qDebug() << "ret" << bytes_json;
+//        logger->info() << "ret" << bytes_json;
 //        success = client_rpc::decode_json_rets_object(bytes_json, ret, id, _last_error);
 //    }, 3000);
-//    qDebug() << ret;
+//    logger->info() << ret;
 //    if (success == false) {
 //        return false;
 //    }
@@ -489,10 +486,10 @@ bool RemoteClient::consumer_sign_up(QString account, QString password)
 //    QJsonValue ret;
 //    int id;
 //    this->handler->wait_for_new_package([&](QByteArray bytes_json) mutable {
-//        qDebug() << "ret" << bytes_json;
+//        logger->info() << "ret" << bytes_json;
 //        success = client_rpc::decode_json_rets_object(bytes_json, ret, id, _last_error);
 //    }, 3000);
-//    qDebug() << ret;
+//    logger->info() << ret;
 //    if (success == false) {
 //        return false;
 //    }
@@ -511,10 +508,10 @@ bool RemoteClient::logout()
 //    QJsonValue ret;
 //    int id;
 //    this->handler->wait_for_new_package([&](QByteArray bytes_json) mutable {
-//        qDebug() << "ret" << bytes_json;
+//        logger->info() << "ret" << bytes_json;
 //        success = client_rpc::decode_json_rets_object(bytes_json, ret, id, _last_error);
 //    }, 3000);
-//    qDebug() << ret;
+//    logger->info() << ret;
 //    if (success == false) {
 //        return false;
 //    }
@@ -531,10 +528,10 @@ bool RemoteClient::sync_status()
 //    QJsonValue ret;
 //    int id;
 //    this->handler->wait_for_new_package([&](QByteArray bytes_json) mutable {
-//        qDebug() << "ret" << bytes_json;
+//        logger->info() << "ret" << bytes_json;
 //        success = client_rpc::decode_json_rets_object(bytes_json, ret, id, _last_error);
 //    }, 3000);
-//    qDebug() << ret;
+//    logger->info() << ret;
 //    if (success == false) {
 //        return false;
 //    }
@@ -558,13 +555,13 @@ int RemoteClient::consumer_level()
 
 bool RemoteClient::consumer_logining()
 {
-    qDebug() << "consu";
+    logger->info() << "consu";
     return user_status_util::has_consumer_status(this->user_status);
 }
 
 bool RemoteClient::author_logining()
 {
-    qDebug() << "autho";
+    logger->info() << "autho";
     return user_status_util::has_author_status(this->user_status);
 }
 
@@ -576,10 +573,10 @@ bool RemoteClient::submit_tango_items(const std::vector<TangoPair> &tango_list)
 //    QJsonValue ret;
 //    int id;
 //    this->handler->wait_for_new_package([&](QByteArray bytes_json) mutable {
-//        qDebug() << "ret" << bytes_json;
+//        logger->info() << "ret" << bytes_json;
 //        success = client_rpc::decode_json_rets_object(bytes_json, ret, id, _last_error);
 //    }, 3000);
-//    qDebug() << ret;
+//    logger->info() << ret;
 //    if (success == false) {
 //        return false;
 //    }
@@ -595,14 +592,14 @@ AbstractGameAutomation *RemoteClient::start_game_event(const GameConfig *, int n
 //    QJsonValue ret;
 //    int id;
 //    this->handler->wait_for_new_package([&](QByteArray bytes_json) mutable {
-//        qDebug() << "ret" << bytes_json;
+//        logger->info() << "ret" << bytes_json;
 //        success = client_rpc::decode_json_rets_object(bytes_json, ret, id, _last_error);
 //    }, 3000);
-//    qDebug() << ret;
+//    logger->info() << ret;
 //    if (success == false) {
 //        return nullptr;
 //    }
-//    qDebug() << "start game event";
+//    logger->info() << "start game event";
     automate = new GameAutomationRelayer(this);
     return automate;
 }
@@ -669,10 +666,10 @@ bool RemoteClient::query_users(int &query_count)
     QJsonValue ret;
     int id;
     this->handler->wait_for_new_package([&](QByteArray bytes_json) mutable {
-        qDebug() << "ret" << bytes_json;
+        logger->info() << "ret" << bytes_json;
         success = client_rpc::decode_json_rets_object(bytes_json, ret, id, _last_error);
     }, 3000);
-    qDebug() << ret;
+    logger->info() << ret;
     if (success == false) {
         return false;
     }

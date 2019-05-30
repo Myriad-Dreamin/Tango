@@ -5,10 +5,12 @@
 #include "../mainwindow.h"
 
 
-MainScene::MainScene(QWidget *parent): Scene(parent)
+MainScene::MainScene(MainWindow *parent): Scene(parent)
 {
-    this->parent = dynamic_cast<MainWindow*>(parent);
+    this->parent = parent;
     this->user_selecting_status = UserStatus::Author;
+    this->logger = Logger::get_logger("main");
+
 
     auto network_lay = new QHBoxLayout;
     auto network_host_lab = new QLabel("服务器地址: ");
@@ -92,7 +94,7 @@ MainScene::MainScene(QWidget *parent): Scene(parent)
 
 MainScene::~MainScene()
 {
-    qDebug() << "main scene deleted";
+    logger->info() << "main scene deleted";
 }
 
 
@@ -116,6 +118,12 @@ void MainScene::set_role_button_event(const std::function<void ()> &ev)
     connect(role_button, &QPushButton::clicked, ev);
 }
 
+void MainScene::on_incoming()
+{
+    this->account_edit->setText("");
+    this->password_edit->setText("");
+}
+
 void MainScene::set_button_events()
 {
     /* 登录事件 */
@@ -124,8 +132,7 @@ void MainScene::set_button_events()
         QString account_text = this->account_edit->text();
         QString password_text = this->password_edit->text();
 
-        qDebug() << "clicked confirm button" << account_text;
-        qDebug() << "clicked confirm button" << password_text;
+        logger->info() << "clicked confirm button" << account_text << password_text;
 
 
         if (account_text == "") {
@@ -140,7 +147,7 @@ void MainScene::set_button_events()
 
         /* 根据 remote button的值判断是否远程连接 */
         if (this->remote_button->isChecked()) {
-            qDebug() << "checked";
+            logger->info() << "checked";
 
             QHostAddress host_address(this->network_edit->text());
             quint16 server_port = quint16(this->port_edit->text().toShort());
@@ -150,7 +157,7 @@ void MainScene::set_button_events()
                 return;
             }
         } else {
-            qDebug() << "not checked";
+            logger->info() << "not checked";
 
             if (!this->parent->client->setup_local_connection()) {
                 MessageBox::critical(this, tr("本地连接失败"), this->parent->client->last_error());
@@ -187,7 +194,7 @@ void MainScene::set_button_events()
 
     /* 退出事件 */
     this->set_cancel_button_event([this]() mutable {
-        qDebug() << "clicked cancel button";
+        logger->info() << "clicked cancel button";
         this->parent->close();
     });
 

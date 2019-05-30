@@ -20,6 +20,7 @@
 
 #include "../component/MessageBox.h"
 #include "../component/ConfigSet.h"
+#include "../component/Logger.h"
 
 #include "../automator/GameAutomation.h"
 #include "../automator/GameConfig.h"
@@ -29,9 +30,10 @@
 #include "RemoteClient.h"
 
 
-Client::Client(QObject *parent) : QObject(parent)
+Client::Client(MainWindow *parent) : QObject(parent)
 {
-    this->parent = dynamic_cast<MainWindow*>(parent);
+    this->logger = Logger::get_logger("main");
+    this->parent = parent;
     this->handler = nullptr;
     this->local_handler = new LocalClient(this);
     this->remote_handler = new RemoteClient(parent);
@@ -39,7 +41,7 @@ Client::Client(QObject *parent) : QObject(parent)
 
 Client::~Client()
 {
-    qDebug() << "release client";
+    logger->info() << "release client";
     if (this->remote_handler != nullptr) {
         this->remote_handler->stop_connection();
     }
@@ -51,7 +53,7 @@ Client::~Client()
 
 bool Client::setup_remote_connection(QHostAddress host_address, quint16 server_port)
 {
-    qDebug() << "trying local connection";
+    logger->info() << "trying local connection";
     if (this->remote_handler == nullptr) {
         _last_error = "remote_handler is not inited";
         return false;
@@ -68,7 +70,7 @@ bool Client::setup_remote_connection(QHostAddress host_address, quint16 server_p
 
 bool Client::setup_local_connection()
 {
-    qDebug() << "trying local connection";
+    logger->info() << "trying local connection";
     if (this->local_handler == nullptr) {
         _last_error = "local_handler is not inited";
         return false;
@@ -85,7 +87,7 @@ bool Client::setup_local_connection()
 
     if (!this->local_handler->setup_connection()) {
         this->_last_error = this->local_handler->last_error();
-        qDebug() << "..." << this->local_handler->last_error();
+        logger->debug() << "setup local connection failed" << this->local_handler->last_error();
         this->handler = nullptr;
         return false;
     }
@@ -179,17 +181,17 @@ bool Client::consumer_sign_up(QString account, QString password)
 
 bool Client::logout()
 {
-    qDebug() << "logout";
+    logger->info() << "logout";
     if (this->handler == nullptr) {
         _last_error = "handler is not inited";
         return false;
     }
-    qDebug() << "logout" << this->handler;
+    logger->info() << "logout" << this->handler;
     if (this->handler->logout()) {
-        qDebug() << "logout";
+        logger->info() << "logout";
         return true;
     }
-    qDebug() << "logout";
+    logger->info() << "logout";
     this->_last_error = this->handler->last_error();
     return false;
 }

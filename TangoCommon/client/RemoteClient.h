@@ -8,7 +8,7 @@
 class SocketX;
 class GameAutomationRelayer;
 class MainWindow;
-
+class Logger;
 
 /*
  * 远程客户端
@@ -99,6 +99,7 @@ private:
     GameAutomationRelayer *automate;
 
     QString current_key;
+    Logger *logger;
     QString _last_error;
     void make_server_on_connected();
     void make_server_on_disconnected();

@@ -1,5 +1,6 @@
 
 #include "Author.h"
+#include "../component/Logger.h"
 
 #include <QDebug>
 #include <QSqlQuery>
@@ -25,7 +26,7 @@ Author::~Author()
 
 bool Author::sign_up_local(QString account, QString password)
 {
-    qDebug() << "account: " << account << "password: " << password;
+
     static const char *sign_up_command = "insert into `authors` (name, password) VALUES (:Name, :Password)";
     QSqlQuery query(this->handler);
     query.prepare(sign_up_command);
@@ -33,25 +34,25 @@ bool Author::sign_up_local(QString account, QString password)
     query.bindValue(":Password", password);
 
     if (query.exec() == false) {
-        qDebug() << query.executedQuery();
         _last_error = query.lastError().text();
+        Logger::get_logger("main")->debug() << query.executedQuery() << _last_error;
         return false;
     }
 
     return true;
 }
 
-bool Author::sign_up_remote(QString account, QString password)
+bool Author::sign_up_remote(QString, QString)
 {
     _last_error = "TODO";
-    qDebug() << "account: " << account << "password: " << password;
+
 
     return true;
 }
 
 bool Author::sign_in_local(QString account, QString password)
 {
-    qDebug() << "account: " << account << "password: " << password;
+
     static const char *sign_in_command = "select * from `authors` where name = :name";
 
     QSqlQuery query(this->handler);
@@ -71,8 +72,8 @@ bool Author::sign_in_local(QString account, QString password)
     }
 
     if (query.value(2).toString() != password) {
-        qDebug() << query.value(2).toString() << " " << password;
         _last_error = "账户密码错误";
+        Logger::get_logger("main")->debug() << query.executedQuery() << _last_error;
         return false;
     }
 
@@ -87,10 +88,10 @@ bool Author::sign_in_local(QString account, QString password)
     return true;
 }
 
-bool Author::sign_in_remote(QString account, QString password)
+bool Author::sign_in_remote(QString, QString)
 {
     _last_error = "TODO";
-    qDebug() << "account: " << account << "password: " << password;
+
 
     return false;
 }
@@ -131,6 +132,7 @@ bool Author::update_full_info_local()
 
     if (query.exec() == false) {
         _last_error = query.lastError().text();
+        Logger::get_logger("main")->debug() << query.executedQuery() << _last_error;
         return false;
     }
 
