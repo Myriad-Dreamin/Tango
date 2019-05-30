@@ -19,7 +19,7 @@ public:
     SocketX(qintptr sockDesc, QObject *parent = nullptr);
     ~SocketX();
 
-// c++ stype public lambda slot:
+// c++11 stype public lambda slot:
     std::function<void (QByteArray)> write_slotter();
 
     bool write_package(QByteArray to_send);

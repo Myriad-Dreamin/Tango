@@ -18,10 +18,10 @@
 #include "../types/UserBriefInfo.h"
 #include "../types/UserFullInfo.h"
 
-#include "../types/MessageBox.h"
+#include "../component/MessageBox.h"
 
-#include "GameAutomation.h"
-#include "GameConfig.h"
+#include "../automator/GameAutomation.h"
+#include "../automator/GameConfig.h"
 
 #include "AbstractClient.h"
 #include "LocalClient.h"

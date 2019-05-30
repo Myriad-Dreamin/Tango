@@ -1,17 +1,8 @@
 #ifndef SELECTINGSCENE_H
 #define SELECTINGSCENE_H
 
-#include "Scene.h"
+#include "scene_common.h"
 
-class QPushButton;
-namespace std
-{
-    template<typename function_signature>
-    class function;
-}
-
-class QGridLayout;
-class MainWindow;
 
 class SelectingScene : public Scene
 {
@@ -40,6 +31,8 @@ public:
 private:
     MainWindow *parent;
     QGridLayout *lay;
+
+    void set_button_events();
 };
 
 #endif // SELECTINGSCENE_H

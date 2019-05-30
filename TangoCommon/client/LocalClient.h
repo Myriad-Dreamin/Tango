@@ -5,7 +5,11 @@
 #include <QObject>
 #include <QSqlDatabase>
 
-
+/*
+ * 本地客户端
+ * 
+ * 承载客户端与本地数据库服务的交互
+ */
 class LocalClient : public QObject, public AbstractClient
 {
     Q_OBJECT

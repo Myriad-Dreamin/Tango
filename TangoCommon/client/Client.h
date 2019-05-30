@@ -27,8 +27,11 @@ class AbstractClient;
 class LocalClient;
 class RemoteClient;
 
-
-/* 客户端 */
+/*
+ * Tango客户端
+ * 
+ * 向图形化界面提供客户端的交互服务
+ */
 class Client: public QObject
 {
     Q_OBJECT

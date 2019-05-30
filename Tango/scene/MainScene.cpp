@@ -1,19 +1,9 @@
 
 #include "MainScene.h"
-
-#include <functional>
-
-#include <QDebug>
-
-#include <QLayout>
-
-#include <QLabel>
-#include <QLineEdit>
-
-#include <QPushButton>
-#include <QRadioButton>
-
+#include "RegisterScene.h"
+#include "SelectingScene.h"
 #include "../mainwindow.h"
+
 
 MainScene::MainScene(QWidget *parent): Scene(parent)
 {
@@ -96,6 +86,8 @@ MainScene::MainScene(QWidget *parent): Scene(parent)
 
     setLayout(lay);
     this->setMinimumSize(400, 400);
+
+    set_button_events();
 }
 
 MainScene::~MainScene()
@@ -122,4 +114,83 @@ void MainScene::set_cancel_button_event(const std::function<void ()> &ev)
 void MainScene::set_role_button_event(const std::function<void ()> &ev)
 {
     connect(role_button, &QPushButton::clicked, ev);
+}
+
+void MainScene::set_button_events()
+{
+    /* 登录事件 */
+    this->set_sign_in_button_event([this]() mutable {
+
+        QString account_text = this->account_edit->text();
+        QString password_text = this->password_edit->text();
+
+        qDebug() << "clicked confirm button" << account_text;
+        qDebug() << "clicked confirm button" << password_text;
+
+
+        if (account_text == "") {
+            MessageBox::critical(this, tr("错误"), tr("用户名不能为空"));
+            return;
+        }
+
+        if (password_text == "") {
+            MessageBox::critical(this, tr("错误"), tr("密码不能为空"));
+            return;
+        }
+
+        /* 根据 remote button的值判断是否远程连接 */
+        if (this->remote_button->isChecked()) {
+            qDebug() << "checked";
+
+            QHostAddress host_address(this->network_edit->text());
+            quint16 server_port = quint16(this->port_edit->text().toShort());
+
+            if (!this->parent->client->setup_remote_connection(host_address, server_port)) {
+                MessageBox::critical(this, tr("远程连接失败"), this->parent->client->last_error());
+                return;
+            }
+        } else {
+            qDebug() << "not checked";
+
+            if (!this->parent->client->setup_local_connection()) {
+                MessageBox::critical(this, tr("本地连接失败"), this->parent->client->last_error());
+                return;
+            }
+        }
+
+        bool sign_in_success = false;
+
+        if (this->user_selecting_status == UserStatus::Author) {
+            sign_in_success = this->parent->author_sign_in(account_text, password_text);
+        } else {
+            sign_in_success = this->parent->consumer_sign_in(account_text, password_text);
+        }
+
+        if (sign_in_success) {
+            this->parent->selecting_scene->set_visble_buttons();
+            this->parent->switch_scene(this->parent->selecting_scene);
+        }
+    });
+
+    /* 角色变换 */
+    this->set_role_button_event([this]() mutable {
+        if (this->user_selecting_status == UserStatus::Author) {
+            this->role_button->setText("consumer!");
+            this->user_selecting_status = UserStatus::Consumer;
+        } else {
+            this->role_button->setText("author!");
+            this->user_selecting_status = UserStatus::Author;
+        }
+    });
+
+    /* 退出事件 */
+    this->set_cancel_button_event([this]() mutable {
+        qDebug() << "clicked cancel button";
+        this->parent->close();
+    });
+
+    /* 转入注册页事件 */
+    this->set_sign_up_button_event([this]() mutable {
+         this->parent->switch_scene(this->parent->register_scene);
+    });
 }

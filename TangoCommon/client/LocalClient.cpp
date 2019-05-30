@@ -9,8 +9,8 @@
 #include "../types/UserBriefInfo.h"
 #include "../types/UserFullInfo.h"
 #include "../types/UserStatus.h"
-#include "GameAutomation.h"
-#include "GameConfig.h"
+#include "../automator/GameAutomation.h"
+#include "../automator/GameConfig.h"
 
 LocalClient::LocalClient(QObject *parent): QObject (parent), AbstractClient ()
 {

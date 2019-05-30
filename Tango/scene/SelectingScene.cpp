@@ -1,13 +1,14 @@
 
-#include <functional>
-
-#include <QPushButton>
-#include <QLayout>
-#include <QDebug>
-
 #include "SelectingScene.h"
+#include "CreationScene.h"
+#include "PlayingScene.h"
+#include "MultiPlayingScene.h"
+#include "QueryUsersScene.h"
+#include "RankingAuthorsScene.h"
+#include "RankingConsumersScene.h"
+#include "MainScene.h"
 #include "../mainwindow.h"
-#include "../../TangoCommon/client/Client.h"
+
 
 SelectingScene::SelectingScene(QWidget *parent): Scene(parent)
 {
@@ -19,26 +20,32 @@ SelectingScene::SelectingScene(QWidget *parent): Scene(parent)
     creation_button->setText("开始创造");
     creation_button->setMinimumHeight(32);
     main_center_lay->addWidget(creation_button);
+    
     play_button = new QPushButton;
     play_button->setText("开始游玩");
     play_button->setMinimumHeight(32);
     main_center_lay->addWidget(play_button);
+    
     multi_play_button = new QPushButton;
     multi_play_button->setText("多人对战");
     multi_play_button->setMinimumHeight(32);
     main_center_lay->addWidget(multi_play_button);
+    
     player_list_button = new QPushButton;
     player_list_button->setText("其他玩家");
     player_list_button->setMinimumHeight(32);
     main_center_lay->addWidget(player_list_button);
+    
     ranking_authors_button = new QPushButton;
     ranking_authors_button->setText("作者排行榜");
     ranking_authors_button->setMinimumHeight(32);
     main_center_lay->addWidget(ranking_authors_button);
+    
     ranking_consumers_button = new QPushButton;
     ranking_consumers_button->setText("读者排行榜");
     ranking_consumers_button->setMinimumHeight(32);
     main_center_lay->addWidget(ranking_consumers_button);
+    
     return_button = new QPushButton;
     return_button->setText("返回登录/注册界面");
     return_button->setMinimumHeight(32);
@@ -53,6 +60,8 @@ SelectingScene::SelectingScene(QWidget *parent): Scene(parent)
     lay->setRowStretch(0, 1);
     lay->setRowStretch(5, 1);
     setLayout(lay);
+
+    set_button_events();
 }
 
 SelectingScene::~SelectingScene()
@@ -119,4 +128,55 @@ void SelectingScene::set_ranking_consumers_button_event(const std::function<void
 void SelectingScene::set_return_button_event(const std::function<void ()> &ev)
 {
     connect(return_button, &QPushButton::clicked, ev);
+}
+
+void SelectingScene::set_button_events()
+{
+    /* 前往创造界面事件 */
+    this->set_creation_button_event([this]() mutable {
+        qDebug() << "clicked creation button";
+
+        this->parent->switch_scene(this->parent->creation_scene);
+    });
+
+    /* 前往游玩界面事件 */
+    this->set_play_button_event([this]() mutable {
+        qDebug() << "clicked play button";
+
+        this->parent->switch_scene(this->parent->playing_scene);
+    });
+
+    this->set_multi_play_button_event([this]() mutable {
+        qDebug() << "clicked play button";
+
+        this->parent->switch_scene(this->parent->multiplaying_scene);
+    });
+
+    this->set_ranking_authors_button_event([this]() mutable {
+        qDebug() << "clicked ranking button";
+
+        this->parent->ranking_authors_scene->switch_page(1);
+        this->parent->switch_scene(this->parent->ranking_authors_scene);
+    });
+
+    this->set_ranking_consumers_button_event([this]() mutable {
+        qDebug() << "clicked ranking button";
+
+        this->parent->ranking_consumers_scene->switch_page(1);
+        this->parent->switch_scene(this->parent->ranking_consumers_scene);
+    });
+
+    this->set_player_list_button_event([this]() mutable {
+        qDebug() << "clicked player list button";
+
+        this->parent->switch_scene(this->parent->query_users_scene);
+    });
+
+    this->set_return_button_event([this]() mutable {
+        qDebug() << "clicked return button";
+
+        this->parent->client->logout();
+        this->parent->switch_scene(this->parent->main_scene);
+    });
+
 }

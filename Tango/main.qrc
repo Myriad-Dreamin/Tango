@@ -1,6 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>qss/main.qss</file>
-        <file>fonts/SourceHanSerifCN-Medium.otf</file>
-    </qresource>
-</RCC>
