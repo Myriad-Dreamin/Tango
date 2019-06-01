@@ -837,3 +837,8 @@ QPushButton#menuButton::menu-indicator{
     subcontrol-origin: padding;
     padding-right: 3px;
 }
+
+
+QSplitter::handle {
+    background-color: white;
+}

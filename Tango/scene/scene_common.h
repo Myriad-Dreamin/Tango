@@ -28,6 +28,7 @@ class MainWindow;
 #include <QScrollBar>
 #include <QScrollArea>
 #include <QTableWidget>
+#include <QComboBox>
 
 #include <QLabel>
 #include <QLayout>

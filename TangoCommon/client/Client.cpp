@@ -184,15 +184,15 @@ bool Client::logout()
     logger->info() << "logout";
     if (this->handler == nullptr) {
         _last_error = "handler is not inited";
+        logger->debug() << _last_error;
         return false;
     }
-    logger->info() << "logout" << this->handler;
     if (this->handler->logout()) {
-        logger->info() << "logout";
+        logger->info() << "logout success";
         return true;
     }
-    logger->info() << "logout";
     this->_last_error = this->handler->last_error();
+    logger->debug() << "logout failed" << _last_error;
     return false;
 }
 

@@ -18,6 +18,7 @@
 #include <QLayout>
 #include <QMenuBar>
 #include <QStatusBar>
+#include <QFileDialog>
 
 #include <QLabel>
 #include <QLineEdit>
@@ -27,6 +28,8 @@
 
 /* 场景 */
 #include "scene/MainScene.h"
+#include "scene/LoginScene.h"
+#include "scene/ConfigScene.h"
 #include "scene/PlayingScene.h"
 #include "scene/MultiPlayingScene.h"
 #include "scene/PlaySubScene.h"
@@ -61,6 +64,8 @@ MainWindow::MainWindow(QWidget *parent):
 
     this->client = nullptr;
     this->cur_scene = nullptr;
+    this->login_scene = nullptr;
+    this->config_scene = nullptr;
     this->main_scene = nullptr;
     this->playing_scene = nullptr;
     this->multiplaying_scene = nullptr;
@@ -75,6 +80,8 @@ MainWindow::MainWindow(QWidget *parent):
 
 
     this->init_main_scene();
+    this->init_login_scene();
+    this->init_config_scene();
     this->init_playing_scene();
     this->init_multiplaying_scene();
     this->init_playsub_scene();
@@ -92,7 +99,8 @@ MainWindow::MainWindow(QWidget *parent):
 
     this->switch_scene(main_scene);
 
-    this->setMinimumSize(800, 600);
+    this->reset_screen_size();
+
     this->setWindowTitle("Tango!");
 
     QFile qssf(":/qss/main.qss");
@@ -130,11 +138,71 @@ inline bool MainWindow::init_client()
 inline bool MainWindow::init_menubar()
 {
     auto main_menubar = menuBar();
-    auto menu_item = main_menubar->addMenu("File(&F)");
+    auto menu_file_item = main_menubar->addMenu("菜单(&I)");
 
-    menu_item->addAction("&Open", this, SLOT(close()), QKeySequence::Open);
-    menu_item->setGeometry(0, 0, this->width(), 30);
-    main_menubar->addMenu(menu_item);
+    auto return_action = menu_file_item->addAction("返回主界面");
+    return_action->setShortcut(Qt::CTRL | Qt::Key_Home);
+    connect(return_action, &QAction::triggered, [this](){
+        if (this->cur_scene != this->playing_scene && this->cur_scene != this->playsub_scene) {
+            this->client->logout();
+            this->switch_scene(this->main_scene);
+        }
+    });
+
+    auto load_action = menu_file_item->addAction("加载配置");
+    load_action->setShortcut(Qt::CTRL | Qt::Key_L);
+    connect(load_action, &QAction::triggered, [this](){
+        auto file_name = QFileDialog::getOpenFileName(this, tr("打开配置文件"), "", tr("Config Files (*.ini);;Config Files (*.txt)"));
+        this->load_configs(file_name);
+        if (this->cur_scene == this->config_scene) {
+            this->config_scene->refill();
+        }
+    });
+
+    auto full_screen_action = menu_file_item->addAction("");
+    if (this->isFullScreen()) {
+        full_screen_action->setText("取消全屏");
+    } else {
+        full_screen_action->setText("全屏");
+    }
+    full_screen_action->setShortcut(Qt::Key_F11);
+
+
+    connect(full_screen_action, &QAction::triggered, [this](){
+        if (this->isFullScreen()) {
+            this->qconfig->setValue("display/fullscreen_mode", "no");
+        } else {
+            this->qconfig->setValue("display/fullscreen_mode", "yes");
+        }
+        this->reset_screen_size();
+    });
+    connect(this, &MainWindow::screen_size_changed, [this, full_screen_action]() {
+        if (this->isFullScreen()) {
+            full_screen_action->setText("取消全屏");
+        } else {
+            full_screen_action->setText("全屏");
+        }
+    });
+
+
+    auto close_action = menu_file_item->addAction("关闭");
+    close_action->setShortcut(Qt::ALT | Qt::Key_F4);
+    connect(close_action, &QAction::triggered, [this](){
+        this->close();
+    });
+
+    menu_file_item->setGeometry(0, 0, this->width(), 30);
+    main_menubar->addMenu(menu_file_item);
+
+    auto menu_config_item = main_menubar->addMenu("设定(&C)");
+
+    menu_config_item->addAction("设置");
+
+    menu_config_item->setGeometry(0, 0, this->width(), 30);
+    main_menubar->addMenu(menu_config_item);
+
+
+
 
     return true;
 }
@@ -175,6 +243,28 @@ inline bool MainWindow::init_main_scene()
 
 
     this->main_scene->hide();
+    return true;
+}
+
+
+inline bool MainWindow::init_login_scene()
+{
+
+    login_scene = new LoginScene(this);
+
+
+    this->login_scene->hide();
+    return true;
+}
+
+
+inline bool MainWindow::init_config_scene()
+{
+
+    config_scene = new ConfigScene(this);
+
+
+    this->config_scene->hide();
     return true;
 }
 
@@ -266,9 +356,12 @@ void MainWindow::switch_scene(Scene *to_set)
 /************************************* Config *************************************/
 
 
-bool MainWindow::load_configs()
+bool MainWindow::load_configs(const char* file_path)
 {
-    this->qconfig = new ConfigSet("config.ini", QSettings::IniFormat, this);
+    if (this->qconfig) {
+        this->qconfig->deleteLater();
+    }
+    this->qconfig = new ConfigSet(file_path, QSettings::IniFormat, this);
 //    if (!this->qconfig) {
 //        MessageBox::critical(this, "错误", "未能读取config.ini文件，将使用默认设定");
 
@@ -279,13 +372,42 @@ bool MainWindow::load_configs()
     return true;
 }
 
+bool MainWindow::load_configs(QString file_path)
+{
+    if (this->qconfig) {
+        this->qconfig->deleteLater();
+    }
+    this->qconfig = new ConfigSet(file_path, QSettings::IniFormat, this);
+
+    this->set_default_configs();
+    this->qconfig->sync();
+    return true;
+}
+
 
 bool MainWindow::set_default_configs()
 {
     this->qconfig->set_default_value("limit/default_creation_table_items_count", 3);
+    this->qconfig->set_default_value("display/style", "800x600");
+    this->qconfig->set_default_value("display/fullscreen_mode", "yes");
     this->qconfig->set_default_value("mysql/host", "localhost");
     this->qconfig->set_default_value("mysql/basename", "tango");
     this->qconfig->set_default_value("mysql/user", "tangosql");
     this->qconfig->set_default_value("mysql/password", "123456");
     return true;
 }
+
+void MainWindow::reset_screen_size()
+{
+    qDebug() << "reset_screen_size";
+    auto dis_style = this->qconfig->at("display/style").toString();
+    auto line_list = dis_style.split("x");
+    this->setFixedSize(line_list[0].toInt(), line_list[1].toInt());
+    if (this->qconfig->at("display/fullscreen_mode").toString() == "yes") {
+        this->showFullScreen();
+    } else {
+        this->showNormal();
+    }
+    emit this->screen_size_changed();
+}
+

@@ -24,7 +24,9 @@ release/UserFullInfo.o
 release/UserStatus.o
 release/main.o
 release/mainwindow.o
+release/ConfigScene.o
 release/CreationScene.o
+release/LoginScene.o
 release/MainScene.o
 release/MultiPlayingScene.o
 release/PlaySettleScene.o
@@ -50,6 +52,8 @@ release/moc_Player.o
 release/moc_PairTableItem.o
 release/moc_TimerWidget.o
 release/moc_mainwindow.o
+release/moc_ConfigScene.o
+release/moc_LoginScene.o
 release/moc_CreationScene.o
 release/moc_MainScene.o
 release/moc_MultiPlayingScene.o

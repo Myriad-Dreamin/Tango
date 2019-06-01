@@ -9,7 +9,9 @@ class TangoPair;
 class TimerWidget;
 
 class Scene;
+class ConfigScene;
 class MainScene;
+class LoginScene;
 class PlayingScene;
 class MultiPlayingScene;
 class PlaySubScene;
@@ -31,27 +33,10 @@ class MainWindow : public QMainWindow
 {
 // property:
     Q_OBJECT
-    friend class Client;
-    friend class RemoteClient;
-    
-    friend class MainScene;
-    friend class PlayingScene;
-    friend class MultiPlayingScene;
-    friend class PlaySubScene;
-    friend class RegisterScene;
-
-    friend class CreationScene;
-    friend class SelectingScene;
-    friend class PlaySettleScene;
-    friend class RankingAuthorsScene;
-    friend class RankingConsumersScene;
-    
-    friend class QueryUsersScene;
 
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-private:
     Client *client;
     ConfigSet *qconfig;
     Logger *logger;
@@ -59,6 +44,8 @@ private:
 
     Scene *cur_scene;
     MainScene *main_scene;
+    ConfigScene *config_scene;
+    LoginScene *login_scene;
     PlayingScene *playing_scene;
     MultiPlayingScene *multiplaying_scene;
     RegisterScene *register_scene;
@@ -71,15 +58,20 @@ private:
     QueryUsersScene *query_users_scene;
 
     void switch_scene(Scene *to_set);
-
+    void reset_screen_size();
+signals:
+    void screen_size_changed();
 private:
-    inline bool load_configs();
+    inline bool load_configs(const char *file_path="config.ini");
+    bool load_configs(QString file_path);
     bool set_default_configs();
     inline bool init_client();
     inline bool init_menubar();
     inline bool init_statusbar();
 
     inline bool init_main_scene();
+    inline bool init_login_scene();
+    inline bool init_config_scene();
     inline bool init_playing_scene();
     inline bool init_multiplaying_scene();
     inline bool init_playsub_scene();

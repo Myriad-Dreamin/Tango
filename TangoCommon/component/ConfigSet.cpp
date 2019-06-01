@@ -31,7 +31,24 @@ bool ConfigSet::set_default_value(const QString &key, const QVariant &value)
     return true;
 }
 
-QVariant ConfigSet::operator[](const QString &key)
+const QVariant &ConfigSet::get_default_value(const QString &key)
+{
+    static QVariant invalid_element(QVariant::Type::Invalid);
+    if (default_set.count(key)) {
+        return default_set.at(key);
+    }
+    return invalid_element;
+}
+
+bool ConfigSet::reset()
+{
+    for (auto &kv: default_set) {
+        this->setValue(kv.first, kv.second);
+    }
+    return true;
+}
+
+const QVariant ConfigSet::operator[](const QString &key)
 {
     static QVariant invalid_element(QVariant::Type::Invalid);
     QVariant to_get = this->value(key, invalid_element);
@@ -45,11 +62,11 @@ QVariant ConfigSet::operator[](const QString &key)
 }
 
 
-const QVariant & ConfigSet::at(const QString &key)
+const QVariant ConfigSet::at(const QString &key)
 {
     static QVariant invalid_element(QVariant::Type::Invalid);
     if (this->value(key, invalid_element).isValid()) {
-        default_set[key] = this->value(key, invalid_element);
+        return this->value(key, invalid_element);
     }
     if (default_set.count(key)) {
         return default_set.at(key);

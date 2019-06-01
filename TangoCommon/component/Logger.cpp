@@ -66,7 +66,7 @@ namespace LoggerFlag {
     template<>
     struct type_traitor<info_logger_flag> {
         typedef logger_flag _ww;
-        typedef std::false_type enable_info;
+        typedef std::true_type enable_info;
         typedef std::true_type enable_warning;
         typedef std::true_type enable_debug;
         typedef std::true_type enable_error;

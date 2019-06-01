@@ -97,6 +97,20 @@ bool LocalClient::setup_connection()
         if (!handler.open()) {
             logger->debug() << "db open error:" << handler.lastError().text();
             _last_error = handler.lastError().text();
+            _last_error +=
+                "\n"
+                "注意：本游戏采用mysql8.0服务。默认设置下，数据库方案为：\n"
+                "    Mysql服务: localhost:3306\n"
+                "    游戏数据库名：tango\n"
+                "    游戏代理账户：tangosql\n"
+                "    游戏代理密码：123456\n"
+                "如果你需要更改配置，请依照默认的config.ini配置\n"
+                "如果你不懂得如何配置，可以寻找游戏服务器游玩，或者尝试寻找维护人员帮助\n"
+                "未来有可能推出sqlite版本的本地数据库方案，敬请期待！";
+            handler.setHostName("localhost");
+            handler.setDatabaseName("tango");
+            handler.setUserName("tangosql");
+            handler.setPassword("123456");
             return false;
         }
 
