@@ -22,10 +22,10 @@ public:
 
 
     void query_online_threads(std::vector<UserFullInfo> &authors_info, std::vector<UserFullInfo> &consumers_info, std::vector<long long> &socks);
-    bool author_pool_register(TangoThread *thread);
-    bool author_pool_unregister(TangoThread *thread);
-    bool consumer_pool_register(TangoThread *thread);
-    bool consumer_pool_unregister(TangoThread *thread);
+    bool author_pool_register(QString account, TangoThread *thread);
+    bool author_pool_unregister(QString account, TangoThread *thread);
+    bool consumer_pool_register(QString account, TangoThread *thread);
+    bool consumer_pool_unregister(QString account, TangoThread *thread);
 signals:
     void client_disconnected(qintptr sockDesc);
 
