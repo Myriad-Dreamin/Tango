@@ -5,6 +5,7 @@
 #include <QThread>
 #include <QSqlDatabase>
 #include "../../TangoCommon/types/RetriveMode.h"
+#include "../../TangoCommon/types/UserStatus.h"
 #include <map>
 #include "TcpServer.h"
 
@@ -25,8 +26,16 @@ public:
     TangoThread(qintptr sockDesc, QSqlDatabase &tango_sql, QObject *server = nullptr);
     ~TangoThread();
 
-    UserFullInfo consumer_info();
-    UserFullInfo author_info();
+    bool consumer_logining();
+    bool author_logining();
+
+    const UserFullInfo &consumer_info();
+    const UserFullInfo &author_info();
+    const UserFullInfo &last_consumer_info();
+    const UserFullInfo &last_author_info();
+    const UserStatus &get_user_status();
+
+    const QString &last_error();
 
 private:
     void run(void);
@@ -43,6 +52,7 @@ private:
     bool game_event_enable;
     bool automate_started;
     QString current_key;
+    QString _last_error;
 
     AbstractGameAutomation *automate;
     long long client_id;

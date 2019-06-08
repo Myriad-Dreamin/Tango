@@ -16,11 +16,9 @@
 #include "../automator/GameAutomation.h"
 #include "../automator/GameConfig.h"
 
-LocalClient::LocalClient(QObject *parent): QObject (parent), AbstractClient ()
+LocalClient::LocalClient(QObject *parent): AbstractClient (parent)
 {
     this->logger = Logger::get_logger("main");
-    this->user_author = nullptr;
-    this->user_consumer = nullptr;
     this->user_status = UserStatus::None;
 
     handler = QSqlDatabase::addDatabase("QMYSQL");
@@ -37,9 +35,8 @@ LocalClient::LocalClient(
     QString user_name,
     QString password,
     QObject *parent
-): QObject (parent), AbstractClient () {
-    this->user_author = nullptr;
-    this->user_consumer = nullptr;
+): AbstractClient (parent) {
+    this->logger = Logger::get_logger("main");
     this->user_status = UserStatus::None;
 
     handler = QSqlDatabase::addDatabase("QMYSQL");
@@ -74,10 +71,9 @@ bool LocalClient::reset_database_user(QString user_name, QString password)
 
 
 
-LocalClient::LocalClient(QSqlDatabase out_link, QObject *parent): QObject (parent), AbstractClient ()
+LocalClient::LocalClient(QSqlDatabase out_link, QObject *parent): AbstractClient (parent)
 {
-    this->user_author = nullptr;
-    this->user_consumer = nullptr;
+    this->logger = Logger::get_logger("main");
     this->user_status = UserStatus::None;
 
     handler = out_link;
@@ -123,6 +119,7 @@ bool LocalClient::setup_connection()
     }
 
     logger->info() << "might be open" << this->handler.isOpen();
+
     return true;
 }
 
@@ -148,8 +145,6 @@ bool LocalClient::author_sign_in(QString account, QString password)
 {
     if (user_status_util::has_author_status(this->user_status)) {
         logger->info() << "user_doesn't logout";
-        user_author->deleteLater();
-        user_author = nullptr;
         user_status_util::remove_author_status(this->user_status);
     }
     return this->_author_sign_in(account, password);
@@ -157,16 +152,14 @@ bool LocalClient::author_sign_in(QString account, QString password)
 
 bool LocalClient::_author_sign_in(QString account, QString password)
 {
-    user_author = new class Author(this->handler);
-    if (user_author->sign_in_local(account, password)) {
+    user_author.set_handler(this->handler);
+    if (user_author.sign_in_local(account, password)) {
         user_status_util::add_author_status(this->user_status);
 
         return true;
     }
 
-    _last_error = user_author->last_error();
-    user_author->deleteLater();
-    user_author = nullptr;
+    _last_error = user_author.last_error();
 
     return false;
 }
@@ -175,8 +168,6 @@ bool LocalClient::author_sign_up(QString account, QString password)
 {
     if (user_status_util::has_author_status(this->user_status)) {
         logger->info() << "author doesn't logout";
-        user_author->deleteLater();
-        user_author = nullptr;
         user_status_util::remove_author_status(this->user_status);
     }
     return this->_author_sign_up(account, password);
@@ -184,16 +175,14 @@ bool LocalClient::author_sign_up(QString account, QString password)
 
 bool LocalClient::_author_sign_up(QString account, QString password)
 {
-    user_author = new class Author(this->handler);
-    if (user_author->sign_up_local(account, password)) {
+    user_author.set_handler(this->handler);
+    if (user_author.sign_up_local(account, password)) {
         user_status_util::add_author_status(this->user_status);
 
         return true;
     }
 
-    _last_error = user_author->last_error();
-    user_author->deleteLater();
-    user_author = nullptr;
+    _last_error = user_author.last_error();
 
     return false;
 }
@@ -202,8 +191,6 @@ bool LocalClient::consumer_sign_in(QString account, QString password)
 {
     if (user_status_util::has_consumer_status(this->user_status)) {
         logger->info() << "consumer doesn't logout";
-        user_consumer->deleteLater();
-        user_consumer = nullptr;
         user_status_util::remove_consumer_status(this->user_status);
     }
     return this->_consumer_sign_in(account, password);
@@ -211,16 +198,14 @@ bool LocalClient::consumer_sign_in(QString account, QString password)
 
 bool LocalClient::_consumer_sign_in(QString account, QString password)
 {
-    user_consumer = new class Consumer(this->handler);
-    if (user_consumer->sign_in_local(account, password)) {
+    user_consumer.set_handler(this->handler);
+    if (user_consumer.sign_in_local(account, password)) {
         user_status_util::add_consumer_status(this->user_status);
 
         return true;
     }
 
-    _last_error = user_consumer->last_error();
-    user_consumer->deleteLater();
-    user_consumer = nullptr;
+    _last_error = user_consumer.last_error();
 
     return false;
 
@@ -230,8 +215,6 @@ bool LocalClient::consumer_sign_up(QString account, QString password)
 {
     if (user_status_util::has_consumer_status(this->user_status)) {
         logger->info() << "consumer doesn't logout";
-        user_consumer->deleteLater();
-        user_consumer = nullptr;
         user_status_util::remove_consumer_status(this->user_status);
     }
     return this->_consumer_sign_up(account, password);
@@ -242,24 +225,20 @@ bool LocalClient::logout()
     logger->info() << "logouting";
     if (user_status_util::has_author_status(this->user_status)) {
         logger->info() << "logout author";
-        if (user_author->login_out_local()) {
-            user_author->deleteLater();
-            user_author = nullptr;
+        if (user_author.login_out_local()) {
             user_status_util::remove_author_status(this->user_status);
         } else {
-            _last_error = user_author->last_error();
+            _last_error = user_author.last_error();
             logger->debug() << "error occured when logout author" << _last_error;
             return false;
         }
     }
     if (user_status_util::has_consumer_status(this->user_status)) {
-        logger->info() << "logout consumer" << this->user_consumer->user_info.tango_count;
-        if (user_consumer->login_out_local()) {
-            user_consumer->deleteLater();
-            user_consumer = nullptr;
+        logger->info() << "logout consumer";
+        if (user_consumer.login_out_local()) {
             user_status_util::remove_consumer_status(this->user_status);
         } else {
-            _last_error = user_consumer->last_error();
+            _last_error = user_consumer.last_error();
             logger->debug() << "error occured when logout consumer" << _last_error;
             return false;
         }
@@ -273,16 +252,16 @@ bool LocalClient::sync_status()
     logger->info() << "syncing";
     if (user_status_util::has_author_status(this->user_status)) {
         logger->info() << "syncing author";
-        if (!user_author->update_full_info_local()) {
-            _last_error = user_author->last_error();
+        if (!user_author.update_full_info_local()) {
+            _last_error = user_author.last_error();
             logger->debug() << "error occured when sync status" << _last_error;
             return false;
         }
     }
     if (user_status_util::has_consumer_status(this->user_status)) {
-        logger->info() << "syncing consumer" << this->user_consumer->user_info.tango_count;
-        if (!user_consumer->update_full_info_local()) {
-            _last_error = user_consumer->last_error();
+        logger->info() << "syncing consumer";
+        if (!user_consumer.update_full_info_local()) {
+            _last_error = user_consumer.last_error();
             logger->debug() << "error occured when syncing consumer" << _last_error;
             return false;
         }
@@ -391,17 +370,17 @@ AbstractGameAutomation *LocalClient::start_game_event(const GameConfig *game_con
 
 bool LocalClient::settle_game_event(const AbstractGameAutomation *automate)
 {
-    logger->info() << this->user_consumer << this->user_consumer->user_info.misson_count << this->user_consumer->user_info.exp << this->user_consumer->user_info.tango_count << this->user_consumer->user_info.level;
+    logger->info() << "settling game event";
     if (static_cast<unsigned int>(automate->success_count) < automate->tango_pool->size()) {
-        this->user_consumer->user_info.misson_count++;
+        this->user_consumer.user_info.misson_count++;
     }
-    this->user_consumer->user_info.exp += automate->exp;
-    this->user_consumer->user_info.tango_count += automate->success_count;
-    while (this->user_consumer->user_info.level * 10 + 10 <= this->user_consumer->user_info.exp) {
-        this->user_consumer->user_info.exp -= this->user_consumer->user_info.level * 10 + 10;
-        this->user_consumer->user_info.level++;
+    this->user_consumer.user_info.exp += automate->exp;
+    this->user_consumer.user_info.tango_count += automate->success_count;
+    while (this->user_consumer.user_info.level * 10 + 10 <= this->user_consumer.user_info.exp) {
+        this->user_consumer.user_info.exp -= this->user_consumer.user_info.level * 10 + 10;
+        this->user_consumer.user_info.level++;
     }
-    logger->info() << this->user_consumer << this->user_consumer->user_info.misson_count << this->user_consumer->user_info.exp << this->user_consumer->user_info.tango_count << this->user_consumer->user_info.level;
+    logger->info() << "settling game event success";
     return true;
 }
 
@@ -640,11 +619,16 @@ bool LocalClient::author_logining()
     return user_status_util::has_author_status(user_status);
 }
 
+const UserStatus &LocalClient::get_user_status()
+{
+    return this->user_status;
+}
+
 
 int LocalClient::consumer_exp()
 {
     if (user_status_util::has_consumer_status(this->user_status)) {
-        return this->user_consumer->user_info.exp;
+        return this->user_consumer.user_info.exp;
     }
     logger->info() << "consumer exp=0";
     return -1;
@@ -653,7 +637,7 @@ int LocalClient::consumer_exp()
 int LocalClient::consumer_level()
 {
     if (user_status_util::has_consumer_status(this->user_status)) {
-        return this->user_consumer->user_info.level;
+        return this->user_consumer.user_info.level;
     }
     return -1;
 }
@@ -661,19 +645,29 @@ int LocalClient::consumer_level()
 const UserFullInfo &LocalClient::consumer_info()
 {
     static auto empty_info = UserFullInfo();
-    if (this->user_consumer == nullptr) {
+    if (! user_status_util::has_consumer_status(this->user_status)) {
         return empty_info;
     }
-    return this->user_consumer->user_info;
+    return this->user_consumer.user_info;
 }
 
 const UserFullInfo &LocalClient::author_info()
 {
     static auto empty_info = UserFullInfo();
-    if (this->user_author == nullptr) {
+    if (! user_status_util::has_author_status(this->user_status)) {
         return empty_info;
     }
-    return this->user_author->user_info;
+    return this->user_author.user_info;
+}
+
+const UserFullInfo &LocalClient::last_consumer_info()
+{
+    return this->user_consumer.user_info;
+}
+
+const UserFullInfo &LocalClient::last_author_info()
+{
+    return this->user_author.user_info;
 }
 
 AbstractGameAutomation *LocalClient::_start_game_event(const GameConfig *game_config, int n, RetriveMode mode)
@@ -711,7 +705,7 @@ bool LocalClient::_submit_tango_items(const std::vector<TangoPair> &tango_list)
     }
 
     query.prepare(insert_command);
-    query.bindValue(":ls", this->user_author->user_info.name);
+    query.bindValue(":ls", this->user_author.user_info.name);
 
     for (unsigned int i = 0; i < tango_list.size(); i++) {
         query.bindValue(":key", tango_list[i].first);
@@ -742,30 +736,28 @@ bool LocalClient::_submit_tango_items(const std::vector<TangoPair> &tango_list)
 // 假定author已上线
 bool LocalClient::settle_creation_event(const std::vector<TangoPair> &tango_list)
 {
-    this->user_author->user_info.misson_count++;
+    this->user_author.user_info.misson_count++;
     for (unsigned int i = 0; i < tango_list.size(); i++) {
-        this->user_author->user_info.exp += tango_list[i].first.length() + tango_list[i].second.length();
+        this->user_author.user_info.exp += tango_list[i].first.length() + tango_list[i].second.length();
     }
-    this->user_author->user_info.tango_count += tango_list.size();
-    while (this->user_author->user_info.level * 10 + 10 <= this->user_author->user_info.exp) {
-        this->user_author->user_info.exp -= this->user_author->user_info.level * 10 + 10;
-        this->user_author->user_info.level++;
+    this->user_author.user_info.tango_count += tango_list.size();
+    while (this->user_author.user_info.level * 10 + 10 <= this->user_author.user_info.exp) {
+        this->user_author.user_info.exp -= this->user_author.user_info.level * 10 + 10;
+        this->user_author.user_info.level++;
     }
     return true;
 }
 
 bool LocalClient::_consumer_sign_up(QString account, QString password)
 {
-    user_consumer = new class Consumer(this->handler);
-    if (user_consumer->sign_up_local(account, password)) {
+    user_consumer.set_handler(this->handler);
+    if (user_consumer.sign_up_local(account, password)) {
         user_status_util::add_consumer_status(this->user_status);
 
         return true;
     }
 
-    _last_error = user_consumer->last_error();
-    user_consumer->deleteLater();
-    user_consumer = nullptr;
+    _last_error = user_consumer.last_error();
 
     return false;
 }

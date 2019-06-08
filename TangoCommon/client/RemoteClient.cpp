@@ -30,7 +30,7 @@
 #include "../network/SocketX.h"
 #include "../network/json_rpc.h"
 
-RemoteClient::RemoteClient(QObject *parent) : QObject(parent)
+RemoteClient::RemoteClient(QObject *parent): AbstractClient (parent)
 {
     this->logger = Logger::get_logger("main");
     this->parent = dynamic_cast<MainWindow*>(parent);
@@ -43,7 +43,12 @@ RemoteClient::RemoteClient(QObject *parent) : QObject(parent)
     this->ready = false;
 
     connect(handler, &SocketX::package_ready, this, &RemoteClient::receive_packages);
-
+    connect(handler, &SocketX::disconnected, [this](){
+        qDebug() << "disconnected";
+        emit AbstractClient::disconnected();
+        this->ready = false;
+        this->user_status = UserStatus::None;
+    });
 
     this->make_server_on_connected();
     this->make_server_on_disconnected();

@@ -64,6 +64,10 @@ bool Client::setup_remote_connection(QHostAddress host_address, quint16 server_p
         return false;
     }
     this->handler = remote_handler;
+    disconnect(this, &Client::disconnected, nullptr, nullptr);
+    connect(this->handler, &AbstractClient::disconnected, [this]()mutable {
+        disconnected_callback();
+    });
     return true;
 }
 
@@ -92,6 +96,25 @@ bool Client::setup_local_connection()
         return false;
     }
     this->handler = local_handler;
+    disconnect(this, &Client::disconnected, nullptr, nullptr);
+    connect(this->handler, &AbstractClient::disconnected, [this]()mutable {
+        emit this->disconnected();
+    });
+    return true;
+}
+
+bool Client::stop_remote_connection()
+{
+    if (this->remote_handler == nullptr) {
+        _last_error = "remote_handler is not inited";
+        return false;
+    }
+    if (!this->remote_handler->stop_connection()) {
+        this->_last_error = this->remote_handler->last_error();
+        return false;
+    }
+    this->remote_handler = nullptr;
+    disconnect(this, &Client::disconnected, nullptr, nullptr);
     return true;
 }
 
@@ -106,6 +129,7 @@ bool Client::stop_local_connection()
         return false;
     }
     this->local_handler = nullptr;
+    disconnect(this, &Client::disconnected, nullptr, nullptr);
     return true;
 }
 
@@ -404,7 +428,6 @@ bool Client::init_default_tangos()
     _last_error = "local handler is not inited";
     return false;
 }
-
 
 
 bool Client::create_tables()

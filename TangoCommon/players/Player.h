@@ -11,6 +11,7 @@ class Player : public QObject
 public:
     Player(QSqlDatabase db_handler=QSqlDatabase::database(), QObject *parent = nullptr);
     Player(QObject *parent = nullptr);
+    Player(const Player &rpl);
 
 public:
 
@@ -34,6 +35,7 @@ public:
     /* 远程更新信息 */
     virtual bool update_full_info_remote() = 0;
 
+    void set_handler(const QSqlDatabase &handler);
 protected:
     QSqlDatabase handler;
 };

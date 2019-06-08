@@ -1,9 +1,9 @@
 
 
 #include "TangoThread.h"
-#include "../../TangoCommon/network/SocketX.h"
 
 #include <QJsonDocument>
+#include "../../TangoCommon/network/SocketX.h"
 #include "../../TangoCommon/network/json_rpc.h"
 #include "../../TangoCommon/client/LocalClient.h"
 #include "../../TangoCommon/automator/GameConfig.h"
@@ -48,19 +48,54 @@ TangoThread::~TangoThread()
         automate->deleteLater();
         automate = nullptr;
     }
-
+    if (this->client->author_logining()) {
+        this->server->author_pool_unregister(this);
+    }
+    if (this->client->consumer_logining()) {
+        this->server->consumer_pool_unregister(this);
+    }
     this->client->deleteLater();
-    m_socket->close();
+    m_socket->deleteLater();
 }
 
-UserFullInfo TangoThread::consumer_info()
+bool TangoThread::consumer_logining()
+{
+    return this->client->consumer_logining();
+}
+
+bool TangoThread::author_logining()
+{
+    return this->client->author_logining();
+}
+
+const UserFullInfo &TangoThread::consumer_info()
 {
     return this->client->consumer_info();
 }
 
-UserFullInfo TangoThread::author_info()
+const UserFullInfo &TangoThread::author_info()
 {
     return this->client->author_info();
+}
+
+const UserFullInfo &TangoThread::last_consumer_info()
+{
+    return this->client->last_consumer_info();
+}
+
+const UserFullInfo &TangoThread::last_author_info()
+{
+    return this->client->last_author_info();
+}
+
+const UserStatus &TangoThread::get_user_status()
+{
+    return this->client->get_user_status();
+}
+
+const QString &TangoThread::last_error()
+{
+    return this->_last_error;
 }
 
 void TangoThread::run(void)
@@ -353,60 +388,79 @@ void TangoThread::make_on_disconnected_client()
         qDebug() << "disconnected Client Server" << this->client_id;
         emit disconnected_from_client(this->client_id);
         m_socket->disconnectFromHost();
+        if (this->client->author_logining()) {
+            this->server->author_pool_unregister(this);
+        }
+        if (this->client->consumer_logining()) {
+            this->server->consumer_pool_unregister(this);
+        }
+        this->client->logout();
     });
 }
 
 QByteArray TangoThread::author_sign_in(QString account, QString password)
 {
+    if (!this->server->author_pool_register(this)) {
+        return client_rpc::err_exec_error(client_rpc::code::author_sign_in, this->last_error());
+    }
     if (!this->client->author_sign_in(account, password)) {
+        this->server->author_pool_unregister(this);
         return client_rpc::err_exec_error(client_rpc::code::author_sign_in, this->client->last_error());
     }
-    qDebug() << "good" << this->client->author_logining();
     return client_rpc::author_sign_in_returns(this->client->author_info());
 }
 
 
 QByteArray TangoThread::author_sign_up(QString account, QString password)
 {
+    if (!this->server->author_pool_register(this)) {
+        return client_rpc::err_exec_error(client_rpc::code::author_sign_up, this->last_error());
+    }
     if (!this->client->author_sign_up(account, password)) {
+        this->server->author_pool_unregister(this);
         return client_rpc::err_exec_error(client_rpc::code::author_sign_up, this->client->last_error());
     }
-    qDebug() << "good" << this->client->author_logining();
     return client_rpc::author_sign_up_returns(this->client->author_info());
 }
 
 
 QByteArray TangoThread::consumer_sign_in(QString account, QString password)
 {
+    if (!this->server->consumer_pool_register(this)) {
+        return client_rpc::err_exec_error(client_rpc::code::consumer_sign_in, this->last_error());
+    }
     if (!this->client->consumer_sign_in(account, password)) {
+        this->server->consumer_pool_unregister(this);
         return client_rpc::err_exec_error(client_rpc::code::consumer_sign_in, this->client->last_error());
     }
-    qDebug() << "good" << this->client->consumer_logining();
     return client_rpc::consumer_sign_in_returns(this->client->consumer_info());
 }
 
 
 QByteArray TangoThread::consumer_sign_up(QString account, QString password)
 {
+    if (!this->server->consumer_pool_register(this)) {
+        return client_rpc::err_exec_error(client_rpc::code::consumer_sign_up, this->last_error());
+    }
     if (!this->client->consumer_sign_up(account, password)) {
+        this->server->consumer_pool_unregister(this);
         return client_rpc::err_exec_error(client_rpc::code::consumer_sign_up, this->client->last_error());
     }
-    qDebug() << "good" << this->client->consumer_logining();
     return client_rpc::consumer_sign_up_returns(this->client->consumer_info());
 }
 
 QByteArray TangoThread::logout()
 {
+    UserStatus ret = this->client->get_user_status();
     if (!this->client->logout()) {
         return client_rpc::err_exec_error(client_rpc::code::logout, this->client->last_error());
     }
     qDebug() << "good" << this->client->consumer_logining();
-    UserStatus ret = UserStatus::None;
-    if (this->client->author_logining()) {
-        user_status_util::add_author_status(ret);
+    if (user_status_util::has_author_status(ret)) {
+        this->server->author_pool_unregister(this);
     }
-    if (this->client->consumer_logining()) {
-        user_status_util::add_consumer_status(ret);
+    if (user_status_util::has_consumer_status(ret)) {
+        this->server->consumer_pool_unregister(this);
     }
     return client_rpc::logout_returns(ret);
 }

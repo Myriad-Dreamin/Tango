@@ -132,6 +132,13 @@ MainWindow::~MainWindow()
 inline bool MainWindow::init_client()
 {
     this->client = new Client(this);
+
+    this->client->disconnected_callback = [this](){
+        qDebug() << "disconnected";
+        MessageBox::critical(this, "失去连接", "与服务器失去连接，未设置重连选项，故退出登录");
+        this->switch_scene(this->main_scene);
+    };
+
     return true;
 }
 

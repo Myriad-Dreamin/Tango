@@ -2,6 +2,8 @@
 #define LOCALCLIENT_H
 
 #include "AbstractClient.h"
+#include "../TangoCommon/players/Author.h"
+#include "../TangoCommon/players/Consumer.h"
 #include <QObject>
 #include <QSqlDatabase>
 
@@ -12,7 +14,7 @@ class Logger;
  * 
  * 承载客户端与本地数据库服务的交互
  */
-class LocalClient : public QObject, public AbstractClient
+class LocalClient : public AbstractClient
 {
     Q_OBJECT
 public:
@@ -65,12 +67,17 @@ public:
 
     bool consumer_logining() override;
     bool author_logining() override;
+    const UserStatus &get_user_status();
 
     int consumer_exp() override;
     int consumer_level() override;
 
+    QString consumer_name();
+    QString user_name();
     const UserFullInfo &consumer_info() override;
+    const UserFullInfo &last_consumer_info();
     const UserFullInfo &author_info() override;
+    const UserFullInfo &last_author_info();
 
     bool create_tables();
 private:
@@ -78,9 +85,9 @@ private:
     UserStatus user_status;
 
     /* author用户handler */
-    class Author *user_author;
+    class Author user_author;
     /* consumer用户handler */
-    class Consumer *user_consumer;
+    class Consumer user_consumer;
 
     /* 本地连接handler */
     QSqlDatabase handler;

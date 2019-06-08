@@ -6,6 +6,14 @@
 #include "../TangoCommon/client/LocalClient.h"
 #include "../TangoCommon/types/UserFullInfo.h"
 
+
+inline void gracefully_destroy_thread(QThread *thread)
+{
+    thread->quit();
+    thread->wait();
+    thread->deleteLater();
+}
+
 TcpServer::TcpServer(QObject *parent): QTcpServer (parent)
 {
     main_window = dynamic_cast<MainWindow*>(parent);
@@ -21,7 +29,11 @@ TcpServer::TcpServer(QSqlDatabase &out_link, QObject *parent): QTcpServer (paren
     // connect()
 }
 
-TcpServer::~TcpServer() {}
+TcpServer::~TcpServer() {
+    for (auto thread: active_threads) {
+        gracefully_destroy_thread(thread.second);
+    }
+}
 
 void TcpServer::incomingConnection(qintptr sock_desc)
 {
@@ -69,16 +81,67 @@ void TcpServer::query_online_threads(
     }
 }
 
-
-
 void TcpServer::make_on_client_disconnected(TangoThread *thread)
 {
     connect(thread, &TangoThread::disconnected_from_client, this, [this, thread](long long sock_desc) {
         qDebug() << "on client disconnected " << sock_desc;
         active_threads.erase(sock_desc);
-        thread->quit();
-        thread->wait();
-        thread->deleteLater();
+        gracefully_destroy_thread(thread);
         emit client_disconnected(sock_desc);
     });
+}
+
+
+bool TcpServer::author_pool_register(TangoThread *thread)
+{
+    m_mutex.lock();
+    if (online_author.count(thread->last_author_info().name.toStdString())) {
+        m_mutex.unlock();
+        thread->_last_error = "author is logining..";
+        return false;
+    }
+    online_author[thread->last_author_info().name.toStdString()] = thread;
+    m_mutex.unlock();
+    return true;
+}
+
+bool TcpServer::author_pool_unregister(TangoThread *thread)
+{
+    m_mutex.lock();
+    if (!online_author.count(thread->last_author_info().name.toStdString())) {
+        m_mutex.unlock();
+        thread->_last_error = "author is not logining..";
+        return false;
+    }
+    online_author.erase(thread->last_author_info().name.toStdString());
+    m_mutex.unlock();
+    return true;
+}
+
+bool TcpServer::consumer_pool_register(TangoThread *thread)
+{
+    m_mutex.lock();
+    qDebug() << "thread->consumer_info().name.toStdString()" << thread->last_consumer_info().name;
+    if (online_consumer.count(thread->last_consumer_info().name.toStdString())) {
+        m_mutex.unlock();
+        thread->_last_error = "consumer is logining..";
+        return false;
+    }
+    online_consumer[thread->last_consumer_info().name.toStdString()] = thread;
+    m_mutex.unlock();
+    return true;
+}
+
+bool TcpServer::consumer_pool_unregister(TangoThread *thread)
+{
+    m_mutex.lock();
+    qDebug() << "thread->consumer_info().name.toStdString()" << thread->last_consumer_info().name;
+    if (!online_consumer.count(thread->last_consumer_info().name.toStdString())) {
+        m_mutex.unlock();
+        thread->_last_error = "consumer is not logining..";
+        return false;
+    }
+    online_consumer.erase(thread->last_consumer_info().name.toStdString());
+    m_mutex.unlock();
+    return true;
 }

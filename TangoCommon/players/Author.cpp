@@ -19,6 +19,12 @@ Author::Author(QObject *parent): Player(parent)
 
 }
 
+Author::Author(const Author &rau): Player(rau)
+{
+    this->_last_error = rau._last_error;
+    this->user_info = rau.user_info;
+}
+
 
 Author::~Author()
 {

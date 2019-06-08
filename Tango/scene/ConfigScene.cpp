@@ -31,7 +31,7 @@ ConfigScene::ConfigScene(MainWindow *parent): Scene(parent)
     displaystyle_edit = new QComboBox;
     displaystyle_edit->setEditable(false);
     QStringList displaystyle_list;
-    displaystyle_list << "800x600" << "960x540" << "1280x720" << "1920x1080" << "2560x1440" <<
+    displaystyle_list << "800x600" << "960x540" << "1280x720" << "1920x1080" << "2560x1440" << "1366x768" <<
                          "800x480" << "1024x600" << "1280x800" << "1440x900" << "1680x1050" << "1920x1200" << "2560x1600";
     displaystyle_edit->addItems(displaystyle_list);
     displaystyle_edit->setView(new QListView());

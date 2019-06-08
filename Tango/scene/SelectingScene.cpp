@@ -175,7 +175,7 @@ void SelectingScene::set_button_events()
     this->set_return_button_event([this]() mutable {
         qDebug() << "clicked return button";
 
-        this->parent->client->logout();
+        qDebug() << this->parent->client->logout() << this->parent->client->last_error();
         this->parent->switch_scene(this->parent->main_scene);
     });
 

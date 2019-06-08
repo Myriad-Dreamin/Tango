@@ -86,6 +86,7 @@ Logger::~Logger()
 {
     if (handler != nullptr) {
         delete handler;
+        this->handler = nullptr;
     }
 }
 
@@ -95,6 +96,7 @@ Logger *Logger::get_logger(const std::string &logger_name)
     if (!LoggerManager::m_logger_instances->count(logger_name)) {
         alloc_mutex.lock();
         if (!LoggerManager::m_logger_instances->count(logger_name)) {
+            qDebug() << "realloced";
             (*LoggerManager::m_logger_instances)[logger_name] = new Logger();
         }
         alloc_mutex.unlock();

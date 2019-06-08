@@ -46,6 +46,11 @@ public:
     /* 本地登陆 */
     bool setup_local_connection();
 
+    /* 断开远程连接 */
+    bool stop_remote_connection();
+    /* 断开本地连接 */
+    bool stop_local_connection();
+
     /* 作者登录 */
     bool author_sign_in(QString account, QString password);
     /* 作者注册 */
@@ -184,12 +189,6 @@ private:
     /* 向远程提交一组单词 */
     bool submit_tango_items_remote(const std::vector<TangoPair> &tango_list);
 
-
-    /* 断开远程连接 */
-    bool stop_remote_connection();
-    /* 断开本地连接 */
-    bool stop_local_connection();
-
     /* 创建表格 */
     bool create_tables();
 signals:
@@ -197,6 +196,8 @@ signals:
     void connected();
     /* 断开信号 */
     void disconnected();
+public:
+    std::function<void()> disconnected_callback;
 private:
     Logger *logger;
 };

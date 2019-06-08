@@ -15,7 +15,7 @@ class Logger;
  * 
  * 负责网络化客户端服务，使用JSON-RPC服务
  */
-class RemoteClient : public QObject, public AbstractClient
+class RemoteClient : public AbstractClient
 {
     Q_OBJECT
     friend class GameAutomationRelayer;

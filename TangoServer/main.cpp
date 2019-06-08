@@ -1,4 +1,7 @@
 #include "mainwindow.h"
+
+#include "../TangoCommon/component/Logger.h"
+
 #include <QApplication>
 #include <QMessageBox>
 #include <QSqlDatabase>
@@ -7,6 +10,8 @@
 
 int main(int argc, char *argv[])
 {
+    Logger::get_logger("main")->set_mode(LoggerFlag::debug_logger_flag());
+    qDebug() << reinterpret_cast<unsigned long long>(Logger::get_logger("main"));
     QApplication a(argc, argv);
 
     auto tango_sql = QSqlDatabase::addDatabase("QMYSQL");
